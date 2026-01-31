@@ -7,7 +7,7 @@ Un tool web interattivo per analizzare la velocità, la potenza e la densità de
 - **Grafici dinamici**: Potenza vs Velocità e perdite per componente (Drag, Rolling, Gravity, Drivetrain)
 - **Calcolo e visualizzazione VAM** (Velocità Ascensionale Media, m/h)
 - **Densità dell’aria**: calcolo da temperatura, pressione, umidità/dew point
-- **Sincronizzazione automatica tra umidità relativa e dew point**
+- **Calcolo della pressione atmosferica per altitudine**
 - **Input compatti e moderni**
 - **Link utili per Crr e Drivetrain Loss**
 - **Licenza MIT**
