@@ -428,10 +428,13 @@
         </header>
 
         <div class="tab-nav">
-            <button class="tab-button active" onclick="switchTab('power')">
-                ⚡ Power vs Speed
+            <button class="tab-button active" onclick="switchTab('power')" data-tab="power">
+                ⚡ Power → Speed
             </button>
-            <button class="tab-button" onclick="switchTab('air')">
+            <button class="tab-button" onclick="switchTab('speed')" data-tab="speed">
+                🚴 Speed → Power
+            </button>
+            <button class="tab-button" onclick="switchTab('air')" data-tab="air">
                 🌡️ Air Density
             </button>
         </div>
@@ -439,7 +442,7 @@
         <!-- Power Calculator Tab -->
         <div id="power-tab" class="tab-content active">
             <div class="card">
-                <h2 class="card-title">Parametri Ciclista e Bicicletta</h2>
+                <h2 class="card-title">Power → Speed (Parametri)</h2>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
@@ -518,6 +521,120 @@
             <div class="card equations">
                 <h3>📐 Equazioni del Modello</h3>
                 <p>Il modello calcola la velocità basandosi sull'equilibrio tra potenza applicata e resistenze:</p>
+                
+                <div class="equation-block">
+                    <strong>Resistenza Aerodinamica:</strong><br>
+                    F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²
+                </div>
+
+                <div class="equation-block">
+                    <strong>Resistenza al Rotolamento:</strong><br>
+                    F<sub>roll</sub> = Crr × m × g × cos(θ)
+                </div>
+
+                <div class="equation-block">
+                    <strong>Resistenza Gravitazionale:</strong><br>
+                    F<sub>grav</sub> = m × g × sin(θ)
+                </div>
+
+                <div class="equation-block">
+                    <strong>Potenza Totale:</strong><br>
+                    P = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v
+                </div>
+
+                <p style="margin-top: 1rem;">
+                    Dove:<br>
+                    • ρ = densità dell'aria (kg/m³)<br>
+                    • CdA = coefficiente di drag × area frontale (m²)<br>
+                    • v<sub>rel</sub> = velocità relativa al vento (m/s)<br>
+                    • Crr = coefficiente di rotolamento<br>
+                    • m = massa totale (ciclista + bici) (kg)<br>
+                    • g = accelerazione di gravità (9.81 m/s²)<br>
+                    • θ = angolo di pendenza
+                </p>
+            </div>
+        </div>
+
+        <!-- Speed->Power Calculator Tab (same layout but input is speed) -->
+        <div id="speed-tab" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Speed → Power (Parametri)</h2>
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Peso Ciclista (kg)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="rider-weight-s" value="75" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Bici (kg)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="bike-weight-s" value="8" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Pendenza (%)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="slope-s" value="0" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Velocità (km/h)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="speed-kmh" value="36" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Densità Aria (kg/m³)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="air-density-s" value="1.225" step="0.001">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>CdA (m²)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="cda-s" value="0.32" step="0.01">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Velocità Vento (km/h)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="wind-speed-s" value="0" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="crr-s" value="0.004" step="0.0001">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><a href="https://powermetercity.com/2016/11/21/power-meter-drivetrain-power-loss/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="drivetrain-loss-s" value="2" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="speed-results" class="results"></div>
+
+                <div class="chart-container">
+                    <canvas id="power-chart-s"></canvas>
+                </div>
+                <div class="chart-container" style="margin-top:1rem;">
+                    <canvas id="power-loss-chart-s"></canvas>
+                </div>
+            </div>
+
+            <div class="card equations">
+                <h3>📐 Equazioni del Modello</h3>
+                <p>Stesso modello; qui si calcola la potenza richiesta data la velocità.</p>
                 
                 <div class="equation-block">
                     <strong>Resistenza Aerodinamica:</strong><br>
@@ -631,8 +748,9 @@
     </div>
 
     <script>
-        let powerChart = null;
-        let powerLossChart = null;
+        // Support multiple chart instances (one per tab suffix)
+        let powerCharts = {};
+        let powerLossCharts = {};
         let airChart = null;
         // Coefficienti Wobus e funzione di saturazione usata in più punti
         const c0 = 0.99999683;
@@ -671,21 +789,18 @@
             return (lo + hi) / 2;
         }
 
-        // Tab switching
+        // Tab switching (supports power, speed, air)
         function switchTab(tab) {
             const buttons = document.querySelectorAll('.tab-button');
             const contents = document.querySelectorAll('.tab-content');
-            
+
             buttons.forEach(btn => btn.classList.remove('active'));
             contents.forEach(content => content.classList.remove('active'));
-            
-            if (tab === 'power') {
-                buttons[0].classList.add('active');
-                document.getElementById('power-tab').classList.add('active');
-            } else {
-                buttons[1].classList.add('active');
-                document.getElementById('air-tab').classList.add('active');
-            }
+
+            const btn = document.querySelector('.tab-button[data-tab="' + tab + '"]');
+            if (btn) btn.classList.add('active');
+            const content = document.getElementById(tab + '-tab');
+            if (content) content.classList.add('active');
         }
 
         // Power Calculator
@@ -786,11 +901,100 @@
                 </div>
             `;
 
-            // Update chart
-            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed);
+            // Update chart (main tab, no suffix)
+            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '');
         }
 
-        function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed) {
+        // Calculate pedaling power given a fixed speed (Speed -> Power)
+        function calculatePowerFromSpeed() {
+            const riderWeight = parseFloat(document.getElementById('rider-weight-s').value);
+            const bikeWeight = parseFloat(document.getElementById('bike-weight-s').value);
+            const cda = parseFloat(document.getElementById('cda-s').value);
+            const crr = parseFloat(document.getElementById('crr-s').value);
+            const slope = parseFloat(document.getElementById('slope-s').value);
+            const rho = parseFloat(document.getElementById('air-density-s').value);
+            const speedKmh = parseFloat(document.getElementById('speed-kmh').value);
+            const drivetrainLossPercent = parseFloat(document.getElementById('drivetrain-loss-s').value) || 0;
+            const windSpeed = parseFloat(document.getElementById('wind-speed-s').value);
+
+            const totalMass = riderWeight + bikeWeight;
+            const g = 9.81;
+            const slopeRad = Math.atan(slope / 100);
+
+            const speed = (speedKmh || 0) / 3.6; // m/s
+            const windSpeedMS = windSpeed / 3.6;
+            const relativeSpeed = speed + windSpeedMS;
+
+            const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
+            const rollForce = crr * totalMass * g * Math.cos(slopeRad);
+            const gravForce = totalMass * g * Math.sin(slopeRad);
+
+            const totalForce = aeroForce + rollForce + gravForce;
+            const powerAtWheel = totalForce * speed; // W at wheel (after drivetrain)
+
+            // Convert to pedaling power before drivetrain losses
+            const eff = 1 - (drivetrainLossPercent / 100);
+            const pedalingPower = eff > 0 ? powerAtWheel / eff : powerAtWheel;
+            const drivetrainLossWatts = pedalingPower * (drivetrainLossPercent / 100);
+
+            // per-component powers
+            const pDragNow = aeroForce * speed;
+            const pRollNow = rollForce * speed;
+            const pGravNow = gravForce * speed;
+
+            const powerPerKg = pedalingPower / Math.max(1e-6, riderWeight);
+
+            // VAM
+            const verticalSpeed = speed * Math.sin(slopeRad);
+            const vam = verticalSpeed * 3600;
+
+            // Display results (mirror layout from calculatePower)
+            const resultsDiv = document.getElementById('speed-results');
+            resultsDiv.innerHTML = `
+                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; align-items:stretch;">
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">At</div>
+                        <div class="result-value">${speedKmh.toFixed(1)}<span class="result-unit"> km/h</span> &nbsp;→</div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Potenza</div>
+                        <div class="result-value">${pedalingPower.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Potenza / Peso</div>
+                        <div class="result-value">${powerPerKg.toFixed(2)}<span class="result-unit"> W/kg</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">VAM</div>
+                        <div class="result-value">${vam.toFixed(0)}<span class="result-unit"> m/h</span></div>
+                    </div>
+                </div>
+
+                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch;">
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Drag</div>
+                        <div class="result-value">${pDragNow.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Rolling</div>
+                        <div class="result-value">${pRollNow.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Gravity</div>
+                        <div class="result-value">${pGravNow.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Drivetrain</div>
+                        <div class="result-value">${drivetrainLossWatts.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                </div>
+            `;
+
+            // Update charts using the same update function but target speed-tab canvases (suffix '-s')
+            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '-s');
+        }
+
+        function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, suffix = '') {
             const totalMass = riderWeight + bikeWeight;
             const g = 9.81;
             const slopeRad = Math.atan(slope / 100);
@@ -831,13 +1035,13 @@
                 drivetrainPowers.push(pDrivetrain);
             }
 
-            const ctx = document.getElementById('power-chart').getContext('2d');
-            
-            if (powerChart) {
-                powerChart.destroy();
+            const ctx = document.getElementById('power-chart' + suffix).getContext('2d');
+
+            if (powerCharts[suffix]) {
+                powerCharts[suffix].destroy();
             }
 
-            powerChart = new Chart(ctx, {
+            powerCharts[suffix] = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: speeds,
@@ -953,10 +1157,10 @@
             });
 
             // --- Power loss chart (negative values for visual 'loss') ---
-            const ctxLoss = document.getElementById('power-loss-chart').getContext('2d');
-            if (powerLossChart) powerLossChart.destroy();
+            const ctxLoss = document.getElementById('power-loss-chart' + suffix).getContext('2d');
+            if (powerLossCharts[suffix]) powerLossCharts[suffix].destroy();
 
-            powerLossChart = new Chart(ctxLoss, {
+            powerLossCharts[suffix] = new Chart(ctxLoss, {
                 type: 'line',
                 data: {
                     labels: speeds,
@@ -1062,22 +1266,26 @@
         // Air Density Calculator
         function calculateAirDensity() {
             const temp = parseFloat(document.getElementById('temp').value);
-            const pressure = parseFloat(document.getElementById('pressure').value);
+            const pressure_hPa = parseFloat(document.getElementById('pressure').value);
             const humidity = parseFloat(document.getElementById('humidity').value);
 
             // Primary calculation based on relative humidity (user request)
             const EsAtTemp = calcEs(temp);
-            const Pv = (humidity / 100) * EsAtTemp; // vapor pressure (hPa)
-            const Pd = pressure - Pv;
+            const Pv_hPa = (humidity / 100) * EsAtTemp; // vapor pressure in hPa
+            const Pd_hPa = pressure_hPa - Pv_hPa; // dry air pressure in hPa
             const Tk = temp + 273.15;
 
             const Rd = 287.0531;
             const Rv = 461.4964;
 
+            // Convert pressures to Pa for ideal gas law (1 hPa = 100 Pa)
+            const Pv = Pv_hPa * 100;
+            const Pd = Pd_hPa * 100;
+
             const rho = (Pd / (Rd * Tk)) + (Pv / (Rv * Tk));
 
-            // Derive dew point from Pv and update field without causing input loop
-            const dewFromPv = dewpointFromPv(Pv);
+            // Derive dew point from Pv_hPa and update field without causing input loop
+            const dewFromPv = dewpointFromPv(Pv_hPa);
             if (Number.isFinite(dewFromPv)) {
                 const prevSuppress = suppressSync;
                 suppressSync = true;
@@ -1085,7 +1293,7 @@
                 suppressSync = prevSuppress;
             }
 
-            // Display results
+            // Display results (show Pv in hPa)
             const resultsDiv = document.getElementById('air-results');
             resultsDiv.innerHTML = `
                 <div class="result-item">
@@ -1094,7 +1302,7 @@
                 </div>
                 <div class="result-item">
                     <div class="result-label">Pressione Vapore</div>
-                    <div class="result-value">${Pv.toFixed(2)}<span class="result-unit">hPa</span></div>
+                    <div class="result-value">${Pv_hPa.toFixed(2)}<span class="result-unit">hPa</span></div>
                 </div>
                 <div class="result-item">
                     <div class="result-label">Temperatura</div>
@@ -1103,7 +1311,7 @@
             `;
 
             // Update chart (use humidity as primary for chart calculations)
-            updateAirChart(pressure, humidity);
+            updateAirChart(pressure_hPa, humidity);
         }
 
         function updateAirChart(pressure, humidity) {
@@ -1111,16 +1319,20 @@
             const densities = [];
             // Preserve absolute vapor pressure based on RH at current temperature
             const tempCurrent = parseFloat(document.getElementById('temp').value);
-            const PvConstant = (humidity / 100) * calcEs(tempCurrent);
+            const PvConstant_hPa = (humidity / 100) * calcEs(tempCurrent);
 
             for (let temp = -10; temp <= 40; temp += 1) {
                 const EsTemp = calcEs(temp);
-                const Pv = Math.min(PvConstant, EsTemp);
-                const Pd = pressure - Pv;
+                const Pv_hPa = Math.min(PvConstant_hPa, EsTemp);
+                const Pd_hPa = pressure - Pv_hPa;
                 const Tk = temp + 273.15;
 
                 const Rd = 287.0531;
                 const Rv = 461.4964;
+
+                // convert hPa to Pa
+                const Pv = Pv_hPa * 100;
+                const Pd = Pd_hPa * 100;
 
                 const rho = (Pd / (Rd * Tk)) + (Pv / (Rv * Tk));
 
@@ -1311,9 +1523,21 @@
             });
         })();
 
+        // Real-time listeners for Speed->Power tab
+        (function setupSpeedListeners(){
+            const speedInputs = ['rider-weight-s','bike-weight-s','cda-s','crr-s','slope-s','air-density-s','speed-kmh','drivetrain-loss-s','wind-speed-s'];
+            speedInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', () => {
+                    if (!suppressSync) calculatePowerFromSpeed();
+                });
+            });
+        })();
+
         // Initialize with default calculations
-        window.addEventListener('load', () => {
+            window.addEventListener('load', () => {
             calculatePower();
+            calculatePowerFromSpeed();
             calculateAirDensity();
         });
     </script>
