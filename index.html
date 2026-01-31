@@ -863,9 +863,12 @@
                 
                 const error = calculatedPower - effectivePower;
                 if (Math.abs(error) < 0.1) break;
-                
-                // Adjust speed
-                const derivative = 1.5 * rho * cda * relativeSpeed * speed + rollForce + gravForce;
+
+                // Adjust speed using exact derivative dP/ds = totalForce + speed * d(totalForce)/ds
+                // where d(aeroForce)/ds = rho * cda * relativeSpeed
+                const derivative = totalForce + speed * (rho * cda * relativeSpeed);
+                // Guard against tiny derivative
+                if (!Number.isFinite(derivative) || Math.abs(derivative) < 1e-6) break;
                 speed -= error / derivative;
             }
 
