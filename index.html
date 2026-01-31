@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cycling Performance Calculators</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E85A2A;
+            --secondary: #004E89;
+            --accent: #F7C59F;
+            --bg-dark: #0A0E27;
+            --bg-card: #1A1E3D;
+            --text-light: #E8EAF6;
+            --text-muted: #9BA4B5;
+            --success: #00D9A0;
+            --border: rgba(255, 255, 255, 0.1);
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a2332 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 78, 137, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .tab-button.active {
+            color: white;
+        }
+
+        .tab-button.active::before {
+            opacity: 1;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 1.5rem;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 2px;
+        }
+
+        /* Input Grid */
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Four-column compact grid for Power tab */
+        .input-grid.grid-4 {
+            grid-template-columns: repeat(4, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="number"],
+        select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            color: var(--text-light);
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 107, 53, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+            pointer-events: none;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Results */
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .result-item {
+            background: rgba(0, 217, 160, 0.1);
+            border: 1px solid rgba(0, 217, 160, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .result-item:hover {
+            background: rgba(0, 217, 160, 0.15);
+            border-color: var(--success);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--success);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-unit {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-left: 0.25rem;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            position: relative;
+            height: 400px;
+        }
+
+        /* Equations Section */
+        .equations {
+            background: rgba(0, 78, 137, 0.1);
+            border: 1px solid rgba(0, 78, 137, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .equations h3 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .equation-block {
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 4px solid var(--secondary);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .tab-nav {
+                flex-direction: column;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Come lo chiamo? Calculator</h1>
+            <p class="subtitle">Performance Analysis & Air Density Tools by Bonvi</p>
+        </header>
+
+        <div class="tab-nav">
+            <button class="tab-button active" onclick="switchTab('power')">
+                ⚡ Power vs Speed
+            </button>
+            <button class="tab-button" onclick="switchTab('air')">
+                🌡️ Air Density
+            </button>
+        </div>
+
+        <!-- Power Calculator Tab -->
+        <div id="power-tab" class="tab-content active">
+            <div class="card">
+                <h2 class="card-title">Parametri Ciclista e Bicicletta</h2>
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Peso Ciclista (kg)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="rider-weight" value="75" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Bici (kg)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="bike-weight" value="8" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Pendenza (%)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="slope" value="0" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Potenza (W)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="power" value="250" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Densità Aria (kg/m³)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="air-density" value="1.225" step="0.001">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="cda" value="0.32" step="0.01">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Velocità Vento (km/h)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="wind-speed" value="0" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="crr" value="0.004" step="0.0001">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label><a href="https://powermetercity.com/2016/11/21/power-meter-drivetrain-power-loss/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a></label>
+                        <div class="input-wrapper">
+                            <input type="number" id="drivetrain-loss" value="2" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calcolo automatico: pulsante rimosso -->
+
+                <div id="power-results" class="results"></div>
+
+                <div class="chart-container">
+                    <canvas id="power-chart"></canvas>
+                </div>
+                <div class="chart-container" style="margin-top:1rem;">
+                    <canvas id="power-loss-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="card equations">
+                <h3>📐 Equazioni del Modello</h3>
+                <p>Il modello calcola la velocità basandosi sull'equilibrio tra potenza applicata e resistenze:</p>
+                
+                <div class="equation-block">
+                    <strong>Resistenza Aerodinamica:</strong><br>
+                    F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²
+                </div>
+
+                <div class="equation-block">
+                    <strong>Resistenza al Rotolamento:</strong><br>
+                    F<sub>roll</sub> = Crr × m × g × cos(θ)
+                </div>
+
+                <div class="equation-block">
+                    <strong>Resistenza Gravitazionale:</strong><br>
+                    F<sub>grav</sub> = m × g × sin(θ)
+                </div>
+
+                <div class="equation-block">
+                    <strong>Potenza Totale:</strong><br>
+                    P = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v
+                </div>
+
+                <p style="margin-top: 1rem;">
+                    Dove:<br>
+                    • ρ = densità dell'aria (kg/m³)<br>
+                    • CdA = coefficiente di drag × area frontale (m²)<br>
+                    • v<sub>rel</sub> = velocità relativa al vento (m/s)<br>
+                    • Crr = coefficiente di rotolamento<br>
+                    • m = massa totale (ciclista + bici) (kg)<br>
+                    • g = accelerazione di gravità (9.81 m/s²)<br>
+                    • θ = angolo di pendenza
+                </p>
+            </div>
+        </div>
+
+        <!-- Air Density Calculator Tab -->
+        <div id="air-tab" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Parametri Atmosferici</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>Temperatura (°C)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="temp" value="20" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Pressione (hPa)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="pressure" value="1013.25" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Umidità Relativa (%)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="humidity" value="50" step="1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Dew Point (°C)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="dewpoint" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calcolo automatico: bottone rimosso -->
+
+                <div id="air-results" class="results"></div>
+
+                <div class="chart-container">
+                    <canvas id="air-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="card equations">
+                <h3>📐 Equazioni della Densità dell'Aria</h3>
+                <p>La densità dell'aria dipende da temperatura, pressione e umidità:</p>
+                
+                <div class="equation-block">
+                    <strong>Pressione di Saturazione del Vapore (Herman Wobus):</strong><br>
+                    E<sub>s</sub> = e<sub>so</sub> / p⁸<br>
+                    dove e<sub>so</sub> = 6.1078
+                </div>
+
+                <div class="equation-block">
+                    <strong>Pressione del Vapore Acqueo:</strong><br>
+                    P<sub>v</sub> = E<sub>s</sub> al punto di rugiada
+                </div>
+
+                <div class="equation-block">
+                    <strong>Pressione dell'Aria Secca:</strong><br>
+                    P<sub>d</sub> = P - P<sub>v</sub>
+                </div>
+
+                <div class="equation-block">
+                    <strong>Densità dell'Aria:</strong><br>
+                    ρ = (P<sub>d</sub> / (R<sub>d</sub> × T<sub>k</sub>)) + (P<sub>v</sub> / (R<sub>v</sub> × T<sub>k</sub>))
+                </div>
+
+                <p style="margin-top: 1rem;">
+                    Dove:<br>
+                    • R<sub>d</sub> = 287.0531 (costante specifica aria secca)<br>
+                    • R<sub>v</sub> = 461.4964 (costante specifica vapore acqueo)<br>
+                    • T<sub>k</sub> = temperatura in Kelvin<br>
+                    • P = pressione atmosferica (hPa)<br>
+                    • P<sub>v</sub> = pressione vapore acqueo (hPa)<br>
+                    • P<sub>d</sub> = pressione aria secca (hPa)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let powerChart = null;
+        let powerLossChart = null;
+        let airChart = null;
+        // Coefficienti Wobus e funzione di saturazione usata in più punti
+        const c0 = 0.99999683;
+        const c1 = -0.90826951e-2;
+        const c2 = 0.78736169e-4;
+        const c3 = -0.61117958e-6;
+        const c4 = 0.43884187e-8;
+        const c5 = -0.29883885e-10;
+        const c6 = 0.21874425e-12;
+        const c7 = -0.17892321e-14;
+        const c8 = 0.11112018e-16;
+        const c9 = -0.30994571e-19;
+
+        function calcEs(t) {
+            const p = c0 + t * (c1 + t * (c2 + t * (c3 + t * (c4 + t * (c5 + t * (c6 + t * (c7 + t * (c8 + t * c9))))))));
+            return 6.1078 / Math.pow(p, 8);
+        }
+
+        // Sync helpers to avoid infinite loops quando aggiorniamo i campi reciprocamente
+        let suppressSync = false;
+
+        // Trova il dewpoint corrispondente a una pressione di vapore Pv (hPa)
+        function dewpointFromPv(Pv) {
+            // ricerca binaria su un intervallo ragionevole
+            let lo = -80;
+            let hi = 60;
+            for (let i = 0; i < 60; i++) {
+                const mid = (lo + hi) / 2;
+                const pMid = calcEs(mid);
+                if (pMid > Pv) {
+                    hi = mid;
+                } else {
+                    lo = mid;
+                }
+            }
+            return (lo + hi) / 2;
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            const buttons = document.querySelectorAll('.tab-button');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'power') {
+                buttons[0].classList.add('active');
+                document.getElementById('power-tab').classList.add('active');
+            } else {
+                buttons[1].classList.add('active');
+                document.getElementById('air-tab').classList.add('active');
+            }
+        }
+
+        // Power Calculator
+        function calculatePower() {
+            const riderWeight = parseFloat(document.getElementById('rider-weight').value);
+            const bikeWeight = parseFloat(document.getElementById('bike-weight').value);
+            const cda = parseFloat(document.getElementById('cda').value);
+            const crr = parseFloat(document.getElementById('crr').value);
+            const slope = parseFloat(document.getElementById('slope').value);
+            const rho = parseFloat(document.getElementById('air-density').value);
+            const power = parseFloat(document.getElementById('power').value);
+            const drivetrainLossPercent = parseFloat(document.getElementById('drivetrain-loss').value) || 0;
+            const drivetrainLossWatts = power * (drivetrainLossPercent / 100);
+            const effectivePower = power - drivetrainLossWatts; // power at wheel
+            const windSpeed = parseFloat(document.getElementById('wind-speed').value);
+
+            const totalMass = riderWeight + bikeWeight;
+            const g = 9.81;
+            const slopeRad = Math.atan(slope / 100);
+
+            // Solve for speed using iterative method
+            let speed = 10; // initial guess in m/s
+            const windSpeedMS = windSpeed / 3.6;
+            
+            for (let i = 0; i < 100; i++) {
+                const relativeSpeed = speed + windSpeedMS;
+                const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
+                const rollForce = crr * totalMass * g * Math.cos(slopeRad);
+                const gravForce = totalMass * g * Math.sin(slopeRad);
+                
+                const totalForce = aeroForce + rollForce + gravForce;
+                const calculatedPower = totalForce * speed;
+                
+                const error = calculatedPower - effectivePower;
+                if (Math.abs(error) < 0.1) break;
+                
+                // Adjust speed
+                const derivative = 1.5 * rho * cda * relativeSpeed * speed + rollForce + gravForce;
+                speed -= error / derivative;
+            }
+
+            const speedKmh = speed * 3.6;
+            // VAM: vertical ascent rate in m/h
+            const verticalSpeed = speed * Math.sin(slopeRad); // m/s
+            const vam = verticalSpeed * 3600; // m/h
+
+            // Compute per-component powers at the solved speed
+            const relativeSpeedNow = speed + windSpeedMS;
+            const aeroForceNow = 0.5 * rho * cda * relativeSpeedNow * relativeSpeedNow;
+            const rollForceNow = crr * totalMass * g * Math.cos(slopeRad);
+            const gravForceNow = totalMass * g * Math.sin(slopeRad);
+
+            const pDragNow = aeroForceNow * speed;
+            const pRollNow = rollForceNow * speed;
+            const pGravNow = gravForceNow * speed;
+
+            const powerPerKg = power / riderWeight;
+
+            // Display results in two rows; force equal heights with align-items:stretch and child 100% height
+            const resultsDiv = document.getElementById('power-results');
+            resultsDiv.innerHTML = `
+                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; align-items:stretch;">
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">At</div>
+                        <div class="result-value">${power.toFixed(0)}<span class="result-unit"> W</span> &nbsp;→</div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Relative</div>
+                        <div class="result-value">${powerPerKg.toFixed(2)}<span class="result-unit"> W/kg</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Velocità</div>
+                        <div class="result-value">${speedKmh.toFixed(2)}<span class="result-unit"> km/h</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">VAM</div>
+                        <div class="result-value">${vam.toFixed(0)}<span class="result-unit"> m/h</span></div>
+                    </div>
+                </div>
+
+                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch;">
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Drag</div>
+                        <div class="result-value">${pDragNow.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Rolling</div>
+                        <div class="result-value">${pRollNow.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Gravity</div>
+                        <div class="result-value">${pGravNow.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div class="result-label">Drivetrain</div>
+                        <div class="result-value">${drivetrainLossWatts.toFixed(1)}<span class="result-unit"> W</span></div>
+                    </div>
+                </div>
+            `;
+
+            // Update chart
+            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed);
+        }
+
+        function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed) {
+            const totalMass = riderWeight + bikeWeight;
+            const g = 9.81;
+            const slopeRad = Math.atan(slope / 100);
+            const windSpeedMS = windSpeed / 3.6;
+
+            const speeds = [];
+            const powers = [];
+            const dragPowers = [];
+            const rollPowers = [];
+            const gravPowers = [];
+            const drivetrainPowers = [];
+
+            for (let speedKmh = 10; speedKmh <= 60; speedKmh += 1) {
+                const speed = speedKmh / 3.6;
+                const relativeSpeed = speed + windSpeedMS;
+                
+                const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
+                const rollForce = crr * totalMass * g * Math.cos(slopeRad);
+                const gravForce = totalMass * g * Math.sin(slopeRad);
+                
+                const totalForce = aeroForce + rollForce + gravForce;
+                const power = totalForce * speed;
+
+                // per-component powers
+                const pDrag = aeroForce * speed;
+                const pRoll = rollForce * speed;
+                const pGrav = gravForce * speed;
+
+                speeds.push(speedKmh);
+                powers.push(power);
+
+                dragPowers.push(pDrag);
+                rollPowers.push(pRoll);
+                gravPowers.push(pGrav);
+                // drivetrain loss at this speed (fraction of pedaling power)
+                const drivetrainPercent = parseFloat(document.getElementById('drivetrain-loss').value) || 0;
+                const pDrivetrain = power * (drivetrainPercent / 100);
+                drivetrainPowers.push(pDrivetrain);
+            }
+
+            const ctx = document.getElementById('power-chart').getContext('2d');
+            
+            if (powerChart) {
+                powerChart.destroy();
+            }
+
+            powerChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: speeds,
+                    datasets: [{
+                        label: 'Potenza Richiesta (W)',
+                        data: powers,
+                        borderColor: '#FF6B35',
+                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#FF6B35',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#E8EAF6',
+                                font: {
+                                    family: 'Manrope',
+                                    size: 14,
+                                    weight: 600
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
+                            titleColor: '#E8EAF6',
+                            bodyColor: '#E8EAF6',
+                            borderColor: '#FF6B35',
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: true,
+                            titleFont: {
+                                family: 'Manrope',
+                                size: 14,
+                                weight: 700
+                            },
+                            bodyFont: {
+                                family: 'JetBrains Mono',
+                                size: 13,
+                                weight: 600
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Velocità: ' + context[0].label + ' km/h';
+                                },
+                                label: function(context) {
+                                    return 'Potenza: ' + context.parsed.y.toFixed(1) + ' W';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Velocità (km/h)',
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 12,
+                                    weight: 600
+                                }
+                            },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Potenza (W)',
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 12,
+                                    weight: 600
+                                }
+                            },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // --- Power loss chart (negative values for visual 'loss') ---
+            const ctxLoss = document.getElementById('power-loss-chart').getContext('2d');
+            if (powerLossChart) powerLossChart.destroy();
+
+            powerLossChart = new Chart(ctxLoss, {
+                type: 'line',
+                data: {
+                    labels: speeds,
+                    datasets: [
+                        {
+                            label: 'Drag',
+                            data: dragPowers.map(v => -v),
+                            borderColor: '#8040FF',
+                            backgroundColor: 'rgba(128,64,255,0.08)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Rolling',
+                            data: rollPowers.map(v => -v),
+                            borderColor: '#AD619A',
+                            backgroundColor: 'rgba(173,97,154,0.08)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Gravity',
+                            data: gravPowers.map(v => -v),
+                            borderColor: '#FFB347',
+                            backgroundColor: 'rgba(255,179,71,0.08)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 0
+                        },
+                        {
+                            label: 'Drivetrain',
+                            data: drivetrainPowers.map(v => -v),
+                            borderColor: '#FFD700',
+                            backgroundColor: 'rgba(255,215,0,0.08)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#E8EAF6',
+                                font: { family: 'Manrope', size: 14, weight: 600 }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
+                            titleColor: '#E8EAF6',
+                            bodyColor: '#E8EAF6',
+                            borderColor: '#FF6B35',
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: true,
+                            titleFont: {
+                                family: 'Manrope',
+                                size: 14,
+                                weight: 700
+                            },
+                            bodyFont: {
+                                family: 'JetBrains Mono',
+                                size: 13,
+                                weight: 600
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Velocità: ' + context[0].label + ' km/h';
+                                },
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + Math.abs(context.parsed.y).toFixed(1) + ' W';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } },
+                            ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }
+                        },
+                        y: {
+                            title: { display: true, text: 'Perdita (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } },
+                            ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Air Density Calculator
+        function calculateAirDensity() {
+            const temp = parseFloat(document.getElementById('temp').value);
+            const pressure = parseFloat(document.getElementById('pressure').value);
+            const humidity = parseFloat(document.getElementById('humidity').value);
+
+            // Primary calculation based on relative humidity (user request)
+            const EsAtTemp = calcEs(temp);
+            const Pv = (humidity / 100) * EsAtTemp; // vapor pressure (hPa)
+            const Pd = pressure - Pv;
+            const Tk = temp + 273.15;
+
+            const Rd = 287.0531;
+            const Rv = 461.4964;
+
+            const rho = (Pd / (Rd * Tk)) + (Pv / (Rv * Tk));
+
+            // Derive dew point from Pv and update field without causing input loop
+            const dewFromPv = dewpointFromPv(Pv);
+            if (Number.isFinite(dewFromPv)) {
+                const prevSuppress = suppressSync;
+                suppressSync = true;
+                document.getElementById('dewpoint').value = dewFromPv.toFixed(1);
+                suppressSync = prevSuppress;
+            }
+
+            // Display results
+            const resultsDiv = document.getElementById('air-results');
+            resultsDiv.innerHTML = `
+                <div class="result-item">
+                    <div class="result-label">Densità Aria</div>
+                    <div class="result-value">${rho.toFixed(4)}<span class="result-unit">kg/m³</span></div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Pressione Vapore</div>
+                    <div class="result-value">${Pv.toFixed(2)}<span class="result-unit">hPa</span></div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Temperatura</div>
+                    <div class="result-value">${Tk.toFixed(2)}<span class="result-unit">K</span></div>
+                </div>
+            `;
+
+            // Update chart (use humidity as primary for chart calculations)
+            updateAirChart(pressure, humidity);
+        }
+
+        function updateAirChart(pressure, humidity) {
+            const temps = [];
+            const densities = [];
+            // Preserve absolute vapor pressure based on RH at current temperature
+            const tempCurrent = parseFloat(document.getElementById('temp').value);
+            const PvConstant = (humidity / 100) * calcEs(tempCurrent);
+
+            for (let temp = -10; temp <= 40; temp += 1) {
+                const EsTemp = calcEs(temp);
+                const Pv = Math.min(PvConstant, EsTemp);
+                const Pd = pressure - Pv;
+                const Tk = temp + 273.15;
+
+                const Rd = 287.0531;
+                const Rv = 461.4964;
+
+                const rho = (Pd / (Rd * Tk)) + (Pv / (Rv * Tk));
+
+                temps.push(temp);
+                densities.push(rho);
+            }
+
+            const ctx = document.getElementById('air-chart').getContext('2d');
+            
+            if (airChart) {
+                airChart.destroy();
+            }
+
+            airChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: temps,
+                    datasets: [{
+                        label: 'Densità Aria (kg/m³)',
+                        data: densities,
+                        borderColor: '#00D9A0',
+                        backgroundColor: 'rgba(0, 217, 160, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#00D9A0',
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#E8EAF6',
+                                font: {
+                                    family: 'Manrope',
+                                    size: 14,
+                                    weight: 600
+                                }
+                            }
+                        },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
+                            titleColor: '#E8EAF6',
+                            bodyColor: '#E8EAF6',
+                            borderColor: '#00D9A0',
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: true,
+                            titleFont: {
+                                family: 'Manrope',
+                                size: 14,
+                                weight: 700
+                            },
+                            bodyFont: {
+                                family: 'JetBrains Mono',
+                                size: 13,
+                                weight: 600
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Temperatura: ' + context[0].label + ' °C';
+                                },
+                                label: function(context) {
+                                    return 'Densità: ' + context.parsed.y.toFixed(4) + ' kg/m³';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Temperatura (°C)',
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 12,
+                                    weight: 600
+                                }
+                            },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Densità (kg/m³)',
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 12,
+                                    weight: 600
+                                }
+                            },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Real-time synchronization between dew point and relative humidity
+        (function setupSyncListeners(){
+            const dewEl = document.getElementById('dewpoint');
+            const humEl = document.getElementById('humidity');
+            const tempEl = document.getElementById('temp');
+            const pressureEl = document.getElementById('pressure');
+
+            dewEl.addEventListener('input', () => {
+                if (suppressSync) return;
+                suppressSync = true;
+                const dew = parseFloat(dewEl.value);
+                const temp = parseFloat(tempEl.value);
+                const EsAtTemp = calcEs(temp);
+                const Pv = calcEs(dew);
+                const rh = EsAtTemp > 0 ? (Pv / EsAtTemp) * 100 : 0;
+                if (Number.isFinite(rh)) humEl.value = rh.toFixed(1);
+                calculateAirDensity();
+                suppressSync = false;
+            });
+
+            humEl.addEventListener('input', () => {
+                if (suppressSync) return;
+                suppressSync = true;
+                const rh = parseFloat(humEl.value);
+                const temp = parseFloat(tempEl.value);
+                const EsAtTemp = calcEs(temp);
+                const Pv = (rh / 100) * EsAtTemp;
+                const dew = dewpointFromPv(Pv);
+                if (Number.isFinite(dew)) dewEl.value = dew.toFixed(1);
+                calculateAirDensity();
+                suppressSync = false;
+            });
+
+            // When temperature or pressure change, recalculate density and RH from current dewpoint
+            tempEl.addEventListener('input', () => {
+                if (suppressSync) return;
+                suppressSync = true;
+                calculateAirDensity();
+                suppressSync = false;
+            });
+
+            pressureEl.addEventListener('input', () => {
+                if (suppressSync) return;
+                suppressSync = true;
+                calculateAirDensity();
+                suppressSync = false;
+            });
+        })();
+
+        // Real-time listeners for Power tab to trigger automatic recalculation
+        (function setupPowerListeners(){
+            const powerInputs = ['rider-weight','bike-weight','cda','crr','slope','air-density','power','drivetrain-loss','wind-speed'];
+            powerInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', () => {
+                    // small guard: avoid calling during sync operations elsewhere
+                    if (!suppressSync) calculatePower();
+                });
+            });
+        })();
+
+        // Initialize with default calculations
+        window.addEventListener('load', () => {
+            calculatePower();
+            calculateAirDensity();
+        });
+    </script>
+</body>
+</html>
