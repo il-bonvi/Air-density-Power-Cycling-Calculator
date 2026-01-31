@@ -459,6 +459,9 @@
             <button class="tab-button" onclick="switchTab('air')" data-tab="air">
                 🌡️ Air Density
             </button>
+            <button class="tab-button" onclick="switchTab('pressure')" data-tab="pressure">
+                🌍 Pressione (quota)
+            </button>
         </div>
 
         <!-- Power Calculator Tab -->
@@ -768,6 +771,79 @@
             </div>
         </div>
 
+        <!-- Pressure Calculator Tab -->
+        <div id="pressure-tab" class="tab-content">
+            <div class="card">
+                <h2 class="card-title">Pressione Teorica in Quota</h2>
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label>P al livello del mare (P₀)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="p-sea-pressure" value="1013.25" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>T a livello del mare (°C)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="p-temperature-sea" value="15" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>T in quota (°C)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="p-temperature-alt" value="15" step="0.1">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Altitudine (m)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="altitude" value="1000" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results" style="margin-top:1rem;">
+                    <div class="result-item">
+                        <div class="result-label">Pressione in quota</div>
+                        <div class="result-value" id="result-pressure-value">—<span class="result-unit"> hPa</span></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="pressure-chart"></canvas>
+                </div>
+            </div>
+
+                <div class="card equations">
+                    <h3>📐 Equazioni della Pressione Atmosferica</h3>
+                    <p>La pressione atmosferica in quota viene calcolata con la formula barometrica, considerando il gradiente termico (lapse-rate) tra livello del mare e quota:</p>
+                    <div class="equation-block">
+                        <strong>Con lapse-rate (lineare):</strong><br>
+                        T(h) = T₀ + L · (h − h₀)<br>
+                        P(h) = P₀ · (T(h)/T₀)<sup>−gM/(R·L)</sup>
+                    </div>
+                    <div class="equation-block">
+                        <strong>Isoterma (caso particolare):</strong><br>
+                        P(h) = P₀ · exp(−gM(h−h₀)/(R·T))<br>
+                        <span style="font-size:0.95em; color:var(--text-muted)">Usata se la temperatura a livello del mare e in quota sono uguali.</span>
+                    </div>
+                    <div class="equation-block">
+                        <strong>Costanti:</strong><br>
+                        g = 9.80665 m/s²<br>
+                        M = 0.0289644 kg/mol<br>
+                        R = 8.31432 J/(mol·K)
+                    </div>
+                    <p style="margin-top:1rem;">
+                        Dove:<br>
+                        • P₀ = pressione al livello del mare (hPa)<br>
+                        • T₀ = temperatura al livello del mare (K)<br>
+                        • T(h) = temperatura alla quota h (K)<br>
+                        • L = lapse-rate (K/m)<br>
+                        • h = altitudine (m)
+                    </p>
+                </div>
+        </div>
+
         <footer class="site-footer" role="contentinfo">
             <div>Developed by Andrea Bonvicin 01/26 — thank you for using this tool.</div>
             <div style="margin-top:0.25rem;"><a href="https://linktr.ee/bonvicin.coaching" target="_blank" rel="noopener">LinkTree</a></div>
@@ -779,6 +855,7 @@
         let powerCharts = {};
         let powerLossCharts = {};
         let airChart = null;
+        let pressureChart = null;
         // Coefficienti Wobus e funzione di saturazione usata in più punti
         const c0 = 0.99999683;
         const c1 = -0.90826951e-2;
@@ -1492,6 +1569,157 @@
             });
         }
 
+        // Pressure calculation and chart (0 - 9000 m)
+        function calculatePressure() {
+            const g = 9.80665;
+            const M = 0.0289644;
+            const R = 8.31432;
+            const p0_hPa = parseFloat(document.getElementById('p-sea-pressure').value);
+            const t0_c = parseFloat(document.getElementById('p-temperature-sea').value);
+            const t_h_c = parseFloat(document.getElementById('p-temperature-alt').value);
+            const h = parseFloat(document.getElementById('altitude').value);
+
+            if (isNaN(p0_hPa) || isNaN(t0_c) || isNaN(t_h_c) || isNaN(h)) {
+                return;
+            }
+
+            const p0 = p0_hPa * 100; // Pa
+            const T0 = t0_c + 273.15; // K
+            const Th = t_h_c + 273.15; // K at altitude
+            const h0 = 0;
+
+            let pPa;
+            // compute implied lapse rate L from T0 and Th over selected altitude h
+            const L = (h === 0) ? 0 : (Th - T0) / h;
+            if (Math.abs(L) < 1e-12) {
+                // isothermal using temperature in quota
+                const expnt = - (g * M * (h - h0)) / (R * Th);
+                pPa = p0 * Math.exp(expnt);
+            } else {
+                // barometric formula with linear lapse-rate
+                const power = - (g * M) / (R * L);
+                pPa = p0 * Math.pow(Th / T0, power);
+            }
+
+            const p_hPa = pPa / 100;
+            document.getElementById('result-pressure-value').textContent = p_hPa.toFixed(0) + ' hPa';
+
+            // update chart
+            updatePressureChart();
+        }
+
+        function updatePressureChart() {
+            const g = 9.80665;
+            const M = 0.0289644;
+            const R = 8.31432;
+
+            const p0_hPa = parseFloat(document.getElementById('p-sea-pressure').value);
+            const t0_c = parseFloat(document.getElementById('p-temperature-sea').value);
+            const t_h_c = parseFloat(document.getElementById('p-temperature-alt').value);
+
+            const p0 = p0_hPa * 100;
+            const T0 = (isNaN(t0_c) ? 15 : t0_c) + 273.15;
+            const Th_sel = (isNaN(t_h_c) ? 15 : t_h_c) + 273.15;
+            const h0 = 0;
+
+            // implied lapse-rate across selected altitude value
+            const selAlt = parseFloat(document.getElementById('altitude').value) || 0;
+            const L = (selAlt === 0) ? 0 : (Th_sel - T0) / selAlt;
+
+            const alts = [];
+            const pressures = [];
+            const step = 100; // 0..9000 m step 100m
+            for (let h = 0; h <= 9000; h += step) {
+                let pPa;
+                if (Math.abs(L) < 1e-12) {
+                    // isothermal using selected altitude temperature
+                    const Th = Th_sel;
+                    const expnt = - (g * M * (h - h0)) / (R * Th);
+                    pPa = p0 * Math.exp(expnt);
+                } else {
+                    // temperature at this altitude using linear lapse-rate derived from T0 and selected Th
+                    const Th_local = T0 + L * h;
+                    const power = - (g * M) / (R * L);
+                    pPa = p0 * Math.pow(Th_local / T0, power);
+                }
+                alts.push(h);
+                pressures.push(pPa / 100);
+            }
+
+            const ctx = document.getElementById('pressure-chart').getContext('2d');
+            if (pressureChart) pressureChart.destroy();
+            pressureChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: alts,
+                    datasets: [{
+                        label: 'Pressione (hPa)',
+                        data: pressures,
+                        borderColor: '#00A3FF',
+                        backgroundColor: 'rgba(0,163,255,0.08)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 0,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { labels: { color: '#E8EAF6' } },
+                        tooltip: {
+                            enabled: true,
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
+                            titleColor: '#E8EAF6',
+                            bodyColor: '#E8EAF6',
+                            borderColor: '#00A3FF',
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: true,
+                            titleFont: {
+                                family: 'Manrope',
+                                size: 14,
+                                weight: 700
+                            },
+                            bodyFont: {
+                                family: 'JetBrains Mono',
+                                size: 13,
+                                weight: 600
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return 'Altitudine: ' + context[0].label + ' m';
+                                },
+                                label: function(context) {
+                                    return 'Pressione: ' + context.parsed.y.toFixed(1) + ' hPa';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: 'Altitudine (m)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                        y: { title: { display: true, text: 'Pressione (hPa)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
+                    }
+                }
+            });
+        }
+
+        // Pressure listeners (live, automatic)
+        (function setupPressureListeners(){
+            const ids = ['p-sea-pressure','p-temperature-sea','p-temperature-alt','altitude'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('input', () => {
+                    calculatePressure();
+                });
+            });
+        })();
+
         // Real-time synchronization between dew point and relative humidity
         (function setupSyncListeners(){
             const dewEl = document.getElementById('dewpoint');
@@ -1569,6 +1797,7 @@
             calculatePower();
             calculatePowerFromSpeed();
             calculateAirDensity();
+            calculatePressure();
         });
     </script>
 </body>
