@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cycling Performance Calculators</title>
+    <title>Bonvi Cycling Tools</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -418,13 +418,35 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--primary-dark);
         }
+        /* Footer */
+        footer.site-footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 1rem 0.75rem;
+            border-top: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+            border-radius: 10px;
+        }
+
+        footer.site-footer .credit {
+            color: var(--text-light);
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            font-size: 1rem;
+        }
+        footer.site-footer a {
+            color: var(--primary);
+            text-decoration: underline;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Come lo chiamo? Calculator</h1>
-            <p class="subtitle">Performance Analysis & Air Density Tools by Bonvi</p>
+            <h1>Bonvi Cycling Tools</h1>
         </header>
 
         <div class="tab-nav">
@@ -745,6 +767,11 @@
                 </p>
             </div>
         </div>
+
+        <footer class="site-footer" role="contentinfo">
+            <div>Developed by Andrea Bonvicin 01/26 — thank you for using this tool.</div>
+            <div style="margin-top:0.25rem;"><a href="https://linktr.ee/bonvicin.coaching" target="_blank" rel="noopener">LinkTree</a></div>
+        </footer>
     </div>
 
     <script>
