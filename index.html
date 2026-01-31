@@ -460,25 +460,24 @@
                 🌡️ Air Density
             </button>
             <button class="tab-button" onclick="switchTab('pressure')" data-tab="pressure">
-                🌍 Pressione (quota)
+                ⛰️ Pressione in quota
             </button>
         </div>
 
         <!-- Power Calculator Tab -->
         <div id="power-tab" class="tab-content active">
             <div class="card">
-                <h2 class="card-title">Power → Speed (Parametri)</h2>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="rider-weight" value="75" step="0.1">
+                            <input type="number" id="rider-weight" value="70" step="0.1">
                         </div>
                     </div>
                     <div class="input-group">
-                        <label>Peso Bici (kg)</label>
+                        <label>Peso Attrezzatura (kg)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="bike-weight" value="8" step="0.1">
+                            <input type="number" id="bike-weight" value="9" step="0.1">
                         </div>
                     </div>
                     <div class="input-group">
@@ -574,7 +573,7 @@
                     • v<sub>rel</sub> = velocità relativa al vento (m/s)<br>
                     • Crr = coefficiente di rotolamento<br>
                     • m = massa totale (ciclista + bici) (kg)<br>
-                    • g = accelerazione di gravità (9.81 m/s²)<br>
+                    • g = accelerazione di gravità (9.80665 m/s²)<br>
                     • θ = angolo di pendenza
                 </p>
             </div>
@@ -583,18 +582,17 @@
         <!-- Speed->Power Calculator Tab (same layout but input is speed) -->
         <div id="speed-tab" class="tab-content">
             <div class="card">
-                <h2 class="card-title">Speed → Power (Parametri)</h2>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="rider-weight-s" value="75" step="0.1">
+                            <input type="number" id="rider-weight-s" value="70" step="0.1">
                         </div>
                     </div>
                     <div class="input-group">
-                        <label>Peso Bici (kg)</label>
+                        <label>Peso Attrezzatura (kg)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="bike-weight-s" value="8" step="0.1">
+                            <input type="number" id="bike-weight-s" value="9" step="0.1">
                         </div>
                     </div>
                     <div class="input-group">
@@ -688,7 +686,7 @@
                     • v<sub>rel</sub> = velocità relativa al vento (m/s)<br>
                     • Crr = coefficiente di rotolamento<br>
                     • m = massa totale (ciclista + bici) (kg)<br>
-                    • g = accelerazione di gravità (9.81 m/s²)<br>
+                    • g = accelerazione di gravità (9.80665 m/s²)<br>
                     • θ = angolo di pendenza
                 </p>
             </div>
@@ -697,7 +695,6 @@
         <!-- Air Density Calculator Tab -->
         <div id="air-tab" class="tab-content">
             <div class="card">
-                <h2 class="card-title">Parametri Atmosferici</h2>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Temperatura (°C)</label>
@@ -774,7 +771,6 @@
         <!-- Pressure Calculator Tab -->
         <div id="pressure-tab" class="tab-content">
             <div class="card">
-                <h2 class="card-title">Pressione Teorica in Quota</h2>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>P al livello del mare (P₀)</label>
@@ -785,19 +781,19 @@
                     <div class="input-group">
                         <label>T a livello del mare (°C)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="p-temperature-sea" value="15" step="0.1">
+                            <input type="number" id="p-temperature-sea" value="25" step="0.1">
                         </div>
                     </div>
                     <div class="input-group">
                         <label>T in quota (°C)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="p-temperature-alt" value="15" step="0.1">
+                            <input type="number" id="p-temperature-alt" value="18" step="0.1">
                         </div>
                     </div>
                     <div class="input-group">
                         <label>Altitudine (m)</label>
                         <div class="input-wrapper">
-                            <input type="number" id="altitude" value="1000" step="1">
+                            <input type="number" id="altitude" value="2000" step="1">
                         </div>
                     </div>
                 </div>
@@ -922,7 +918,7 @@
             const windSpeed = parseFloat(document.getElementById('wind-speed').value);
 
             const totalMass = riderWeight + bikeWeight;
-            const g = 9.81;
+            const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
 
             // Solve for speed using iterative method
@@ -1025,7 +1021,7 @@
             const windSpeed = parseFloat(document.getElementById('wind-speed-s').value);
 
             const totalMass = riderWeight + bikeWeight;
-            const g = 9.81;
+            const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
 
             const speed = (speedKmh || 0) / 3.6; // m/s
@@ -1103,7 +1099,7 @@
 
         function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, suffix = '') {
             const totalMass = riderWeight + bikeWeight;
-            const g = 9.81;
+            const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
             const windSpeedMS = windSpeed / 3.6;
 
