@@ -277,7 +277,7 @@
         /* Results */
         .results {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1rem;
             margin-top: 2rem;
         }
@@ -387,20 +387,62 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
             h1 {
-                font-size: 2.5rem;
+                font-size: 2rem;
             }
 
             .tab-nav {
                 flex-direction: column;
+                gap: 0.4rem;
             }
 
-            .input-grid {
+            .tab-button {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .input-grid,
+            .input-grid.grid-4 {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .card {
+                padding: 1.25rem;
             }
 
             .chart-container {
-                height: 300px;
+                height: 280px;
+                padding: 1rem;
+            }
+
+            /* 2 colonne fisse per i risultati */
+            .results {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.6rem;
+            }
+
+            .result-item {
+                padding: 0.875rem 0.4rem;
+                min-width: 0;
+            }
+
+            .result-value {
+                font-size: 1.25rem;
+                word-break: break-all;
+            }
+
+            .result-unit {
+                font-size: 0.8rem;
+            }
+
+            .result-label {
+                font-size: 0.72rem;
+                letter-spacing: 0.03em;
             }
         }
 
