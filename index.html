@@ -1010,7 +1010,7 @@
             // Display results in two rows; force equal heights with align-items:stretch and child 100% height
             const resultsDiv = document.getElementById('power-results');
             resultsDiv.innerHTML = `
-                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; align-items:stretch;">
+                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; align-items:stretch\""}>
                     <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                         <div class="result-label">At</div>
                         <div class="result-value">${power.toFixed(0)}<span class="result-unit"> W</span> &nbsp;→</div>
@@ -1029,7 +1029,7 @@
                     </div>
                 </div>
 
-                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch;">
+                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch\""}>
                     <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                         <div class="result-label">Drag</div>
                         <div class="result-value">${pDragNow.toFixed(1)}<span class="result-unit"> W</span></div>
@@ -1099,7 +1099,7 @@
             // Display results (mirror layout from calculatePower)
             const resultsDiv = document.getElementById('speed-results');
             resultsDiv.innerHTML = `
-                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; align-items:stretch;">
+                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; align-items:stretch\""}>
                     <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                         <div class="result-label">At</div>
                         <div class="result-value">${speedKmh.toFixed(1)}<span class="result-unit"> km/h</span> &nbsp;→</div>
@@ -1118,7 +1118,7 @@
                     </div>
                 </div>
 
-                <div style="grid-column:1/-1; display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch;">
+                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch\""}>
                     <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                         <div class="result-label">Drag</div>
                         <div class="result-value">${pDragNow.toFixed(1)}<span class="result-unit"> W</span></div>
@@ -1839,6 +1839,16 @@
             calculatePowerFromSpeed();
             calculateAirDensity();
             calculatePressure();
+        });
+
+        // Re-render results on resize (e.g. phone rotation) so grid cols update
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                calculatePower();
+                calculatePowerFromSpeed();
+            }, 150);
         });
     </script>
 </body>
