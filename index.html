@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -39,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated background pattern */
         body::before {
             content: '';
             position: fixed;
@@ -62,7 +61,6 @@
             z-index: 1;
         }
 
-        /* Header */
         header {
             text-align: center;
             margin-bottom: 3rem;
@@ -86,7 +84,6 @@
             font-weight: 500;
         }
 
-        /* Tab Navigation */
         .tab-nav {
             display: flex;
             gap: 1rem;
@@ -139,7 +136,6 @@
             background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Tab Content */
         .tab-content {
             display: none;
             animation: fadeInUp 0.6s ease-out;
@@ -149,7 +145,6 @@
             display: block;
         }
 
-        /* Card Styles */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -183,7 +178,6 @@
             border-radius: 2px;
         }
 
-        /* Input Grid */
         .input-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -191,7 +185,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Four-column compact grid for Power tab */
         .input-grid.grid-4 {
             grid-template-columns: repeat(4, minmax(140px, 1fr));
             gap: 1rem;
@@ -248,7 +241,6 @@
             position: relative;
         }
 
-        /* Buttons */
         .btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -273,7 +265,6 @@
             transform: translateY(0);
         }
 
-        /* Results */
         .results {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -288,11 +279,46 @@
             padding: 1.5rem;
             text-align: center;
             transition: all 0.3s;
+            position: relative;
         }
 
         .result-item:hover {
             background: rgba(0, 217, 160, 0.15);
             border-color: var(--success);
+        }
+
+        /* Copy button on result cards */
+        .copy-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: none;
+            background: rgba(255,255,255,0.08);
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: background 0.2s, color 0.2s;
+            line-height: 1;
+        }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.18);
+            color: var(--text-light);
+        }
+        .copy-btn.copied {
+            color: var(--success);
+            background: rgba(0,217,160,0.15);
+        }
+        .copy-btn svg {
+            width: 13px;
+            height: 13px;
+            pointer-events: none;
+            flex-shrink: 0;
         }
 
         .result-label {
@@ -316,7 +342,6 @@
             margin-left: 0.25rem;
         }
 
-        /* Chart Container */
         .chart-container {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 16px;
@@ -326,7 +351,6 @@
             height: 400px;
         }
 
-        /* Equations Section */
         .equations {
             background: rgba(0, 78, 137, 0.1);
             border: 1px solid rgba(0, 78, 137, 0.3);
@@ -352,117 +376,42 @@
             font-family: 'JetBrains Mono', monospace;
         }
 
-        /* Animations */
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .tab-nav {
-                flex-direction: column;
-                gap: 0.4rem;
-            }
-
-            .tab-button {
-                padding: 0.75rem 1rem;
-                font-size: 0.95rem;
-            }
-
+            .container { padding: 1rem; }
+            h1 { font-size: 2rem; }
+            .tab-nav { flex-direction: column; gap: 0.4rem; }
+            .tab-button { padding: 0.75rem 1rem; font-size: 0.95rem; }
             .input-grid,
-            .input-grid.grid-4 {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .card {
-                padding: 1.25rem;
-            }
-
-            .chart-container {
-                height: 280px;
-                padding: 1rem;
-            }
-
-            /* 2 colonne fisse per i risultati */
-            .results {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 0.6rem;
-            }
-
-            .result-item {
-                padding: 0.875rem 0.4rem;
-                min-width: 0;
-            }
-
-            .result-value {
-                font-size: 1.25rem;
-                word-break: break-all;
-            }
-
-            .result-unit {
-                font-size: 0.8rem;
-            }
-
-            .result-label {
-                font-size: 0.72rem;
-                letter-spacing: 0.03em;
-            }
+            .input-grid.grid-4 { grid-template-columns: 1fr; gap: 1rem; }
+            .card { padding: 1.25rem; }
+            .chart-container { height: 280px; padding: 1rem; }
+            .results { grid-template-columns: 1fr 1fr !important; gap: 0.6rem; }
+            .result-item { padding: 0.875rem 0.4rem; min-width: 0; }
+            .result-value { font-size: 1.25rem; word-break: break-all; }
+            .result-unit { font-size: 0.8rem; }
+            .result-label { font-size: 0.72rem; letter-spacing: 0.03em; }
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-        /* Footer */
         footer.site-footer {
             margin-top: 2rem;
             text-align: center;
@@ -473,7 +422,6 @@
             background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
             border-radius: 10px;
         }
-
         footer.site-footer .credit {
             color: var(--text-light);
             font-weight: 700;
@@ -494,18 +442,10 @@
         </header>
 
         <div class="tab-nav">
-            <button class="tab-button active" onclick="switchTab('power')" data-tab="power">
-                ⚡ Power → Speed
-            </button>
-            <button class="tab-button" onclick="switchTab('speed')" data-tab="speed">
-                🚴 Speed → Power
-            </button>
-            <button class="tab-button" onclick="switchTab('air')" data-tab="air">
-                🌡️ Air Density
-            </button>
-            <button class="tab-button" onclick="switchTab('pressure')" data-tab="pressure">
-                ⛰️ Pressione in quota
-            </button>
+            <button class="tab-button active" onclick="switchTab('power')" data-tab="power">⚡ Power → Speed</button>
+            <button class="tab-button" onclick="switchTab('speed')" data-tab="speed">🚴 Speed → Power</button>
+            <button class="tab-button" onclick="switchTab('air')" data-tab="air">🌡️ Air Density</button>
+            <button class="tab-button" onclick="switchTab('pressure')" data-tab="pressure">⛰️ Pressione in quota</button>
         </div>
 
         <!-- Power Calculator Tab -->
@@ -514,225 +454,117 @@
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="rider-weight" value="70" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="rider-weight" value="70" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Peso Attrezzatura (kg)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="bike-weight" value="9" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="bike-weight" value="9" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Pendenza (%)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="slope" value="0" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="slope" value="0" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Potenza (W)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="power" value="250" step="1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="power" value="250" step="1"></div>
                     </div>
                 </div>
-
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Densità Aria (kg/m³)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="air-density" value="1.1989" step="0.001">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="air-density" value="1.1989" step="0.001"></div>
                     </div>
                     <div class="input-group">
                         <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a></label>
-                        <div class="input-wrapper">
-                            <input type="number" id="cda" value="0.4" step="0.01">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="cda" value="0.4" step="0.01"></div>
                     </div>
                     <div class="input-group">
                         <label>Velocità Vento (km/h)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="wind-speed" value="0" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="wind-speed" value="0" step="0.1"></div>
                     </div>
                 </div>
-
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a></label>
-                        <div class="input-wrapper">
-                            <input type="number" id="crr" value="0.004" step="0.0001">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="crr" value="0.004" step="0.0001"></div>
                     </div>
                     <div class="input-group">
                         <label><a href="https://powermetercity.com/2016/11/21/power-meter-drivetrain-power-loss/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a></label>
-                        <div class="input-wrapper">
-                            <input type="number" id="drivetrain-loss" value="2" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="drivetrain-loss" value="2" step="0.1"></div>
                     </div>
                 </div>
-
-                <!-- Calcolo automatico: pulsante rimosso -->
-
                 <div id="power-results" class="results"></div>
-
-                <div class="chart-container">
-                    <canvas id="power-chart"></canvas>
-                </div>
-                <div class="chart-container" style="margin-top:1rem;">
-                    <canvas id="power-loss-chart"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="power-chart"></canvas></div>
+                <div class="chart-container" style="margin-top:1rem;"><canvas id="power-loss-chart"></canvas></div>
             </div>
-
             <div class="card equations">
                 <h3>📐 Equazioni del Modello</h3>
                 <p>Il modello calcola la velocità basandosi sull'equilibrio tra potenza applicata e resistenze:</p>
-                
-                <div class="equation-block">
-                    <strong>Resistenza Aerodinamica:</strong><br>
-                    F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²
-                </div>
-
-                <div class="equation-block">
-                    <strong>Resistenza al Rotolamento:</strong><br>
-                    F<sub>roll</sub> = Crr × m × g × cos(θ)
-                </div>
-
-                <div class="equation-block">
-                    <strong>Resistenza Gravitazionale:</strong><br>
-                    F<sub>grav</sub> = m × g × sin(θ)
-                </div>
-
-                <div class="equation-block">
-                    <strong>Potenza Totale:</strong><br>
-                    P = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v
-                </div>
-
-                <p style="margin-top: 1rem;">
-                    Dove:<br>
-                    • ρ = densità dell'aria (kg/m³)<br>
-                    • CdA = coefficiente di drag × area frontale (m²)<br>
-                    • v<sub>rel</sub> = velocità relativa al vento (m/s)<br>
-                    • Crr = coefficiente di rotolamento<br>
-                    • m = massa totale (ciclista + bici) (kg)<br>
-                    • g = accelerazione di gravità (9.80665 m/s²)<br>
-                    • θ = angolo di pendenza
-                </p>
+                <div class="equation-block"><strong>Resistenza Aerodinamica:</strong><br>F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²</div>
+                <div class="equation-block"><strong>Resistenza al Rotolamento:</strong><br>F<sub>roll</sub> = Crr × m × g × cos(θ)</div>
+                <div class="equation-block"><strong>Resistenza Gravitazionale:</strong><br>F<sub>grav</sub> = m × g × sin(θ)</div>
+                <div class="equation-block"><strong>Potenza Totale:</strong><br>P = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v</div>
+                <p style="margin-top: 1rem;">Dove:<br>• ρ = densità dell'aria (kg/m³)<br>• CdA = coefficiente di drag × area frontale (m²)<br>• v<sub>rel</sub> = velocità relativa al vento (m/s)<br>• Crr = coefficiente di rotolamento<br>• m = massa totale (ciclista + bici) (kg)<br>• g = accelerazione di gravità (9.80665 m/s²)<br>• θ = angolo di pendenza</p>
             </div>
         </div>
 
-        <!-- Speed->Power Calculator Tab (same layout but input is speed) -->
+        <!-- Speed->Power Calculator Tab -->
         <div id="speed-tab" class="tab-content">
             <div class="card">
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="rider-weight-s" value="70" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="rider-weight-s" value="70" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Peso Attrezzatura (kg)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="bike-weight-s" value="9" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="bike-weight-s" value="9" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Pendenza (%)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="slope-s" value="0" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="slope-s" value="0" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Velocità (km/h)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="speed-kmh" value="36" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="speed-kmh" value="36" step="0.1"></div>
                     </div>
                 </div>
-
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Densità Aria (kg/m³)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="air-density-s" value="1.1989" step="0.001">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="air-density-s" value="1.1989" step="0.001"></div>
                     </div>
                     <div class="input-group">
                         <label>CdA (m²)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="cda-s" value="0.4" step="0.01">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="cda-s" value="0.4" step="0.01"></div>
                     </div>
                     <div class="input-group">
                         <label>Velocità Vento (km/h)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="wind-speed-s" value="0" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="wind-speed-s" value="0" step="0.1"></div>
                     </div>
                 </div>
-
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a></label>
-                        <div class="input-wrapper">
-                            <input type="number" id="crr-s" value="0.004" step="0.0001">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="crr-s" value="0.004" step="0.0001"></div>
                     </div>
                     <div class="input-group">
                         <label><a href="https://powermetercity.com/2016/11/21/power-meter-drivetrain-power-loss/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a></label>
-                        <div class="input-wrapper">
-                            <input type="number" id="drivetrain-loss-s" value="2" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="drivetrain-loss-s" value="2" step="0.1"></div>
                     </div>
                 </div>
-
                 <div id="speed-results" class="results"></div>
-
-                <div class="chart-container">
-                    <canvas id="power-chart-s"></canvas>
-                </div>
-                <div class="chart-container" style="margin-top:1rem;">
-                    <canvas id="power-loss-chart-s"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="power-chart-s"></canvas></div>
+                <div class="chart-container" style="margin-top:1rem;"><canvas id="power-loss-chart-s"></canvas></div>
             </div>
-
             <div class="card equations">
                 <h3>📐 Equazioni del Modello</h3>
                 <p>Stesso modello; qui si calcola la potenza richiesta data la velocità.</p>
-                
-                <div class="equation-block">
-                    <strong>Resistenza Aerodinamica:</strong><br>
-                    F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²
-                </div>
-
-                <div class="equation-block">
-                    <strong>Resistenza al Rotolamento:</strong><br>
-                    F<sub>roll</sub> = Crr × m × g × cos(θ)
-                </div>
-
-                <div class="equation-block">
-                    <strong>Resistenza Gravitazionale:</strong><br>
-                    F<sub>grav</sub> = m × g × sin(θ)
-                </div>
-
-                <div class="equation-block">
-                    <strong>Potenza Totale:</strong><br>
-                    P = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v
-                </div>
-
-                <p style="margin-top: 1rem;">
-                    Dove:<br>
-                    • ρ = densità dell'aria (kg/m³)<br>
-                    • CdA = coefficiente di drag × area frontale (m²)<br>
-                    • v<sub>rel</sub> = velocità relativa al vento (m/s)<br>
-                    • Crr = coefficiente di rotolamento<br>
-                    • m = massa totale (ciclista + bici) (kg)<br>
-                    • g = accelerazione di gravità (9.80665 m/s²)<br>
-                    • θ = angolo di pendenza
-                </p>
+                <div class="equation-block"><strong>Resistenza Aerodinamica:</strong><br>F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²</div>
+                <div class="equation-block"><strong>Resistenza al Rotolamento:</strong><br>F<sub>roll</sub> = Crr × m × g × cos(θ)</div>
+                <div class="equation-block"><strong>Resistenza Gravitazionale:</strong><br>F<sub>grav</sub> = m × g × sin(θ)</div>
+                <div class="equation-block"><strong>Potenza Totale:</strong><br>P = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v</div>
+                <p style="margin-top: 1rem;">Dove:<br>• ρ = densità dell'aria (kg/m³)<br>• CdA = coefficiente di drag × area frontale (m²)<br>• v<sub>rel</sub> = velocità relativa al vento (m/s)<br>• Crr = coefficiente di rotolamento<br>• m = massa totale (ciclista + bici) (kg)<br>• g = accelerazione di gravità (9.80665 m/s²)<br>• θ = angolo di pendenza</p>
             </div>
         </div>
 
@@ -742,73 +574,32 @@
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Temperatura (°C)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="temp" value="20" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="temp" value="20" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Pressione (hPa)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="pressure" value="1013.25" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="pressure" value="1013.25" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Umidità Relativa (%)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="humidity" value="50" step="1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="humidity" value="50" step="1"></div>
                     </div>
                     <div class="input-group">
                         <label>Dew Point (°C)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="dewpoint" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="dewpoint" step="0.1"></div>
                     </div>
                 </div>
-
-                <!-- Calcolo automatico: bottone rimosso -->
-
                 <div id="air-results" class="results"></div>
-
-                <div class="chart-container">
-                    <canvas id="air-chart"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="air-chart"></canvas></div>
             </div>
-
             <div class="card equations">
                 <h3>📐 Equazioni della Densità dell'Aria</h3>
                 <p>La densità dell'aria dipende da temperatura, pressione e umidità:</p>
-                
-                <div class="equation-block">
-                    <strong>Pressione di Saturazione del Vapore (Herman Wobus):</strong><br>
-                    E<sub>s</sub> = e<sub>so</sub> / p⁸<br>
-                    dove e<sub>so</sub> = 6.1078
-                </div>
-
-                <div class="equation-block">
-                    <strong>Pressione del Vapore Acqueo:</strong><br>
-                    P<sub>v</sub> = E<sub>s</sub> al punto di rugiada
-                </div>
-
-                <div class="equation-block">
-                    <strong>Pressione dell'Aria Secca:</strong><br>
-                    P<sub>d</sub> = P - P<sub>v</sub>
-                </div>
-
-                <div class="equation-block">
-                    <strong>Densità dell'Aria:</strong><br>
-                    ρ = (P<sub>d</sub> / (R<sub>d</sub> × T<sub>k</sub>)) + (P<sub>v</sub> / (R<sub>v</sub> × T<sub>k</sub>))
-                </div>
-
-                <p style="margin-top: 1rem;">
-                    Dove:<br>
-                    • R<sub>d</sub> = 287.0531 (costante specifica aria secca)<br>
-                    • R<sub>v</sub> = 461.4964 (costante specifica vapore acqueo)<br>
-                    • T<sub>k</sub> = temperatura in Kelvin<br>
-                    • P = pressione atmosferica (hPa)<br>
-                    • P<sub>v</sub> = pressione vapore acqueo (hPa)<br>
-                    • P<sub>d</sub> = pressione aria secca (hPa)
-                </p>
+                <div class="equation-block"><strong>Pressione di Saturazione del Vapore (Herman Wobus):</strong><br>E<sub>s</sub> = e<sub>so</sub> / p⁸<br>dove e<sub>so</sub> = 6.1078</div>
+                <div class="equation-block"><strong>Pressione del Vapore Acqueo:</strong><br>P<sub>v</sub> = E<sub>s</sub> al punto di rugiada</div>
+                <div class="equation-block"><strong>Pressione dell'Aria Secca:</strong><br>P<sub>d</sub> = P - P<sub>v</sub></div>
+                <div class="equation-block"><strong>Densità dell'Aria:</strong><br>ρ = (P<sub>d</sub> / (R<sub>d</sub> × T<sub>k</sub>)) + (P<sub>v</sub> / (R<sub>v</sub> × T<sub>k</sub>))</div>
+                <p style="margin-top: 1rem;">Dove:<br>• R<sub>d</sub> = 287.0531 (costante specifica aria secca)<br>• R<sub>v</sub> = 461.4964 (costante specifica vapore acqueo)<br>• T<sub>k</sub> = temperatura in Kelvin<br>• P = pressione atmosferica (hPa)<br>• P<sub>v</sub> = pressione vapore acqueo (hPa)<br>• P<sub>d</sub> = pressione aria secca (hPa)</p>
             </div>
         </div>
 
@@ -818,70 +609,43 @@
                 <div class="input-grid">
                     <div class="input-group">
                         <label>P al livello del mare (P₀)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="p-sea-pressure" value="1013.25" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="p-sea-pressure" value="1013.25" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>T a livello del mare (°C)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="p-temperature-sea" value="25" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="p-temperature-sea" value="25" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>T in quota (°C)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="p-temperature-alt" value="18" step="0.1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="p-temperature-alt" value="18" step="0.1"></div>
                     </div>
                     <div class="input-group">
                         <label>Altitudine (m)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="altitude" value="2000" step="1">
-                        </div>
+                        <div class="input-wrapper"><input type="number" id="altitude" value="2000" step="1"></div>
                     </div>
                 </div>
-
                 <div class="results" style="margin-top:1rem;">
-                    <div class="result-item">
+                    <div class="result-item" id="pressure-result-card">
+                        <button class="copy-btn" id="pressure-copy-btn" title="Copia valore" aria-label="Copia valore pressione" onclick="copyResultCard('pressure-result-card')">
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="5" y="5" width="8" height="9" rx="1.5"/>
+                                <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v7A1.5 1.5 0 0 0 3.5 12H5"/>
+                            </svg>
+                        </button>
                         <div class="result-label">Pressione in quota</div>
                         <div class="result-value" id="result-pressure-value">—<span class="result-unit"> hPa</span></div>
                     </div>
                 </div>
-
-                <div class="chart-container">
-                    <canvas id="pressure-chart"></canvas>
-                </div>
+                <div class="chart-container"><canvas id="pressure-chart"></canvas></div>
             </div>
-
-                <div class="card equations">
-                    <h3>📐 Equazioni della Pressione Atmosferica</h3>
-                    <p>La pressione atmosferica in quota viene calcolata con la formula barometrica, considerando il gradiente termico (lapse-rate) tra livello del mare e quota:</p>
-                    <div class="equation-block">
-                        <strong>Con lapse-rate (lineare):</strong><br>
-                        T(h) = T₀ + L · (h − h₀)<br>
-                        P(h) = P₀ · (T(h)/T₀)<sup>−gM/(R·L)</sup>
-                    </div>
-                    <div class="equation-block">
-                        <strong>Isoterma (caso particolare):</strong><br>
-                        P(h) = P₀ · exp(−gM(h−h₀)/(R·T))<br>
-                        <span style="font-size:0.95em; color:var(--text-muted)">Usata se la temperatura a livello del mare e in quota sono uguali.</span>
-                    </div>
-                    <div class="equation-block">
-                        <strong>Costanti:</strong><br>
-                        g = 9.80665 m/s²<br>
-                        M = 0.0289644 kg/mol<br>
-                        R = 8.31432 J/(mol·K)
-                    </div>
-                    <p style="margin-top:1rem;">
-                        Dove:<br>
-                        • P₀ = pressione al livello del mare (hPa)<br>
-                        • T₀ = temperatura al livello del mare (K)<br>
-                        • T(h) = temperatura alla quota h (K)<br>
-                        • L = lapse-rate (K/m)<br>
-                        • h = altitudine (m)
-                    </p>
-                </div>
+            <div class="card equations">
+                <h3>📐 Equazioni della Pressione Atmosferica</h3>
+                <p>La pressione atmosferica in quota viene calcolata con la formula barometrica, considerando il gradiente termico (lapse-rate) tra livello del mare e quota:</p>
+                <div class="equation-block"><strong>Con lapse-rate (lineare):</strong><br>T(h) = T₀ + L · (h − h₀)<br>P(h) = P₀ · (T(h)/T₀)<sup>−gM/(R·L)</sup></div>
+                <div class="equation-block"><strong>Isoterma (caso particolare):</strong><br>P(h) = P₀ · exp(−gM(h−h₀)/(R·T))<br><span style="font-size:0.95em; color:var(--text-muted)">Usata se la temperatura a livello del mare e in quota sono uguali.</span></div>
+                <div class="equation-block"><strong>Costanti:</strong><br>g = 9.80665 m/s²<br>M = 0.0289644 kg/mol<br>R = 8.31432 J/(mol·K)</div>
+                <p style="margin-top:1rem;">Dove:<br>• P₀ = pressione al livello del mare (hPa)<br>• T₀ = temperatura al livello del mare (K)<br>• T(h) = temperatura alla quota h (K)<br>• L = lapse-rate (K/m)<br>• h = altitudine (m)</p>
+            </div>
         </div>
 
         <footer class="site-footer" role="contentinfo">
@@ -891,63 +655,142 @@
     </div>
 
     <script>
-        // Support multiple chart instances (one per tab suffix)
+        // SVG icons for copy button states
+        const ICON_COPY = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="5" y="5" width="8" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v7A1.5 1.5 0 0 0 3.5 12H5"/></svg>`;
+        const ICON_CHECK = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="2,8 6,12 14,4"/></svg>`;
+
+        // Generic copy helper: reads the numeric text from .result-value (strips unit span)
+        function copyResultCard(cardId) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+            const valEl = card.querySelector('.result-value');
+            if (!valEl) return;
+            // Clone and remove unit span to get only the number text
+            const clone = valEl.cloneNode(true);
+            const unitSpan = clone.querySelector('.result-unit');
+            if (unitSpan) unitSpan.remove();
+            const text = clone.textContent.trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = card.querySelector('.copy-btn');
+                if (!btn) return;
+                btn.innerHTML = ICON_CHECK;
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = ICON_COPY;
+                    btn.classList.remove('copied');
+                }, 1800);
+            }).catch(() => {
+                // fallback: execCommand
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                const btn = card.querySelector('.copy-btn');
+                if (btn) {
+                    btn.innerHTML = ICON_CHECK;
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.innerHTML = ICON_COPY;
+                        btn.classList.remove('copied');
+                    }, 1800);
+                }
+            });
+        }
+
+        // Inject copy button into every .result-item that doesn't already have one
+        function injectCopyButtons(container) {
+            const items = container.querySelectorAll('.result-item');
+            items.forEach((item, idx) => {
+                if (item.querySelector('.copy-btn')) return; // already has one
+                // Assign a stable id if missing
+                if (!item.id) item.id = 'ri-' + Date.now() + '-' + idx;
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.title = 'Copia valore';
+                btn.setAttribute('aria-label', 'Copia valore');
+                btn.innerHTML = ICON_COPY;
+                btn.addEventListener('click', () => copyResultCard(item.id));
+                item.insertBefore(btn, item.firstChild);
+            });
+        }
+
+        // Observe result containers so copy buttons appear after dynamic renders
+        function observeResults(containerId) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            const obs = new MutationObserver(() => injectCopyButtons(el));
+            obs.observe(el, { childList: true, subtree: true });
+        }
+
+        observeResults('power-results');
+        observeResults('speed-results');
+        observeResults('air-results');
+
+        // Also inject into the static pressure card on load
+        window.addEventListener('load', () => {
+            const pressureCard = document.getElementById('pressure-result-card');
+            if (pressureCard && !pressureCard.querySelector('.copy-btn')) {
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.title = 'Copia valore';
+                btn.setAttribute('aria-label', 'Copia valore');
+                btn.innerHTML = ICON_COPY;
+                btn.addEventListener('click', () => copyResultCard('pressure-result-card'));
+                pressureCard.insertBefore(btn, pressureCard.firstChild);
+            }
+        });
+
         let powerCharts = {};
         let powerLossCharts = {};
         let airChart = null;
         let pressureChart = null;
-        // Coefficienti Wobus e funzione di saturazione usata in più punti
-        const c0 = 0.99999683;
-        const c1 = -0.90826951e-2;
-        const c2 = 0.78736169e-4;
-        const c3 = -0.61117958e-6;
-        const c4 = 0.43884187e-8;
-        const c5 = -0.29883885e-10;
-        const c6 = 0.21874425e-12;
-        const c7 = -0.17892321e-14;
-        const c8 = 0.11112018e-16;
-        const c9 = -0.30994571e-19;
+
+        const c0 = 0.99999683, c1 = -0.90826951e-2, c2 = 0.78736169e-4, c3 = -0.61117958e-6;
+        const c4 = 0.43884187e-8, c5 = -0.29883885e-10, c6 = 0.21874425e-12;
+        const c7 = -0.17892321e-14, c8 = 0.11112018e-16, c9 = -0.30994571e-19;
 
         function calcEs(t) {
             const p = c0 + t * (c1 + t * (c2 + t * (c3 + t * (c4 + t * (c5 + t * (c6 + t * (c7 + t * (c8 + t * c9))))))));
             return 6.1078 / Math.pow(p, 8);
         }
 
-        // Sync helpers to avoid infinite loops quando aggiorniamo i campi reciprocamente
         let suppressSync = false;
 
-        // Trova il dewpoint corrispondente a una pressione di vapore Pv (hPa)
         function dewpointFromPv(Pv) {
-            // ricerca binaria su un intervallo ragionevole
-            let lo = -80;
-            let hi = 60;
+            let lo = -80, hi = 60;
             for (let i = 0; i < 60; i++) {
                 const mid = (lo + hi) / 2;
-                const pMid = calcEs(mid);
-                if (pMid > Pv) {
-                    hi = mid;
-                } else {
-                    lo = mid;
-                }
+                if (calcEs(mid) > Pv) hi = mid; else lo = mid;
             }
             return (lo + hi) / 2;
         }
 
-        // Tab switching (supports power, speed, air)
         function switchTab(tab) {
-            const buttons = document.querySelectorAll('.tab-button');
-            const contents = document.querySelectorAll('.tab-content');
-
-            buttons.forEach(btn => btn.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             const btn = document.querySelector('.tab-button[data-tab="' + tab + '"]');
             if (btn) btn.classList.add('active');
             const content = document.getElementById(tab + '-tab');
             if (content) content.classList.add('active');
         }
 
-        // Power Calculator
+        function buildResultRow(items, isMobile) {
+            const cols = isMobile ? '1fr 1fr' : 'repeat(4,minmax(140px,1fr))';
+            const gap = isMobile ? '0.6rem' : '1rem';
+            const html = items.map((it, idx) => {
+                const id = 'ri-dyn-' + Date.now() + '-' + idx;
+                return `<div class="result-item" id="${id}" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                    <div class="result-label">${it.label}</div>
+                    <div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span>${it.arrow||''}</div>
+                </div>`;
+            }).join('');
+            return `<div style="grid-column:1/-1; display:grid; grid-template-columns:${cols}; gap:${gap}; align-items:stretch;">${html}</div>`;
+        }
+
         function calculatePower() {
             const riderWeight = parseFloat(document.getElementById('rider-weight').value);
             const bikeWeight = parseFloat(document.getElementById('bike-weight').value);
@@ -958,101 +801,54 @@
             const power = parseFloat(document.getElementById('power').value);
             const drivetrainLossPercent = parseFloat(document.getElementById('drivetrain-loss').value) || 0;
             const drivetrainLossWatts = power * (drivetrainLossPercent / 100);
-            const effectivePower = power - drivetrainLossWatts; // power at wheel
+            const effectivePower = power - drivetrainLossWatts;
             const windSpeed = parseFloat(document.getElementById('wind-speed').value);
-
             const totalMass = riderWeight + bikeWeight;
             const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
-
-            // Solve for speed using iterative method
-            let speed = 10; // initial guess in m/s
+            let speed = 10;
             const windSpeedMS = windSpeed / 3.6;
-            
             for (let i = 0; i < 100; i++) {
                 const relativeSpeed = speed + windSpeedMS;
                 const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
                 const rollForce = crr * totalMass * g * Math.cos(slopeRad);
                 const gravForce = totalMass * g * Math.sin(slopeRad);
-                
                 const totalForce = aeroForce + rollForce + gravForce;
                 const calculatedPower = totalForce * speed;
-                
                 const error = calculatedPower - effectivePower;
                 if (Math.abs(error) < 0.1) break;
-
-                // Adjust speed using exact derivative dP/ds = totalForce + speed * d(totalForce)/ds
-                // where d(aeroForce)/ds = rho * cda * relativeSpeed
                 const derivative = totalForce + speed * (rho * cda * relativeSpeed);
-                // Guard against tiny derivative
                 if (!Number.isFinite(derivative) || Math.abs(derivative) < 1e-6) break;
                 speed -= error / derivative;
             }
-
             const speedKmh = speed * 3.6;
-            // VAM: vertical ascent rate in m/h
-            const verticalSpeed = speed * Math.sin(slopeRad); // m/s
-            const vam = verticalSpeed * 3600; // m/h
-
-            // Compute per-component powers at the solved speed
+            const verticalSpeed = speed * Math.sin(slopeRad);
+            const vam = verticalSpeed * 3600;
             const relativeSpeedNow = speed + windSpeedMS;
             const aeroForceNow = 0.5 * rho * cda * relativeSpeedNow * relativeSpeedNow;
             const rollForceNow = crr * totalMass * g * Math.cos(slopeRad);
             const gravForceNow = totalMass * g * Math.sin(slopeRad);
-
             const pDragNow = aeroForceNow * speed;
             const pRollNow = rollForceNow * speed;
             const pGravNow = gravForceNow * speed;
-
             const powerPerKg = power / riderWeight;
-
-            // Display results in two rows; force equal heights with align-items:stretch and child 100% height
+            const mob = window.innerWidth <= 768;
             const resultsDiv = document.getElementById('power-results');
-            resultsDiv.innerHTML = `
-                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; align-items:stretch\""}>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">At</div>
-                        <div class="result-value">${power.toFixed(0)}<span class="result-unit"> W</span> &nbsp;→</div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Relative</div>
-                        <div class="result-value">${powerPerKg.toFixed(2)}<span class="result-unit"> W/kg</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Velocità</div>
-                        <div class="result-value">${speedKmh.toFixed(2)}<span class="result-unit"> km/h</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">VAM</div>
-                        <div class="result-value">${vam.toFixed(0)}<span class="result-unit"> m/h</span></div>
-                    </div>
-                </div>
-
-                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch\""}>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Drag</div>
-                        <div class="result-value">${pDragNow.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Rolling</div>
-                        <div class="result-value">${pRollNow.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Gravity</div>
-                        <div class="result-value">${pGravNow.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Drivetrain</div>
-                        <div class="result-value">${drivetrainLossWatts.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                </div>
-            `;
-
-            // Update chart (main tab, no suffix)
+            resultsDiv.innerHTML =
+                buildResultRow([
+                    {label:'At', value:power.toFixed(0), unit:'W', arrow:'&nbsp;→'},
+                    {label:'Relative', value:powerPerKg.toFixed(2), unit:'W/kg'},
+                    {label:'Velocità', value:speedKmh.toFixed(2), unit:'km/h'},
+                    {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
+                ], mob) +
+                `<div style="grid-column:1/-1; display:grid; grid-template-columns:${mob?'1fr 1fr':'repeat(4,minmax(140px,1fr))'}; gap:${mob?'0.6rem':'1rem'}; margin-top:${mob?'0.6rem':'1rem'}; align-items:stretch;">` +
+                [{label:'Drag',value:pDragNow.toFixed(1),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(1),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(1),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(1),unit:'W'}].map((it,idx)=>{
+                    const id='ri-pl-'+Date.now()+'-'+idx;
+                    return `<div class="result-item" id="${id}" style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;"><div class="result-label">${it.label}</div><div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span></div></div>`;
+                }).join('') + `</div>`;
             updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '');
         }
 
-        // Calculate pedaling power given a fixed speed (Speed -> Power)
         function calculatePowerFromSpeed() {
             const riderWeight = parseFloat(document.getElementById('rider-weight-s').value);
             const bikeWeight = parseFloat(document.getElementById('bike-weight-s').value);
@@ -1063,384 +859,98 @@
             const speedKmh = parseFloat(document.getElementById('speed-kmh').value);
             const drivetrainLossPercent = parseFloat(document.getElementById('drivetrain-loss-s').value) || 0;
             const windSpeed = parseFloat(document.getElementById('wind-speed-s').value);
-
             const totalMass = riderWeight + bikeWeight;
             const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
-
-            const speed = (speedKmh || 0) / 3.6; // m/s
+            const speed = (speedKmh || 0) / 3.6;
             const windSpeedMS = windSpeed / 3.6;
             const relativeSpeed = speed + windSpeedMS;
-
             const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
             const rollForce = crr * totalMass * g * Math.cos(slopeRad);
             const gravForce = totalMass * g * Math.sin(slopeRad);
-
             const totalForce = aeroForce + rollForce + gravForce;
-            const powerAtWheel = totalForce * speed; // W at wheel (after drivetrain)
-
-            // Convert to pedaling power before drivetrain losses
+            const powerAtWheel = totalForce * speed;
             const eff = 1 - (drivetrainLossPercent / 100);
             const pedalingPower = eff > 0 ? powerAtWheel / eff : powerAtWheel;
             const drivetrainLossWatts = pedalingPower * (drivetrainLossPercent / 100);
-
-            // per-component powers
             const pDragNow = aeroForce * speed;
             const pRollNow = rollForce * speed;
             const pGravNow = gravForce * speed;
-
             const powerPerKg = pedalingPower / Math.max(1e-6, riderWeight);
-
-            // VAM
             const verticalSpeed = speed * Math.sin(slopeRad);
             const vam = verticalSpeed * 3600;
-
-            // Display results (mirror layout from calculatePower)
+            const mob = window.innerWidth <= 768;
             const resultsDiv = document.getElementById('speed-results');
-            resultsDiv.innerHTML = `
-                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; align-items:stretch\""}>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">At</div>
-                        <div class="result-value">${speedKmh.toFixed(1)}<span class="result-unit"> km/h</span> &nbsp;→</div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Potenza</div>
-                        <div class="result-value">${pedalingPower.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Potenza / Peso</div>
-                        <div class="result-value">${powerPerKg.toFixed(2)}<span class="result-unit"> W/kg</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">VAM</div>
-                        <div class="result-value">${vam.toFixed(0)}<span class="result-unit"> m/h</span></div>
-                    </div>
-                </div>
-
-                <div ${window.innerWidth<=768?"style=\"grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-top:0.6rem; align-items:stretch;\"":"style=\"grid-column:1/-1; display:grid; grid-template-columns:repeat(4,minmax(140px,1fr)); gap:1rem; margin-top:1rem; align-items:stretch\""}>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Drag</div>
-                        <div class="result-value">${pDragNow.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Rolling</div>
-                        <div class="result-value">${pRollNow.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Gravity</div>
-                        <div class="result-value">${pGravNow.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                    <div class="result-item" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <div class="result-label">Drivetrain</div>
-                        <div class="result-value">${drivetrainLossWatts.toFixed(1)}<span class="result-unit"> W</span></div>
-                    </div>
-                </div>
-            `;
-
-            // Update charts using the same update function but target speed-tab canvases (suffix '-s')
+            resultsDiv.innerHTML =
+                buildResultRow([
+                    {label:'At', value:speedKmh.toFixed(1), unit:'km/h', arrow:'&nbsp;→'},
+                    {label:'Potenza', value:pedalingPower.toFixed(1), unit:'W'},
+                    {label:'Potenza / Peso', value:powerPerKg.toFixed(2), unit:'W/kg'},
+                    {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
+                ], mob) +
+                `<div style="grid-column:1/-1; display:grid; grid-template-columns:${mob?'1fr 1fr':'repeat(4,minmax(140px,1fr))'}; gap:${mob?'0.6rem':'1rem'}; margin-top:${mob?'0.6rem':'1rem'}; align-items:stretch;">` +
+                [{label:'Drag',value:pDragNow.toFixed(1),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(1),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(1),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(1),unit:'W'}].map((it,idx)=>{
+                    const id='ri-sl-'+Date.now()+'-'+idx;
+                    return `<div class="result-item" id="${id}" style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;"><div class="result-label">${it.label}</div><div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span></div></div>`;
+                }).join('') + `</div>`;
             updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '-s');
         }
 
-        function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, suffix = '') {
+        function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, suffix) {
             const totalMass = riderWeight + bikeWeight;
             const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
             const windSpeedMS = windSpeed / 3.6;
-
-            const speeds = [];
-            const powers = [];
-            const dragPowers = [];
-            const rollPowers = [];
-            const gravPowers = [];
-            const drivetrainPowers = [];
-
+            const speeds = [], powers = [], dragPowers = [], rollPowers = [], gravPowers = [], drivetrainPowers = [];
+            const dtPct = parseFloat(document.getElementById('drivetrain-loss').value) || 0;
             for (let speedKmh = 10; speedKmh <= 60; speedKmh += 1) {
                 const speed = speedKmh / 3.6;
                 const relativeSpeed = speed + windSpeedMS;
-                
                 const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
                 const rollForce = crr * totalMass * g * Math.cos(slopeRad);
                 const gravForce = totalMass * g * Math.sin(slopeRad);
-                
                 const totalForce = aeroForce + rollForce + gravForce;
                 const power = totalForce * speed;
-
-                // per-component powers
-                const pDrag = aeroForce * speed;
-                const pRoll = rollForce * speed;
-                const pGrav = gravForce * speed;
-
                 speeds.push(speedKmh);
                 powers.push(power);
-
-                dragPowers.push(pDrag);
-                rollPowers.push(pRoll);
-                gravPowers.push(pGrav);
-                // drivetrain loss at this speed (fraction of pedaling power)
-                const drivetrainPercent = parseFloat(document.getElementById('drivetrain-loss').value) || 0;
-                const pDrivetrain = power * (drivetrainPercent / 100);
-                drivetrainPowers.push(pDrivetrain);
+                dragPowers.push(aeroForce * speed);
+                rollPowers.push(rollForce * speed);
+                gravPowers.push(gravForce * speed);
+                drivetrainPowers.push(power * (dtPct / 100));
             }
-
             const ctx = document.getElementById('power-chart' + suffix).getContext('2d');
-
-            if (powerCharts[suffix]) {
-                powerCharts[suffix].destroy();
-            }
-
+            if (powerCharts[suffix]) powerCharts[suffix].destroy();
             powerCharts[suffix] = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: speeds,
-                    datasets: [{
-                        label: 'Potenza Richiesta (W)',
-                        data: powers,
-                        borderColor: '#FF6B35',
-                        backgroundColor: 'rgba(255, 107, 53, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: '#FF6B35',
-                        pointHoverBorderColor: '#fff',
-                        pointHoverBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#E8EAF6',
-                                font: {
-                                    family: 'Manrope',
-                                    size: 14,
-                                    weight: 600
-                                }
-                            }
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
-                            titleColor: '#E8EAF6',
-                            bodyColor: '#E8EAF6',
-                            borderColor: '#FF6B35',
-                            borderWidth: 2,
-                            padding: 12,
-                            displayColors: true,
-                            titleFont: {
-                                family: 'Manrope',
-                                size: 14,
-                                weight: 700
-                            },
-                            bodyFont: {
-                                family: 'JetBrains Mono',
-                                size: 13,
-                                weight: 600
-                            },
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Velocità: ' + context[0].label + ' km/h';
-                                },
-                                label: function(context) {
-                                    return 'Potenza: ' + context.parsed.y.toFixed(1) + ' W';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Velocità (km/h)',
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono',
-                                    size: 12,
-                                    weight: 600
-                                }
-                            },
-                            ticks: {
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.05)'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Potenza (W)',
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono',
-                                    size: 12,
-                                    weight: 600
-                                }
-                            },
-                            ticks: {
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.05)'
-                            }
-                        }
-                    }
-                }
+                data: { labels: speeds, datasets: [{ label: 'Potenza Richiesta (W)', data: powers, borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 8, pointHoverBackgroundColor: '#FF6B35', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 }] },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => 'Potenza: ' + c.parsed.y.toFixed(1) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Potenza (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
             });
-
-            // --- Power loss chart (negative values for visual 'loss') ---
             const ctxLoss = document.getElementById('power-loss-chart' + suffix).getContext('2d');
             if (powerLossCharts[suffix]) powerLossCharts[suffix].destroy();
-
             powerLossCharts[suffix] = new Chart(ctxLoss, {
                 type: 'line',
-                data: {
-                    labels: speeds,
-                    datasets: [
-                        {
-                            label: 'Drag',
-                            data: dragPowers.map(v => -v),
-                            borderColor: '#8040FF',
-                            backgroundColor: 'rgba(128,64,255,0.08)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'Rolling',
-                            data: rollPowers.map(v => -v),
-                            borderColor: '#AD619A',
-                            backgroundColor: 'rgba(173,97,154,0.08)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'Gravity',
-                            data: gravPowers.map(v => -v),
-                            borderColor: '#FFB347',
-                            backgroundColor: 'rgba(255,179,71,0.08)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 0
-                        },
-                        {
-                            label: 'Drivetrain',
-                            data: drivetrainPowers.map(v => -v),
-                            borderColor: '#FFD700',
-                            backgroundColor: 'rgba(255,215,0,0.08)',
-                            borderWidth: 2,
-                            tension: 0.3,
-                            fill: true,
-                            pointRadius: 0
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#E8EAF6',
-                                font: { family: 'Manrope', size: 14, weight: 600 }
-                            }
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
-                            titleColor: '#E8EAF6',
-                            bodyColor: '#E8EAF6',
-                            borderColor: '#FF6B35',
-                            borderWidth: 2,
-                            padding: 12,
-                            displayColors: true,
-                            titleFont: {
-                                family: 'Manrope',
-                                size: 14,
-                                weight: 700
-                            },
-                            bodyFont: {
-                                family: 'JetBrains Mono',
-                                size: 13,
-                                weight: 600
-                            },
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Velocità: ' + context[0].label + ' km/h';
-                                },
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + Math.abs(context.parsed.y).toFixed(1) + ' W';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } },
-                            ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }
-                        },
-                        y: {
-                            title: { display: true, text: 'Perdita (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } },
-                            ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }
-                        }
-                    }
-                }
+                data: { labels: speeds, datasets: [ { label: 'Drag', data: dragPowers.map(v => -v), borderColor: '#8040FF', backgroundColor: 'rgba(128,64,255,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Rolling', data: rollPowers.map(v => -v), borderColor: '#AD619A', backgroundColor: 'rgba(173,97,154,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Gravity', data: gravPowers.map(v => -v), borderColor: '#FFB347', backgroundColor: 'rgba(255,179,71,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Drivetrain', data: drivetrainPowers.map(v => -v), borderColor: '#FFD700', backgroundColor: 'rgba(255,215,0,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 } ] },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => c.dataset.label + ': ' + Math.abs(c.parsed.y).toFixed(1) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } }, y: { title: { display: true, text: 'Perdita (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } } } }
             });
         }
 
-        // Air Density Calculator
         function calculateAirDensity() {
             const temp = parseFloat(document.getElementById('temp').value);
             const pressure_hPa = parseFloat(document.getElementById('pressure').value);
             const humidity = parseFloat(document.getElementById('humidity').value);
-
-            // Primary calculation based on relative humidity (user request)
             const EsAtTemp = calcEs(temp);
-            const Pv_hPa = (humidity / 100) * EsAtTemp; // vapor pressure in hPa
-            const Pd_hPa = pressure_hPa - Pv_hPa; // dry air pressure in hPa
+            const Pv_hPa = (humidity / 100) * EsAtTemp;
+            const Pd_hPa = pressure_hPa - Pv_hPa;
             const Tk = temp + 273.15;
-
-            const Rd = 287.0531;
-            const Rv = 461.4964;
-
-            // Convert pressures to Pa for ideal gas law (1 hPa = 100 Pa)
-            const Pv = Pv_hPa * 100;
-            const Pd = Pd_hPa * 100;
-
+            const Rd = 287.0531, Rv = 461.4964;
+            const Pv = Pv_hPa * 100, Pd = Pd_hPa * 100;
             const rho = (Pd / (Rd * Tk)) + (Pv / (Rv * Tk));
-
-            // Derive dew point from Pv_hPa and update field without causing input loop
             const dewFromPv = dewpointFromPv(Pv_hPa);
             if (Number.isFinite(dewFromPv)) {
-                const prevSuppress = suppressSync;
-                suppressSync = true;
+                const prev = suppressSync; suppressSync = true;
                 document.getElementById('dewpoint').value = dewFromPv.toFixed(1);
-                suppressSync = prevSuppress;
+                suppressSync = prev;
             }
-
-            // Display results (show Pv in hPa)
             const resultsDiv = document.getElementById('air-results');
             resultsDiv.innerHTML = `
                 <div class="result-item">
@@ -1454,400 +964,142 @@
                 <div class="result-item">
                     <div class="result-label">Temperatura</div>
                     <div class="result-value">${Tk.toFixed(2)}<span class="result-unit">K</span></div>
-                </div>
-            `;
-
-            // Update chart (use humidity as primary for chart calculations)
+                </div>`;
             updateAirChart(pressure_hPa, humidity);
         }
 
         function updateAirChart(pressure, humidity) {
-            const temps = [];
-            const densities = [];
-            // Preserve absolute vapor pressure based on RH at current temperature
+            const temps = [], densities = [];
             const tempCurrent = parseFloat(document.getElementById('temp').value);
             const PvConstant_hPa = (humidity / 100) * calcEs(tempCurrent);
-
             for (let temp = -10; temp <= 40; temp += 1) {
                 const EsTemp = calcEs(temp);
                 const Pv_hPa = Math.min(PvConstant_hPa, EsTemp);
                 const Pd_hPa = pressure - Pv_hPa;
                 const Tk = temp + 273.15;
-
-                const Rd = 287.0531;
-                const Rv = 461.4964;
-
-                // convert hPa to Pa
-                const Pv = Pv_hPa * 100;
-                const Pd = Pd_hPa * 100;
-
-                const rho = (Pd / (Rd * Tk)) + (Pv / (Rv * Tk));
-
-                temps.push(temp);
-                densities.push(rho);
+                const Rd = 287.0531, Rv = 461.4964;
+                const rho = (Pd_hPa * 100 / (Rd * Tk)) + (Pv_hPa * 100 / (Rv * Tk));
+                temps.push(temp); densities.push(rho);
             }
-
             const ctx = document.getElementById('air-chart').getContext('2d');
-            
-            if (airChart) {
-                airChart.destroy();
-            }
-
+            if (airChart) airChart.destroy();
             airChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: temps,
-                    datasets: [{
-                        label: 'Densità Aria (kg/m³)',
-                        data: densities,
-                        borderColor: '#00D9A0',
-                        backgroundColor: 'rgba(0, 217, 160, 0.1)',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 0,
-                        pointHoverRadius: 8,
-                        pointHoverBackgroundColor: '#00D9A0',
-                        pointHoverBorderColor: '#fff',
-                        pointHoverBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#E8EAF6',
-                                font: {
-                                    family: 'Manrope',
-                                    size: 14,
-                                    weight: 600
-                                }
-                            }
-                        },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
-                            titleColor: '#E8EAF6',
-                            bodyColor: '#E8EAF6',
-                            borderColor: '#00D9A0',
-                            borderWidth: 2,
-                            padding: 12,
-                            displayColors: true,
-                            titleFont: {
-                                family: 'Manrope',
-                                size: 14,
-                                weight: 700
-                            },
-                            bodyFont: {
-                                family: 'JetBrains Mono',
-                                size: 13,
-                                weight: 600
-                            },
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Temperatura: ' + context[0].label + ' °C';
-                                },
-                                label: function(context) {
-                                    return 'Densità: ' + context.parsed.y.toFixed(4) + ' kg/m³';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Temperatura (°C)',
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono',
-                                    size: 12,
-                                    weight: 600
-                                }
-                            },
-                            ticks: {
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.05)'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Densità (kg/m³)',
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono',
-                                    size: 12,
-                                    weight: 600
-                                }
-                            },
-                            ticks: {
-                                color: '#9BA4B5',
-                                font: {
-                                    family: 'JetBrains Mono'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.05)'
-                            }
-                        }
-                    }
-                }
+                data: { labels: temps, datasets: [{ label: 'Densità Aria (kg/m³)', data: densities, borderColor: '#00D9A0', backgroundColor: 'rgba(0,217,160,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 8, pointHoverBackgroundColor: '#00D9A0', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 }] },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#00D9A0', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Temperatura: ' + c[0].label + ' °C', label: c => 'Densità: ' + c.parsed.y.toFixed(4) + ' kg/m³' } } }, scales: { x: { title: { display: true, text: 'Temperatura (°C)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Densità (kg/m³)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
             });
         }
 
-        // Pressure calculation and chart (0 - 9000 m)
         function calculatePressure() {
-            const g = 9.80665;
-            const M = 0.0289644;
-            const R = 8.31432;
+            const g = 9.80665, M = 0.0289644, R = 8.31432;
             const p0_hPa = parseFloat(document.getElementById('p-sea-pressure').value);
             const t0_c = parseFloat(document.getElementById('p-temperature-sea').value);
             const t_h_c = parseFloat(document.getElementById('p-temperature-alt').value);
             const h = parseFloat(document.getElementById('altitude').value);
-
-            if (isNaN(p0_hPa) || isNaN(t0_c) || isNaN(t_h_c) || isNaN(h)) {
-                return;
-            }
-
-            const p0 = p0_hPa * 100; // Pa
-            const T0 = t0_c + 273.15; // K
-            const Th = t_h_c + 273.15; // K at altitude
-            const h0 = 0;
-
-            let pPa;
-            // compute implied lapse rate L from T0 and Th over selected altitude h
+            if (isNaN(p0_hPa) || isNaN(t0_c) || isNaN(t_h_c) || isNaN(h)) return;
+            const p0 = p0_hPa * 100, T0 = t0_c + 273.15, Th = t_h_c + 273.15;
             const L = (h === 0) ? 0 : (Th - T0) / h;
+            let pPa;
             if (Math.abs(L) < 1e-12) {
-                // isothermal using temperature in quota
-                const expnt = - (g * M * (h - h0)) / (R * Th);
-                pPa = p0 * Math.exp(expnt);
+                pPa = p0 * Math.exp(-(g * M * h) / (R * Th));
             } else {
-                // barometric formula with linear lapse-rate
-                const power = - (g * M) / (R * L);
-                pPa = p0 * Math.pow(Th / T0, power);
+                pPa = p0 * Math.pow(Th / T0, -(g * M) / (R * L));
             }
-
             const p_hPa = pPa / 100;
-            document.getElementById('result-pressure-value').textContent = p_hPa.toFixed(0) + ' hPa';
-
-            // update chart
+            document.getElementById('result-pressure-value').innerHTML = p_hPa.toFixed(0) + '<span class="result-unit"> hPa</span>';
             updatePressureChart();
         }
 
         function updatePressureChart() {
-            const g = 9.80665;
-            const M = 0.0289644;
-            const R = 8.31432;
-
+            const g = 9.80665, M = 0.0289644, R = 8.31432;
             const p0_hPa = parseFloat(document.getElementById('p-sea-pressure').value);
             const t0_c = parseFloat(document.getElementById('p-temperature-sea').value);
             const t_h_c = parseFloat(document.getElementById('p-temperature-alt').value);
-
             const p0 = p0_hPa * 100;
             const T0 = (isNaN(t0_c) ? 15 : t0_c) + 273.15;
             const Th_sel = (isNaN(t_h_c) ? 15 : t_h_c) + 273.15;
-            const h0 = 0;
-
-            // implied lapse-rate across selected altitude value
             const selAlt = parseFloat(document.getElementById('altitude').value) || 0;
             const L = (selAlt === 0) ? 0 : (Th_sel - T0) / selAlt;
-
-            const alts = [];
-            const pressures = [];
-            const step = 100; // 0..9000 m step 100m
-            for (let h = 0; h <= 9000; h += step) {
+            const alts = [], pressures = [];
+            for (let h = 0; h <= 9000; h += 100) {
                 let pPa;
                 if (Math.abs(L) < 1e-12) {
-                    // isothermal using selected altitude temperature
-                    const Th = Th_sel;
-                    const expnt = - (g * M * (h - h0)) / (R * Th);
-                    pPa = p0 * Math.exp(expnt);
+                    pPa = p0 * Math.exp(-(g * M * h) / (R * Th_sel));
                 } else {
-                    // temperature at this altitude using linear lapse-rate derived from T0 and selected Th
                     const Th_local = T0 + L * h;
-                    const power = - (g * M) / (R * L);
-                    pPa = p0 * Math.pow(Th_local / T0, power);
+                    pPa = p0 * Math.pow(Th_local / T0, -(g * M) / (R * L));
                 }
-                alts.push(h);
-                pressures.push(pPa / 100);
+                alts.push(h); pressures.push(pPa / 100);
             }
-
             const ctx = document.getElementById('pressure-chart').getContext('2d');
             if (pressureChart) pressureChart.destroy();
             pressureChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: alts,
-                    datasets: [{
-                        label: 'Pressione (hPa)',
-                        data: pressures,
-                        borderColor: '#00A3FF',
-                        backgroundColor: 'rgba(0,163,255,0.08)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 0,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: { labels: { color: '#E8EAF6' } },
-                        tooltip: {
-                            enabled: true,
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(26, 30, 61, 0.95)',
-                            titleColor: '#E8EAF6',
-                            bodyColor: '#E8EAF6',
-                            borderColor: '#00A3FF',
-                            borderWidth: 2,
-                            padding: 12,
-                            displayColors: true,
-                            titleFont: {
-                                family: 'Manrope',
-                                size: 14,
-                                weight: 700
-                            },
-                            bodyFont: {
-                                family: 'JetBrains Mono',
-                                size: 13,
-                                weight: 600
-                            },
-                            callbacks: {
-                                title: function(context) {
-                                    return 'Altitudine: ' + context[0].label + ' m';
-                                },
-                                label: function(context) {
-                                    return 'Pressione: ' + context.parsed.y.toFixed(1) + ' hPa';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: { title: { display: true, text: 'Altitudine (m)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255, 255, 255, 0.05)' } },
-                        y: { title: { display: true, text: 'Pressione (hPa)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255, 255, 255, 0.05)' } }
-                    }
-                }
+                data: { labels: alts, datasets: [{ label: 'Pressione (hPa)', data: pressures, borderColor: '#00A3FF', backgroundColor: 'rgba(0,163,255,0.08)', borderWidth: 2, tension: 0.3, pointRadius: 0, fill: true }] },
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6' } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#00A3FF', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Altitudine: ' + c[0].label + ' m', label: c => 'Pressione: ' + c.parsed.y.toFixed(1) + ' hPa' } } }, scales: { x: { title: { display: true, text: 'Altitudine (m)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Pressione (hPa)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
             });
         }
 
-        // Pressure listeners (live, automatic)
         (function setupPressureListeners(){
-            const ids = ['p-sea-pressure','p-temperature-sea','p-temperature-alt','altitude'];
-            ids.forEach(id => {
+            ['p-sea-pressure','p-temperature-sea','p-temperature-alt','altitude'].forEach(id => {
                 const el = document.getElementById(id);
-                if (!el) return;
-                el.addEventListener('input', () => {
-                    calculatePressure();
-                });
+                if (el) el.addEventListener('input', calculatePressure);
             });
         })();
 
-        // Real-time synchronization between dew point and relative humidity
         (function setupSyncListeners(){
             const dewEl = document.getElementById('dewpoint');
             const humEl = document.getElementById('humidity');
             const tempEl = document.getElementById('temp');
             const pressureEl = document.getElementById('pressure');
-
             dewEl.addEventListener('input', () => {
                 if (suppressSync) return;
                 suppressSync = true;
-                const dew = parseFloat(dewEl.value);
-                const temp = parseFloat(tempEl.value);
-                const EsAtTemp = calcEs(temp);
-                const Pv = calcEs(dew);
-                const rh = EsAtTemp > 0 ? (Pv / EsAtTemp) * 100 : 0;
+                const dew = parseFloat(dewEl.value), temp = parseFloat(tempEl.value);
+                const rh = calcEs(temp) > 0 ? (calcEs(dew) / calcEs(temp)) * 100 : 0;
                 if (Number.isFinite(rh)) humEl.value = rh.toFixed(1);
                 calculateAirDensity();
                 suppressSync = false;
             });
-
             humEl.addEventListener('input', () => {
                 if (suppressSync) return;
                 suppressSync = true;
-                const rh = parseFloat(humEl.value);
-                const temp = parseFloat(tempEl.value);
-                const EsAtTemp = calcEs(temp);
-                const Pv = (rh / 100) * EsAtTemp;
+                const rh = parseFloat(humEl.value), temp = parseFloat(tempEl.value);
+                const Pv = (rh / 100) * calcEs(temp);
                 const dew = dewpointFromPv(Pv);
                 if (Number.isFinite(dew)) dewEl.value = dew.toFixed(1);
                 calculateAirDensity();
                 suppressSync = false;
             });
-
-            // When temperature or pressure change, recalculate density and RH from current dewpoint
-            tempEl.addEventListener('input', () => {
-                if (suppressSync) return;
-                suppressSync = true;
-                calculateAirDensity();
-                suppressSync = false;
-            });
-
-            pressureEl.addEventListener('input', () => {
-                if (suppressSync) return;
-                suppressSync = true;
-                calculateAirDensity();
-                suppressSync = false;
-            });
+            tempEl.addEventListener('input', () => { if (!suppressSync) { suppressSync = true; calculateAirDensity(); suppressSync = false; } });
+            pressureEl.addEventListener('input', () => { if (!suppressSync) { suppressSync = true; calculateAirDensity(); suppressSync = false; } });
         })();
 
-        // Real-time listeners for Power tab to trigger automatic recalculation
         (function setupPowerListeners(){
-            const powerInputs = ['rider-weight','bike-weight','cda','crr','slope','air-density','power','drivetrain-loss','wind-speed'];
-            powerInputs.forEach(id => {
+            ['rider-weight','bike-weight','cda','crr','slope','air-density','power','drivetrain-loss','wind-speed'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.addEventListener('input', () => {
-                    // small guard: avoid calling during sync operations elsewhere
-                    if (!suppressSync) calculatePower();
-                });
+                if (el) el.addEventListener('input', () => { if (!suppressSync) calculatePower(); });
             });
         })();
 
-        // Real-time listeners for Speed->Power tab
         (function setupSpeedListeners(){
-            const speedInputs = ['rider-weight-s','bike-weight-s','cda-s','crr-s','slope-s','air-density-s','speed-kmh','drivetrain-loss-s','wind-speed-s'];
-            speedInputs.forEach(id => {
+            ['rider-weight-s','bike-weight-s','cda-s','crr-s','slope-s','air-density-s','speed-kmh','drivetrain-loss-s','wind-speed-s'].forEach(id => {
                 const el = document.getElementById(id);
-                if (el) el.addEventListener('input', () => {
-                    if (!suppressSync) calculatePowerFromSpeed();
-                });
+                if (el) el.addEventListener('input', () => { if (!suppressSync) calculatePowerFromSpeed(); });
             });
         })();
 
-        // Initialize with default calculations
-            window.addEventListener('load', () => {
+        window.addEventListener('load', () => {
             calculatePower();
             calculatePowerFromSpeed();
             calculateAirDensity();
             calculatePressure();
         });
 
-        // Re-render results on resize (e.g. phone rotation) so grid cols update
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                calculatePower();
-                calculatePowerFromSpeed();
-            }, 150);
+            resizeTimer = setTimeout(() => { calculatePower(); calculatePowerFromSpeed(); }, 150);
         });
     </script>
 </body>
