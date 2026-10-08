@@ -419,7 +419,7 @@
             .input-grid.grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem 0.6rem; margin-bottom: 0.9rem; }
             /* >=16px evita lo zoom automatico di iOS al focus */
             input[type="number"], select { font-size: 16px; padding: 0.5rem 0.6rem; }
-            #climb-custom { height: 2.2rem; }
+            #climb-custom, #eq-custom { height: 2.2rem; }
             .card { padding: 1rem; border-radius: 16px; margin-bottom: 1rem; }
             .equations { padding: 1rem; }
             .chart-container { height: 280px; padding: 0.6rem; }
@@ -507,7 +507,7 @@
         }
         .climb-reset:hover { background: rgba(255,255,255,0.12); color: var(--text-light); }
         .climb-slider-wrap { padding: 0.4rem 0.2rem 0; }
-        #climb-custom { width: 100%; accent-color: var(--primary); cursor: pointer; height: 1.6rem; }
+        #climb-custom, #eq-custom { width: 100%; accent-color: var(--primary); cursor: pointer; height: 1.6rem; }
         .climb-slider-scale { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
         .climb-chart-box { margin-top: 1.5rem; height: 380px; }
         .climb-badge {
@@ -558,6 +558,7 @@
             <button class="tab-button active" onclick="switchTab('power')" data-tab="power">⚡ Power → Speed</button>
             <button class="tab-button" onclick="switchTab('speed')" data-tab="speed">🚴 Speed → Power</button>
             <button class="tab-button" onclick="switchTab('climb')" data-tab="climb">⏱ Tempo ± kg</button>
+            <button class="tab-button" onclick="switchTab('eq')" data-tab="eq">⚖️ Watt ± kg</button>
             <button class="tab-button" onclick="switchTab('air')" data-tab="air">🌡️ Air Density</button>
             <button class="tab-button" onclick="switchTab('pressure')" data-tab="pressure">⛰️ Pressione in quota</button>
         </div>
@@ -779,6 +780,7 @@
                             <tr>
                                 <th>Δ Peso</th>
                                 <th>Massa tot.</th>
+                                <th>W/kg atleta</th>
                                 <th>W/kg sist.</th>
                                 <th>Velocità</th>
                                 <th>Tempo</th>
@@ -803,6 +805,108 @@
                 <div class="equation-block"><strong>Resistenza Gravitazionale:</strong><br>F<sub>grav</sub> = m × g × sin(θ)</div>
                 <div class="equation-block"><strong>Potenza alla ruota:</strong><br>P<sub>wheel</sub> = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v<br>P<sub>pedals</sub> = P<sub>wheel</sub> / (1 − loss%)</div>
                 <p style="margin-top: 1rem;">CdA tipico in salita ≈ 0.32–0.40. Su pendenze elevate (&gt;7%) la gravità domina e ogni kg conta di più.</p>
+            </div>
+        </div>
+
+        <!-- Watt ± kg (stesso tempo) Tab -->
+        <div id="eq-tab" class="tab-content">
+            <div class="card">
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Peso Ciclista (kg)</label>
+                        <div class="input-wrapper"><input type="number" id="eq-body" value="70" step="0.1" min="40" max="120"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Attrezzatura (kg)</label>
+                        <div class="input-wrapper"><input type="number" id="eq-bike" value="8" step="0.1" min="5" max="20"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Pendenza (%)</label>
+                        <div class="input-wrapper"><input type="number" id="eq-grade" value="8" step="0.1" min="1" max="25"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
+                        <div class="input-wrapper"><input type="number" id="eq-rho" value="1.1989" step="0.001"></div>
+                    </div>
+                </div>
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
+                        <div class="input-wrapper"><input type="number" id="eq-cda" value="0.35" step="0.01"></div>
+                    </div>
+                    <div class="input-group">
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
+                        <div class="input-wrapper"><input type="number" id="eq-crr" value="0.004" step="0.0001"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
+                        <div class="input-wrapper"><input type="number" id="eq-dt" value="2" step="0.1"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
+                        <div class="input-wrapper"><input type="number" id="eq-wind" value="0" step="0.1"></div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem;">
+                    <label style="margin-bottom:0.4rem; display:block;">Potenza di riferimento</label>
+                    <div class="toggle-row">
+                        <button type="button" class="toggle-btn" id="eq-btn-wkg" onclick="setEqPowerMode('wkg')">W/kg atleta</button>
+                        <button type="button" class="toggle-btn active" id="eq-btn-watt" onclick="setEqPowerMode('watt')">Watt assoluti</button>
+                    </div>
+                    <div class="input-grid grid-4">
+                        <div class="input-group" id="eq-wrap-wkg" style="display:none;">
+                            <label>W/kg (atleta)</label>
+                            <div class="input-wrapper"><input type="number" id="eq-wkg" value="4.5" step="0.1" min="1.5" max="8"></div>
+                        </div>
+                        <div class="input-group" id="eq-wrap-watt">
+                            <label>Watt assoluti</label>
+                            <div class="input-wrapper"><input type="number" id="eq-watts" value="300" step="1" min="50" max="600"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem;">
+                    <div class="climb-slider-head">
+                        <label style="margin:0;">Variazione di peso custom</label>
+                        <div class="climb-slider-right">
+                            <span id="eq-custom-val" class="climb-slider-val">0 kg</span>
+                            <button type="button" class="climb-reset" id="eq-custom-reset" title="Azzera">azzera</button>
+                        </div>
+                    </div>
+                    <div class="climb-slider-wrap" id="eq-slider-wrap">
+                        <input type="range" id="eq-custom" min="-20" max="20" step="0.1" value="0">
+                        <div class="climb-slider-scale"><span>−20</span><span>−10</span><span>0</span><span>+10</span><span>+20</span></div>
+                    </div>
+                </div>
+                <div id="eq-results" class="results" style="margin-top:1.5rem;"></div>
+                <div class="climb-table-wrap">
+                    <table class="climb-table">
+                        <thead>
+                            <tr>
+                                <th>Δ Peso</th>
+                                <th>Massa tot.</th>
+                                <th>W necessari</th>
+                                <th>W/kg atleta</th>
+                                <th>Δ Watt</th>
+                                <th>Δ %</th>
+                                <th>W/kg sist.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="eq-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="chart-container climb-chart-box">
+                    <canvas id="eq-chart"></canvas>
+                </div>
+                <p class="climb-note">
+                    Curva = watt in più o in meno da fare per salire nello <strong>stesso tempo</strong> (stessa velocità, stessa salita) al variare del peso. Sopra lo zero (rosso) servono più watt, sotto (verde) ne bastano meno. I pallini sono i valori in tabella; quello arancione è la variazione custom. Passa il cursore sulla curva per i dettagli. Peso, bici, pendenza, parametri aerodinamici e potenza di riferimento sono allineati con la tab «Tempo ± kg».
+                </p>
+            </div>
+            <div class="card equations">
+                <h3>📐 Equazioni del Modello</h3>
+                <p>Stesso modello delle altre tab. Dalla potenza di riferimento si ricava la velocità; a parità di tempo la velocità resta uguale, quindi si calcola la potenza necessaria per la nuova massa a quella velocità.</p>
+                <div class="equation-block"><strong>Resistenze:</strong><br>F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²<br>F<sub>roll</sub> = Crr × m × g × cos(θ)<br>F<sub>grav</sub> = m × g × sin(θ)</div>
+                <div class="equation-block"><strong>Potenza necessaria a v costante:</strong><br>P<sub>pedals</sub>(m) = (F<sub>aero</sub> + F<sub>roll</sub>(m) + F<sub>grav</sub>(m)) × v / (1 − loss%)</div>
+                <p style="margin-top: 1rem;">Con v fissata, solo rotolamento e gravità dipendono dalla massa: il costo in watt per kg cresce con la pendenza e con la velocità.</p>
             </div>
         </div>
 
@@ -972,6 +1076,7 @@
         observeResults('speed-results');
         observeResults('air-results');
         observeResults('climb-results');
+        observeResults('eq-results');
 
         // Also inject into the static pressure card on load
         window.addEventListener('load', () => {
@@ -1089,7 +1194,7 @@
                     {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
                 ], mob) +
                 `<div style="grid-column:1/-1; display:grid; grid-template-columns:${mob?'1fr 1fr':'repeat(4,minmax(140px,1fr))'}; gap:${mob?'0.6rem':'1rem'}; margin-top:${mob?'0.6rem':'1rem'}; align-items:stretch;">` +
-                [{label:'Drag',value:pDragNow.toFixed(1),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(1),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(1),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(1),unit:'W'}].map((it,idx)=>{
+                [{label:'Drag',value:pDragNow.toFixed(0),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(0),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(0),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(0),unit:'W'}].map((it,idx)=>{
                     const id='ri-pl-'+Date.now()+'-'+idx;
                     return `<div class="result-item" id="${id}" style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;"><div class="result-label">${it.label}</div><div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span></div></div>`;
                 }).join('') + `</div>`;
@@ -1131,12 +1236,12 @@
             resultsDiv.innerHTML =
                 buildResultRow([
                     {label:'At', value:speedKmh.toFixed(1), unit:'km/h', arrow:'&nbsp;→'},
-                    {label:'Potenza', value:pedalingPower.toFixed(1), unit:'W'},
+                    {label:'Potenza', value:pedalingPower.toFixed(0), unit:'W'},
                     {label:'Potenza / Peso', value:powerPerKg.toFixed(2), unit:'W/kg'},
                     {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
                 ], mob) +
                 `<div style="grid-column:1/-1; display:grid; grid-template-columns:${mob?'1fr 1fr':'repeat(4,minmax(140px,1fr))'}; gap:${mob?'0.6rem':'1rem'}; margin-top:${mob?'0.6rem':'1rem'}; align-items:stretch;">` +
-                [{label:'Drag',value:pDragNow.toFixed(1),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(1),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(1),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(1),unit:'W'}].map((it,idx)=>{
+                [{label:'Drag',value:pDragNow.toFixed(0),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(0),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(0),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(0),unit:'W'}].map((it,idx)=>{
                     const id='ri-sl-'+Date.now()+'-'+idx;
                     return `<div class="result-item" id="${id}" style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;"><div class="result-label">${it.label}</div><div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span></div></div>`;
                 }).join('') + `</div>`;
@@ -1170,14 +1275,14 @@
             powerCharts[suffix] = new Chart(ctx, {
                 type: 'line',
                 data: { labels: speeds, datasets: [{ label: 'Potenza Richiesta (W)', data: powers, borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 8, pointHoverBackgroundColor: '#FF6B35', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 }] },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => 'Potenza: ' + c.parsed.y.toFixed(1) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Potenza (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => 'Potenza: ' + c.parsed.y.toFixed(0) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Potenza (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
             });
             const ctxLoss = document.getElementById('power-loss-chart' + suffix).getContext('2d');
             if (powerLossCharts[suffix]) powerLossCharts[suffix].destroy();
             powerLossCharts[suffix] = new Chart(ctxLoss, {
                 type: 'line',
                 data: { labels: speeds, datasets: [ { label: 'Drag', data: dragPowers.map(v => -v), borderColor: '#8040FF', backgroundColor: 'rgba(128,64,255,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Rolling', data: rollPowers.map(v => -v), borderColor: '#AD619A', backgroundColor: 'rgba(173,97,154,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Gravity', data: gravPowers.map(v => -v), borderColor: '#FFB347', backgroundColor: 'rgba(255,179,71,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Drivetrain', data: drivetrainPowers.map(v => -v), borderColor: '#FFD700', backgroundColor: 'rgba(255,215,0,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 } ] },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => c.dataset.label + ': ' + Math.abs(c.parsed.y).toFixed(1) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } }, y: { title: { display: true, text: 'Perdita (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } } } }
+                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => c.dataset.label + ': ' + Math.abs(c.parsed.y).toFixed(0) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } }, y: { title: { display: true, text: 'Perdita (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } } } }
             });
         }
 
@@ -1360,6 +1465,7 @@
             document.getElementById('climb-btn-watt').classList.toggle('active', m === 'watt');
             document.getElementById('climb-wrap-wkg').style.display = m === 'wkg' ? '' : 'none';
             document.getElementById('climb-wrap-watt').style.display = m === 'watt' ? '' : 'none';
+            if (eqPowerMode !== m) setEqPowerMode(m);
             calculateClimb();
             saveState();
         }
@@ -1532,6 +1638,7 @@
                                         'Tempo: ' + fmtClimbTime(p.time),
                                         'Δ: ' + (Math.abs(p.delta) < 0.5 ? '—' : fmtClimbDelta(p.delta)),
                                         'Velocità: ' + p.speed.toFixed(2) + ' km/h',
+                                        'W/kg atleta: ' + (c.P / (c.body + p.d)).toFixed(2),
                                         'W/kg sist.: ' + p.wkg.toFixed(2)
                                     ];
                                 }
@@ -1659,13 +1766,13 @@
                 const label = d === 0 ? 'Base' : fmtKg(d);
                 rows += '<tr' + (item.custom ? ' class="climb-custom-row"' : '') + '><td><strong>' + label + '</strong>' +
                     (item.custom ? '<span class="climb-badge">custom</span>' : '') + '</td><td>' + m.toFixed(1) + ' kg</td><td>' +
-                    wkg.toFixed(2) + '</td><td>' + (v * 3.6).toFixed(1) + ' km/h</td><td>' +
+                    (P / (body + d)).toFixed(2) + '</td><td>' + wkg.toFixed(2) + '</td><td>' + (v * 3.6).toFixed(1) + ' km/h</td><td>' +
                     fmtClimbTime(t) + '</td><td class="' + cls + '">' +
                     (d === 0 ? '—' : fmtClimbDelta(dt)) + '</td></tr>';
                 markers.push({ d, t, dt, custom: item.custom });
             });
             document.getElementById('climb-tbody').innerHTML = rows;
-            updateClimbChart({ P, mBase, gradePct, rho, cda, crr, dtLoss, wind, distM, tBase, markers });
+            updateClimbChart({ P, body, mBase, gradePct, rho, cda, crr, dtLoss, wind, distM, tBase, markers });
         }
 
         function updateClimbCustomLabel() {
@@ -1716,8 +1823,330 @@
             calculateAirDensity();
             calculatePressure();
             calculateClimb();
+            calculateEq();
         });
 
+
+
+        // ——— Watt ± kg (stesso tempo) ———
+        let eqPowerMode = 'watt';
+        let eqChart = null;
+
+        function setEqPowerMode(m) {
+            eqPowerMode = m;
+            document.getElementById('eq-btn-wkg').classList.toggle('active', m === 'wkg');
+            document.getElementById('eq-btn-watt').classList.toggle('active', m === 'watt');
+            document.getElementById('eq-wrap-wkg').style.display = m === 'wkg' ? '' : 'none';
+            document.getElementById('eq-wrap-watt').style.display = m === 'watt' ? '' : 'none';
+            if (climbPowerMode !== m) setClimbPowerMode(m);
+            calculateEq();
+            saveState();
+        }
+
+        // potenza ai pedali necessaria per mantenere la velocità v (m/s) con massa m
+        function powerForSpeed(v, m, gradePct, rho, cda, crr, dtLossPct, windKmh) {
+            const g = 9.80665;
+            const theta = Math.atan(gradePct / 100);
+            const vRel = v + windKmh / 3.6;
+            const F = 0.5 * rho * cda * vRel * vRel + crr * m * g * Math.cos(theta) + m * g * Math.sin(theta);
+            return F * v / (1 - dtLossPct / 100);
+        }
+
+        function fmtW(d, withUnit) {
+            const r = Math.round(d);
+            return (r > 0 ? '+' : (r < 0 ? '−' : '')) + Math.abs(r) + (withUnit === false ? '' : ' W');
+        }
+
+        function fmtPct(p) {
+            const a = Math.abs(p);
+            return (p > 0.049 ? '+' : (p < -0.049 ? '−' : '')) + a.toFixed(1) + '%';
+        }
+
+        function updateEqChart(c) {
+            const canvas = document.getElementById('eq-chart');
+            if (!canvas) return;
+            const GREEN = '#00D9A0', RED = '#ff6b6b', ORANGE = '#FF6B35', GREY = '#E8EAF6';
+            const minD = Math.max(Math.min(-10, ...c.markers.map(m => m.d)), 30.5 - c.mBase);
+            const maxD = Math.max(10, ...c.markers.map(m => m.d));
+
+            const xs = [];
+            for (let i = 0; i <= 40; i++) xs.push(minD + (maxD - minD) * i / 40);
+            c.markers.forEach(m => xs.push(m.d));
+            xs.sort((a, b) => a - b);
+            const grid = xs.filter((x, i) => i === 0 || x - xs[i - 1] > 1e-6);
+
+            const curveMeta = grid.map(d => {
+                const m = c.mBase + d;
+                const P = powerForSpeed(c.v, m, c.gradePct, c.rho, c.cda, c.crr, c.dtLoss, c.wind);
+                return { d, mass: m, P, dP: P - c.P0, pct: (P / c.P0 - 1) * 100, wkg: P / m, wkgAth: P / (c.body + d) };
+            });
+            const curve = curveMeta.map(p => ({ x: p.d, y: p.dP }));
+            const pts = c.markers.map(m => ({ x: m.d, y: m.dP }));
+            const ptColor = c.markers.map(m => m.custom ? ORANGE : (m.d === 0 ? GREY : (m.dP > 0 ? RED : GREEN)));
+            const ptRadius = c.markers.map(m => m.custom ? 8 : 6);
+
+            const labelPlugin = {
+                id: 'eqPointLabels',
+                afterDatasetsDraw(chart) {
+                    const ds = chart.getDatasetMeta(1);
+                    const g = chart.ctx;
+                    const narrow = chart.width < 560;
+                    g.save();
+                    g.font = '600 11px JetBrains Mono, monospace';
+                    g.textAlign = 'center';
+                    ds.data.forEach((el, i) => {
+                        const m = c.markers[i];
+                        if (narrow && !m.custom) return;
+                        const above = m.dP >= 0;
+                        g.fillStyle = m.custom ? ORANGE : (m.d === 0 ? '#9BA4B5' : (m.dP > 0 ? RED : GREEN));
+                        g.textBaseline = above ? 'bottom' : 'top';
+                        g.fillText(m.d === 0 ? 'base' : fmtW(m.dP), el.x, el.y + (above ? -12 : 12));
+                    });
+                    g.restore();
+                }
+            };
+
+            if (eqChart) eqChart.destroy();
+            eqChart = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                plugins: [labelPlugin],
+                data: {
+                    datasets: [
+                        {
+                            label: 'Δ potenza',
+                            data: curve,
+                            borderColor: ORANGE,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            tension: 0.2,
+                            fill: { target: 'origin', above: 'rgba(255,107,107,0.14)', below: 'rgba(0,217,160,0.14)' },
+                            order: 2
+                        },
+                        {
+                            label: 'Valori in tabella',
+                            data: pts,
+                            showLine: false,
+                            pointRadius: ptRadius,
+                            pointHoverRadius: ptRadius.map(r => r + 2),
+                            pointBackgroundColor: ptColor,
+                            pointBorderColor: '#0A0E27',
+                            pointBorderWidth: 2,
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    layout: { padding: { top: 6, right: 14 } },
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Quanti watt servono per salire nello stesso tempo',
+                            color: '#E8EAF6',
+                            font: { family: 'Manrope', size: 15, weight: 700 },
+                            padding: { bottom: 2 }
+                        },
+                        subtitle: {
+                            display: true,
+                            text: 'A parità di velocità (' + (c.v * 3.6).toFixed(1) + ' km/h) · base ' + c.P0.toFixed(0) + ' W · ' + c.gradePct + '% di pendenza',
+                            color: '#9BA4B5',
+                            font: { family: 'JetBrains Mono', size: 11 },
+                            padding: { bottom: 12 }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26,30,61,0.96)',
+                            titleColor: '#E8EAF6',
+                            bodyColor: '#E8EAF6',
+                            borderColor: ORANGE,
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: false,
+                            titleFont: { family: 'Manrope', size: 14, weight: 700 },
+                            bodyFont: { family: 'JetBrains Mono', size: 12, weight: 600 },
+                            filter: (item, idx) => idx === 0,
+                            callbacks: {
+                                title: items => {
+                                    const p = nearestMeta(items[0].parsed.x);
+                                    return (Math.abs(p.d) < 1e-6 ? 'Base' : fmtKg(p.d)) + '  ·  massa ' + p.mass.toFixed(1) + ' kg';
+                                },
+                                label: item => {
+                                    const p = nearestMeta(item.parsed.x);
+                                    return [
+                                        'Potenza: ' + p.P.toFixed(0) + ' W (' + p.wkgAth.toFixed(2) + ' W/kg)',
+                                        'Δ: ' + (Math.abs(p.dP) < 0.5 ? '—' : fmtW(p.dP) + ' (' + fmtPct(p.pct) + ')'),
+                                        'W/kg sist.: ' + p.wkg.toFixed(2)
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: minD,
+                            max: maxD,
+                            title: { display: true, text: 'Variazione di peso', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: { family: 'JetBrains Mono', size: 11 },
+                                maxTicksLimit: 11,
+                                callback: v => (v > 0 ? '+' : (v < 0 ? '−' : '')) + Math.abs(Math.round(v * 10) / 10)
+                            },
+                            grid: {
+                                color: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 'rgba(232,234,246,0.45)' : 'rgba(255,255,255,0.05)',
+                                lineWidth: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 2 : 1
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: '← meno watt      Δ potenza      più watt →', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 11, weight: 600 } },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: { family: 'JetBrains Mono', size: 11 },
+                                callback: v => Math.abs(v) < 0.5 ? '0' : fmtW(v, false)
+                            },
+                            grid: {
+                                color: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 'rgba(232,234,246,0.45)' : 'rgba(255,255,255,0.05)',
+                                lineWidth: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 2 : 1
+                            },
+                            grace: '12%'
+                        }
+                    }
+                }
+            });
+
+            function nearestMeta(x) {
+                let best = curveMeta[0], bd = Infinity;
+                for (const p of curveMeta) {
+                    const dd = Math.abs(p.d - x);
+                    if (dd < bd) { bd = dd; best = p; }
+                }
+                return best;
+            }
+        }
+
+        function calculateEq() {
+            const body = parseFloat(document.getElementById('eq-body').value);
+            const bike = parseFloat(document.getElementById('eq-bike').value);
+            const gradePct = parseFloat(document.getElementById('eq-grade').value);
+            const rho = parseFloat(document.getElementById('eq-rho').value);
+            const cda = parseFloat(document.getElementById('eq-cda').value);
+            const crr = parseFloat(document.getElementById('eq-crr').value);
+            const dtLoss = parseFloat(document.getElementById('eq-dt').value) || 0;
+            const wind = parseFloat(document.getElementById('eq-wind').value) || 0;
+
+            let P;
+            if (eqPowerMode === 'wkg') {
+                P = parseFloat(document.getElementById('eq-wkg').value) * body;
+            } else {
+                P = parseFloat(document.getElementById('eq-watts').value);
+            }
+            if (!(body > 0 && bike > 0 && gradePct > 0 && P > 0 && rho > 0 && cda > 0)) return;
+
+            const mBase = body + bike;
+            const v = climbSpeedFromPower(P, mBase, gradePct, rho, cda, crr, dtLoss, wind);
+            if (!(v > 0)) return;
+            // base ricalcolata con la stessa formula, così i delta sono coerenti col solver
+            const P0 = powerForSpeed(v, mBase, gradePct, rho, cda, crr, dtLoss, wind);
+            const theta = Math.atan(gradePct / 100);
+            const vam = v * Math.sin(theta) * 3600;
+            const pPlus = powerForSpeed(v, mBase + 1, gradePct, rho, cda, crr, dtLoss, wind) - P0;
+            const pMinus = powerForSpeed(v, mBase - 1, gradePct, rho, cda, crr, dtLoss, wind) - P0;
+            const mob = window.innerWidth <= 768;
+
+            document.getElementById('eq-results').innerHTML = buildResultRow([
+                eqPowerMode === 'watt'
+                    ? { label: 'W/kg atleta', value: (P / body).toFixed(2), unit: '' }
+                    : { label: 'Potenza', value: P.toFixed(0), unit: 'W' },
+                { label: 'W/kg sist.', value: (P / mBase).toFixed(2), unit: '' },
+                { label: 'Velocità', value: (v * 3.6).toFixed(1), unit: 'km/h' },
+                { label: 'VAM', value: vam.toFixed(0), unit: 'm/h' },
+                { label: 'Costo +1 kg', value: fmtW(pPlus, false), unit: 'W' },
+                { label: 'Guadagno −1 kg', value: fmtW(pMinus, false), unit: 'W' }
+            ], mob);
+
+            const baseDeltas = [-10, -5, -2.5, -1, 0, 1, 2.5, 5, 10];
+            const customRaw = parseFloat(document.getElementById('eq-custom').value);
+            const hasCustom = isFinite(customRaw) && Math.abs(customRaw) > 1e-9;
+            const list = baseDeltas.map(d => ({ d, custom: hasCustom && Math.abs(d - customRaw) < 1e-9 }));
+            if (hasCustom && !list.some(x => x.custom)) list.push({ d: customRaw, custom: true });
+            list.sort((a, b) => a.d - b.d);
+
+            let rows = '';
+            const markers = [];
+            list.forEach(item => {
+                const d = item.d;
+                const m = mBase + d;
+                if (m < 30) return;
+                const Pm = powerForSpeed(v, m, gradePct, rho, cda, crr, dtLoss, wind);
+                const dP = Pm - P0;
+                const pct = (Pm / P0 - 1) * 100;
+                const cls = d === 0 ? 'delta-zero' : (dP > 0 ? 'delta-plus' : 'delta-minus');
+                const label = d === 0 ? 'Base' : fmtKg(d);
+                rows += '<tr' + (item.custom ? ' class="climb-custom-row"' : '') + '><td><strong>' + label + '</strong>' +
+                    (item.custom ? '<span class="climb-badge">custom</span>' : '') + '</td><td>' + m.toFixed(1) + ' kg</td><td>' +
+                    Pm.toFixed(0) + ' W</td><td>' + (Pm / (body + d)).toFixed(2) + '</td><td class="' + cls + '">' + (d === 0 ? '—' : fmtW(dP)) + '</td><td class="' + cls + '">' +
+                    (d === 0 ? '—' : fmtPct(pct)) + '</td><td>' + (Pm / m).toFixed(2) + '</td></tr>';
+                markers.push({ d, dP, custom: item.custom });
+            });
+            document.getElementById('eq-tbody').innerHTML = rows;
+            updateEqChart({ v, P0, body, mBase, gradePct, rho, cda, crr, dtLoss, wind, markers });
+        }
+
+        function updateEqCustomLabel() {
+            const v = parseFloat(document.getElementById('eq-custom').value) || 0;
+            const el = document.getElementById('eq-custom-val');
+            el.textContent = (Math.abs(v) < 1e-9) ? '0 kg' : fmtKg(v);
+            el.style.color = Math.abs(v) < 1e-9 ? 'var(--text-muted)' : 'var(--primary)';
+        }
+
+        (function setupEq() {
+            const slider = document.getElementById('eq-custom');
+            const wrap = document.getElementById('eq-slider-wrap');
+            const setV = v => { slider.value = v; updateEqCustomLabel(); calculateEq(); saveState(); };
+            slider.addEventListener('input', updateEqCustomLabel);
+            wrap.addEventListener('wheel', e => {
+                e.preventDefault();
+                const dir = (e.deltaY || e.deltaX) < 0 ? 1 : -1;
+                let v = (parseFloat(slider.value) || 0) + dir * 0.1;
+                setV(Math.max(-20, Math.min(20, Math.round(v * 10) / 10)));
+            }, { passive: false });
+            document.getElementById('eq-custom-reset').addEventListener('click', () => setV(0));
+            slider.addEventListener('dblclick', () => setV(0));
+            updateEqCustomLabel();
+            ['eq-body','eq-bike','eq-grade','eq-rho','eq-cda','eq-crr','eq-dt','eq-wind','eq-wkg','eq-watts','eq-custom'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', calculateEq);
+            });
+        })();
+
+
+        // ——— Allineamento parametri condivisi tra tab 3 (Tempo ± kg) e tab 4 (Watt ± kg) ———
+        const SHARED = ['body', 'bike', 'grade', 'rho', 'cda', 'crr', 'dt', 'wind', 'wkg', 'watts'];
+        function syncShared(from) {
+            const to = from === 'climb' ? 'eq' : 'climb';
+            SHARED.forEach(k => {
+                const a = document.getElementById(from + '-' + k);
+                const b = document.getElementById(to + '-' + k);
+                if (a && b) b.value = a.value;
+            });
+        }
+        (function setupSharedSync() {
+            [['climb', 'eq', () => calculateEq()], ['eq', 'climb', () => calculateClimb()]].forEach(([from, to, recalc]) => {
+                SHARED.forEach(k => {
+                    const a = document.getElementById(from + '-' + k);
+                    const b = document.getElementById(to + '-' + k);
+                    if (!a || !b) return;
+                    a.addEventListener('input', () => {
+                        if (b.value !== a.value) { b.value = a.value; recalc(); }
+                    });
+                });
+            });
+        })();
 
         // ——— Persistenza, link condivisibili, reset, info, densità aria ———
         const STORE_KEY = 'bonvi-cycling-tools-v1';
@@ -1726,6 +2155,7 @@
             power: () => calculatePower(),
             speed: () => calculatePowerFromSpeed(),
             climb: () => calculateClimb(),
+            eq: () => calculateEq(),
             air: () => calculateAirDensity(),
             pressure: () => calculatePressure()
         };
@@ -1744,6 +2174,7 @@
             });
             if (!onlyChanged || climbMode !== 'time') s.cm = climbMode;
             if (!onlyChanged || climbPowerMode !== 'watt') s.pm = climbPowerMode;
+            if (!onlyChanged || eqPowerMode !== 'watt') s.pw2 = eqPowerMode;
             s.t = currentTab();
             return s;
         }
@@ -1756,13 +2187,15 @@
 
         function applyState(s) {
             Object.keys(s).forEach(k => {
-                if (k === 'cm' || k === 'pm' || k === 't') return;
+                if (k === 'cm' || k === 'pm' || k === 'pw2' || k === 't') return;
                 const el = document.getElementById(k);
                 if (el && el.tagName === 'INPUT' && !SKIP_IDS.has(k) && s[k] !== '' && isFinite(parseFloat(s[k]))) el.value = s[k];
             });
             if (s.cm === 'dist' || s.cm === 'time') setClimbMode(s.cm);
             if (s.pm === 'wkg' || s.pm === 'watt') setClimbPowerMode(s.pm);
+            syncShared('climb');
             updateClimbCustomLabel();
+            updateEqCustomLabel();
             if (s.t && TAB_CALC[s.t]) switchTab(s.t);
         }
 
@@ -1809,6 +2242,15 @@
                 setClimbMode('time');
                 setClimbPowerMode('watt');
                 updateClimbCustomLabel();
+            }
+            if (tab === 'eq') {
+                setEqPowerMode('watt');
+                updateEqCustomLabel();
+            }
+            if (tab === 'climb' || tab === 'eq') {
+                syncShared(tab);
+                calculateClimb();
+                calculateEq();
             }
             if (TAB_CALC[tab]) TAB_CALC[tab]();
             saveState();
@@ -1884,6 +2326,7 @@
                 calculatePower();
                 calculatePowerFromSpeed();
                 calculateClimb();
+                calculateEq();
             }, 150);
         });
     </script>
