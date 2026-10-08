@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -63,7 +63,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 1.75rem;
             animation: fadeInDown 0.8s ease-out;
         }
 
@@ -86,10 +86,11 @@
 
         .tab-nav {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 1.25rem;
             background: var(--bg-card);
-            padding: 0.5rem;
+            padding: 0.4rem;
             border-radius: 16px;
             border: 1px solid var(--border);
             animation: fadeIn 0.8s ease-out 0.2s both;
@@ -97,12 +98,13 @@
 
         .tab-button {
             flex: 1;
-            padding: 1rem 2rem;
+            min-width: 120px;
+            padding: 0.65rem 1rem;
             background: transparent;
             border: none;
             color: var(--text-muted);
             font-family: 'Manrope', sans-serif;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             border-radius: 12px;
@@ -148,16 +150,18 @@
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            border-radius: 18px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             backdrop-filter: blur(10px);
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 40px var(--shadow);
+        @media (hover: hover) {
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 20px 40px var(--shadow);
+            }
         }
 
         .card-title {
@@ -180,24 +184,30 @@
 
         .input-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 200px));
+            justify-content: start;
+            gap: 0.85rem 1rem;
+            margin-bottom: 1.1rem;
         }
 
         .input-grid.grid-4 {
-            grid-template-columns: repeat(4, minmax(140px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 200px));
+            gap: 0.85rem 1rem;
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.3rem;
+            min-width: 0;
         }
 
+        .input-group > .input-wrapper,
+        .input-group > .dur-row { margin-top: auto; }
+
         label {
-            font-size: 0.9rem;
+            line-height: 1.25;
+            font-size: 0.74rem;
             font-weight: 600;
             color: var(--text-muted);
             font-family: 'JetBrains Mono', monospace;
@@ -209,9 +219,11 @@
         select {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 0.875rem 1rem;
-            font-size: 1rem;
+            border-radius: 10px;
+            padding: 0.5rem 0.7rem;
+            font-size: 0.95rem;
+            width: 100%;
+            min-width: 0;
             color: var(--text-light);
             font-family: 'JetBrains Mono', monospace;
             transition: all 0.3s;
@@ -241,6 +253,8 @@
             position: relative;
         }
 
+        .input-wrapper input { width: 100%; }
+
         .btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -268,15 +282,15 @@
         .results {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 2rem;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
         }
 
         .result-item {
             background: rgba(0, 217, 160, 0.1);
             border: 1px solid rgba(0, 217, 160, 0.3);
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1rem 0.75rem;
             text-align: center;
             transition: all 0.3s;
             position: relative;
@@ -330,7 +344,7 @@
         }
 
         .result-value {
-            font-size: 2rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: var(--success);
             font-family: 'JetBrains Mono', monospace;
@@ -345,18 +359,18 @@
         .chart-container {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 16px;
-            padding: 2rem;
-            margin-top: 2rem;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
             position: relative;
-            height: 400px;
+            height: 380px;
         }
 
         .equations {
             background: rgba(0, 78, 137, 0.1);
             border: 1px solid rgba(0, 78, 137, 0.3);
             border-radius: 16px;
-            padding: 2rem;
-            margin-top: 2rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
             font-size: 0.95rem;
             line-height: 1.8;
         }
@@ -392,17 +406,26 @@
         }
 
         @media (max-width: 768px) {
-            .container { padding: 1rem; }
-            h1 { font-size: 2rem; }
-            .tab-nav { flex-direction: column; gap: 0.4rem; }
-            .tab-button { padding: 0.75rem 1rem; font-size: 0.95rem; }
+            .container { padding: 0.75rem; }
+            h1 { font-size: 1.8rem; }
+            header { margin-bottom: 1.1rem; }
+            .tab-nav {
+                flex-wrap: nowrap; overflow-x: auto; gap: 0.3rem;
+                scrollbar-width: none; -webkit-overflow-scrolling: touch;
+            }
+            .tab-nav::-webkit-scrollbar { display: none; }
+            .tab-button { flex: 0 0 auto; min-width: 0; white-space: nowrap; padding: 0.6rem 0.9rem; font-size: 0.9rem; }
             .input-grid,
-            .input-grid.grid-4 { grid-template-columns: 1fr; gap: 1rem; }
-            .card { padding: 1.25rem; }
-            .chart-container { height: 280px; padding: 1rem; }
+            .input-grid.grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem 0.6rem; margin-bottom: 0.9rem; }
+            /* >=16px evita lo zoom automatico di iOS al focus */
+            input[type="number"], select { font-size: 16px; padding: 0.5rem 0.6rem; }
+            #climb-custom { height: 2.2rem; }
+            .card { padding: 1rem; border-radius: 16px; margin-bottom: 1rem; }
+            .equations { padding: 1rem; }
+            .chart-container { height: 280px; padding: 0.6rem; }
             .results { grid-template-columns: 1fr 1fr !important; gap: 0.6rem; }
             .result-item { padding: 0.875rem 0.4rem; min-width: 0; }
-            .result-value { font-size: 1.25rem; word-break: break-all; }
+            .result-value { font-size: 1.2rem; overflow-wrap: anywhere; }
             .result-unit { font-size: 0.8rem; }
             .result-label { font-size: 0.72rem; letter-spacing: 0.03em; }
         }
@@ -433,6 +456,69 @@
             text-decoration: underline;
             font-weight: 700;
         }
+
+        /* Climb ± kg */
+        .toggle-row { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .toggle-btn {
+            flex: 1; padding: 0.55rem 0.75rem;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text-muted);
+            font-family: 'Manrope', sans-serif; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-color: transparent; color: white;
+        }
+        .toggle-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+        .climb-table-wrap {
+            overflow-x: auto; margin-top: 1.5rem;
+            border-radius: 12px; border: 1px solid var(--border);
+        }
+        .climb-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.9rem; font-family: 'JetBrains Mono', monospace;
+        }
+        .climb-table th {
+            text-align: left; padding: 0.75rem 0.85rem; color: var(--text-muted);
+            font-weight: 600; font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.04em; border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.2); white-space: nowrap;
+        }
+        .climb-table td {
+            padding: 0.7rem 0.85rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06); white-space: nowrap;
+        }
+        .climb-table tr:last-child td { border-bottom: none; }
+        .climb-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .delta-plus { color: #ff6b6b; font-weight: 700; }
+        .delta-minus { color: var(--success); font-weight: 700; }
+        .delta-zero { color: var(--text-muted); }
+        .climb-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem; line-height: 1.5; }
+        .dur-row { display: flex; gap: 0.5rem; align-items: center; }
+        .dur-row input { flex: 1; min-width: 0; }
+        .climb-slider-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .climb-slider-right { display: flex; align-items: center; gap: 0.6rem; }
+        .climb-slider-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.05rem; color: var(--primary); min-width: 5.5rem; text-align: right; }
+        .climb-reset {
+            padding: 0.2rem 0.65rem; border-radius: 999px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: pointer;
+            font-family: 'Manrope', sans-serif; font-size: 0.75rem; font-weight: 600;
+        }
+        .climb-reset:hover { background: rgba(255,255,255,0.12); color: var(--text-light); }
+        .climb-slider-wrap { padding: 0.4rem 0.2rem 0; }
+        #climb-custom { width: 100%; accent-color: var(--primary); cursor: pointer; height: 1.6rem; }
+        .climb-slider-scale { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
+        .climb-chart-box { margin-top: 1.5rem; height: 380px; }
+        .climb-badge {
+            display: inline-block; margin-left: 0.4rem; padding: 0.05rem 0.45rem;
+            border-radius: 999px; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.04em;
+            text-transform: uppercase; background: var(--primary); color: #fff; vertical-align: middle;
+        }
+        .climb-table tr.climb-custom-row td { background: rgba(255,107,53,0.08); }
+        .climb-table tr.climb-custom-row td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
+        @media (max-width: 768px) { .climb-chart-box { height: 320px; } }
+        .dur-sep { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; }
     </style>
 </head>
 <body>
@@ -444,6 +530,7 @@
         <div class="tab-nav">
             <button class="tab-button active" onclick="switchTab('power')" data-tab="power">⚡ Power → Speed</button>
             <button class="tab-button" onclick="switchTab('speed')" data-tab="speed">🚴 Speed → Power</button>
+            <button class="tab-button" onclick="switchTab('climb')" data-tab="climb">⏱ Tempo ± kg</button>
             <button class="tab-button" onclick="switchTab('air')" data-tab="air">🌡️ Air Density</button>
             <button class="tab-button" onclick="switchTab('pressure')" data-tab="pressure">⛰️ Pressione in quota</button>
         </div>
@@ -565,6 +652,130 @@
                 <div class="equation-block"><strong>Resistenza Gravitazionale:</strong><br>F<sub>grav</sub> = m × g × sin(θ)</div>
                 <div class="equation-block"><strong>Potenza Totale:</strong><br>P = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v</div>
                 <p style="margin-top: 1rem;">Dove:<br>• ρ = densità dell'aria (kg/m³)<br>• CdA = coefficiente di drag × area frontale (m²)<br>• v<sub>rel</sub> = velocità relativa al vento (m/s)<br>• Crr = coefficiente di rotolamento<br>• m = massa totale (ciclista + bici) (kg)<br>• g = accelerazione di gravità (9.80665 m/s²)<br>• θ = angolo di pendenza</p>
+            </div>
+        </div>
+
+        <!-- Climb Time ± kg Tab -->
+        <div id="climb-tab" class="tab-content">
+            <div class="card">
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Peso Ciclista (kg)</label>
+                        <div class="input-wrapper"><input type="number" id="climb-body" value="70" step="0.1" min="40" max="120"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Attrezzatura (kg)</label>
+                        <div class="input-wrapper"><input type="number" id="climb-bike" value="8" step="0.1" min="5" max="20"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Pendenza (%)</label>
+                        <div class="input-wrapper"><input type="number" id="climb-grade" value="8" step="0.1" min="1" max="25"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Densità Aria (kg/m³)</label>
+                        <div class="input-wrapper"><input type="number" id="climb-rho" value="1.1989" step="0.001"></div>
+                    </div>
+                </div>
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>CdA (m²)</label>
+                        <div class="input-wrapper"><input type="number" id="climb-cda" value="0.35" step="0.01"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Crr</label>
+                        <div class="input-wrapper"><input type="number" id="climb-crr" value="0.004" step="0.0001"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Drivetrain Loss (%)</label>
+                        <div class="input-wrapper"><input type="number" id="climb-dt" value="2" step="0.1"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Vento (km/h)</label>
+                        <div class="input-wrapper"><input type="number" id="climb-wind" value="0" step="0.1"></div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem;">
+                    <label style="margin-bottom:0.4rem; display:block;">Riferimento salita</label>
+                    <div class="toggle-row">
+                        <button type="button" class="toggle-btn" id="climb-btn-dist" onclick="setClimbMode('dist')">Distanza (km)</button>
+                        <button type="button" class="toggle-btn active" id="climb-btn-time" onclick="setClimbMode('time')">Durata (mm:ss)</button>
+                    </div>
+                    <div class="input-grid grid-4">
+                        <div class="input-group" id="climb-wrap-dist" style="display:none;">
+                            <label>Distanza (km)</label>
+                            <div class="input-wrapper"><input type="number" id="climb-distance" value="5" step="0.1" min="0.5" max="50"></div>
+                        </div>
+                        <div class="input-group" id="climb-wrap-time">
+                            <label>Durata</label>
+                            <div class="dur-row">
+                                <input type="number" id="climb-dur-min" value="10" step="1" min="0" max="180" title="Minuti">
+                                <span class="dur-sep">:</span>
+                                <input type="number" id="climb-dur-sec" value="0" step="1" min="0" max="59" title="Secondi">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem;">
+                    <label style="margin-bottom:0.4rem; display:block;">Potenza</label>
+                    <div class="toggle-row">
+                        <button type="button" class="toggle-btn" id="climb-btn-wkg" onclick="setClimbPowerMode('wkg')">W/kg atleta</button>
+                        <button type="button" class="toggle-btn active" id="climb-btn-watt" onclick="setClimbPowerMode('watt')">Watt assoluti</button>
+                    </div>
+                    <div class="input-grid grid-4">
+                        <div class="input-group" id="climb-wrap-wkg" style="display:none;">
+                            <label>W/kg (atleta)</label>
+                            <div class="input-wrapper"><input type="number" id="climb-wkg" value="4.5" step="0.1" min="1.5" max="8"></div>
+                        </div>
+                        <div class="input-group" id="climb-wrap-watt">
+                            <label>Watt assoluti</label>
+                            <div class="input-wrapper"><input type="number" id="climb-watts" value="300" step="1" min="50" max="600"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem;">
+                    <div class="climb-slider-head">
+                        <label style="margin:0;">Variazione di peso custom</label>
+                        <div class="climb-slider-right">
+                            <span id="climb-custom-val" class="climb-slider-val">0 kg</span>
+                            <button type="button" class="climb-reset" id="climb-custom-reset" title="Azzera">azzera</button>
+                        </div>
+                    </div>
+                    <div class="climb-slider-wrap" id="climb-slider-wrap">
+                        <input type="range" id="climb-custom" min="-20" max="20" step="0.1" value="0">
+                        <div class="climb-slider-scale"><span>−20</span><span>−10</span><span>0</span><span>+10</span><span>+20</span></div>
+                    </div>
+                </div>
+                <div id="climb-results" class="results" style="margin-top:1.5rem;"></div>
+                <div class="climb-table-wrap">
+                    <table class="climb-table">
+                        <thead>
+                            <tr>
+                                <th>Δ Peso</th>
+                                <th>Massa tot.</th>
+                                <th>W/kg sist.</th>
+                                <th>Velocità</th>
+                                <th>Tempo</th>
+                                <th>Differenza</th>
+                            </tr>
+                        </thead>
+                        <tbody id="climb-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="chart-container climb-chart-box">
+                    <canvas id="climb-chart"></canvas>
+                </div>
+                <p class="climb-note">
+                    Curva = Δ tempo rispetto alla base (stessi watt, stessa salita) al variare del peso. Sopra lo zero (rosso) sei più lento, sotto (verde) più veloce. I pallini sono i valori in tabella; quello arancione è la variazione custom. Passa il cursore sulla curva per velocità, W/kg e tempo.
+                </p>
+            </div>
+            <div class="card equations">
+                <h3>📐 Equazioni del Modello</h3>
+                <p>Stesso modello delle altre tab. Si risolve la velocità per potenza e massa, poi il tempo su distanza fissa (o distanza da durata di riferimento).</p>
+                <div class="equation-block"><strong>Resistenza Aerodinamica:</strong><br>F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²</div>
+                <div class="equation-block"><strong>Resistenza al Rotolamento:</strong><br>F<sub>roll</sub> = Crr × m × g × cos(θ)</div>
+                <div class="equation-block"><strong>Resistenza Gravitazionale:</strong><br>F<sub>grav</sub> = m × g × sin(θ)</div>
+                <div class="equation-block"><strong>Potenza alla ruota:</strong><br>P<sub>wheel</sub> = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v<br>P<sub>pedals</sub> = P<sub>wheel</sub> / (1 − loss%)</div>
+                <p style="margin-top: 1rem;">CdA tipico in salita ≈ 0.32–0.40. Su pendenze elevate (&gt;7%) la gravità domina e ogni kg conta di più.</p>
             </div>
         </div>
 
@@ -729,6 +940,7 @@
         observeResults('power-results');
         observeResults('speed-results');
         observeResults('air-results');
+        observeResults('climb-results');
 
         // Also inject into the static pressure card on load
         window.addEventListener('load', () => {
@@ -773,7 +985,10 @@
             document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             const btn = document.querySelector('.tab-button[data-tab="' + tab + '"]');
-            if (btn) btn.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+                if (btn.scrollIntoView) btn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+            }
             const content = document.getElementById(tab + '-tab');
             if (content) content.classList.add('active');
         }
@@ -1089,17 +1304,392 @@
             });
         })();
 
+        // ——— Climb Time ± kg ———
+        let climbMode = 'time';
+        let climbPowerMode = 'watt';
+        let climbChart = null;
+        let climbMeta = []; // per tooltip: {mass, speed, time, delta, wkgsys}
+
+        function setClimbMode(m) {
+            climbMode = m;
+            document.getElementById('climb-btn-dist').classList.toggle('active', m === 'dist');
+            document.getElementById('climb-btn-time').classList.toggle('active', m === 'time');
+            document.getElementById('climb-wrap-dist').style.display = m === 'dist' ? '' : 'none';
+            document.getElementById('climb-wrap-time').style.display = m === 'time' ? '' : 'none';
+            calculateClimb();
+        }
+
+        function setClimbPowerMode(m) {
+            climbPowerMode = m;
+            document.getElementById('climb-btn-wkg').classList.toggle('active', m === 'wkg');
+            document.getElementById('climb-btn-watt').classList.toggle('active', m === 'watt');
+            document.getElementById('climb-wrap-wkg').style.display = m === 'wkg' ? '' : 'none';
+            document.getElementById('climb-wrap-watt').style.display = m === 'watt' ? '' : 'none';
+            calculateClimb();
+        }
+
+        function climbSpeedFromPower(P_pedals, m, gradePct, rho, cda, crr, dtLossPct, windKmh) {
+            const g = 9.80665;
+            const theta = Math.atan(gradePct / 100);
+            const windMS = windKmh / 3.6;
+            const eta = 1 - (dtLossPct / 100);
+            const P_wheel = P_pedals * eta;
+            let v = 3.0;
+            for (let i = 0; i < 40; i++) {
+                const vRel = v + windMS;
+                const Faero = 0.5 * rho * cda * vRel * vRel;
+                const Froll = crr * m * g * Math.cos(theta);
+                const Fgrav = m * g * Math.sin(theta);
+                const Pcalc = (Faero + Froll + Fgrav) * v;
+                const err = Pcalc - P_wheel;
+                if (Math.abs(err) < 0.05) break;
+                const dPdv = (Faero + Froll + Fgrav) + v * (rho * cda * vRel);
+                if (Math.abs(dPdv) < 1e-9) break;
+                v = Math.max(0.1, Math.min(25, v - err / dPdv));
+            }
+            return v;
+        }
+
+        function fmtClimbTime(sec) {
+            let total = Math.round(sec);
+            if (total < 0) total = 0;
+            const mm = Math.floor(total / 60);
+            const ss = total % 60;
+            return mm + "'" + (ss < 10 ? '0' : '') + ss + '"';
+        }
+
+        function fmtClimbDelta(sec) {
+            const sign = sec > 0 ? '+' : (sec < 0 ? '−' : '');
+            let abs = Math.round(Math.abs(sec));
+            if (abs >= 60) {
+                const mm = Math.floor(abs / 60);
+                const ss = abs % 60;
+                return sign + mm + "'" + (ss < 10 ? '0' : '') + ss + '"';
+            }
+            return sign + abs + ' s';
+        }
+
+        function fmtKg(d) {
+            const a = Math.abs(d);
+            const s = (Math.round(a * 100) / 100).toString();
+            return (d > 0 ? '+' : (d < 0 ? '−' : '')) + s + ' kg';
+        }
+
+        function updateClimbChart(c) {
+            const canvas = document.getElementById('climb-chart');
+            if (!canvas) return;
+            const GREEN = '#00D9A0', RED = '#ff6b6b', ORANGE = '#FF6B35', GREY = '#E8EAF6';
+            const minD = Math.max(Math.min(-10, ...c.markers.map(m => m.d)), 30.5 - c.mBase);
+            const maxD = Math.max(10, ...c.markers.map(m => m.d));
+
+            // griglia x: 41 punti regolari + i punti marker (così il tooltip coincide con la tabella)
+            const xs = [];
+            for (let i = 0; i <= 40; i++) xs.push(minD + (maxD - minD) * i / 40);
+            c.markers.forEach(m => xs.push(m.d));
+            xs.sort((a, b) => a - b);
+            const grid = xs.filter((x, i) => i === 0 || x - xs[i - 1] > 1e-6);
+
+            const curveMeta = grid.map(d => {
+                const m = c.mBase + d;
+                const v = climbSpeedFromPower(c.P, m, c.gradePct, c.rho, c.cda, c.crr, c.dtLoss, c.wind);
+                const t = c.distM / v;
+                return { d, mass: m, speed: v * 3.6, time: t, delta: t - c.tBase, wkg: c.P / m };
+            });
+            const curve = curveMeta.map(p => ({ x: p.d, y: p.delta }));
+            const pts = c.markers.map(m => ({ x: m.d, y: m.dt }));
+            const ptColor = c.markers.map(m => m.custom ? ORANGE : (m.d === 0 ? GREY : (m.dt > 0 ? RED : GREEN)));
+            const ptRadius = c.markers.map(m => m.custom ? 8 : 6);
+
+            const labelPlugin = {
+                id: 'climbPointLabels',
+                afterDatasetsDraw(chart) {
+                    const ds = chart.getDatasetMeta(1);
+                    const g = chart.ctx;
+                    const narrow = chart.width < 560;
+                    g.save();
+                    g.font = '600 11px JetBrains Mono, monospace';
+                    g.textAlign = 'center';
+                    ds.data.forEach((el, i) => {
+                        const m = c.markers[i];
+                        if (narrow && !m.custom) return;
+                        const above = m.dt >= 0;
+                        g.fillStyle = m.custom ? ORANGE : (m.d === 0 ? '#9BA4B5' : (m.dt > 0 ? RED : GREEN));
+                        const txt = m.d === 0 ? 'base' : fmtClimbDelta(m.dt);
+                        g.textBaseline = above ? 'bottom' : 'top';
+                        g.fillText(txt, el.x, el.y + (above ? -12 : 12));
+                    });
+                    g.restore();
+                }
+            };
+
+            if (climbChart) climbChart.destroy();
+            climbChart = new Chart(canvas.getContext('2d'), {
+                type: 'line',
+                plugins: [labelPlugin],
+                data: {
+                    datasets: [
+                        {
+                            label: 'Δ tempo',
+                            data: curve,
+                            borderColor: ORANGE,
+                            borderWidth: 3,
+                            pointRadius: 0,
+                            pointHoverRadius: 0,
+                            tension: 0.2,
+                            fill: { target: 'origin', above: 'rgba(255,107,107,0.14)', below: 'rgba(0,217,160,0.14)' },
+                            order: 2
+                        },
+                        {
+                            label: 'Valori in tabella',
+                            data: pts,
+                            showLine: false,
+                            pointRadius: ptRadius,
+                            pointHoverRadius: ptRadius.map(r => r + 2),
+                            pointBackgroundColor: ptColor,
+                            pointBorderColor: '#0A0E27',
+                            pointBorderWidth: 2,
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    layout: { padding: { top: 6, right: 14 } },
+                    interaction: { mode: 'nearest', axis: 'x', intersect: false },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Quanto cambia il tempo di salita al variare del peso',
+                            color: '#E8EAF6',
+                            font: { family: 'Manrope', size: 15, weight: 700 },
+                            padding: { bottom: 2 }
+                        },
+                        subtitle: {
+                            display: true,
+                            text: 'A parità di potenza (' + c.P.toFixed(0) + ' W) · base ' + fmtClimbTime(c.tBase) + ' · ' + c.gradePct + '% di pendenza',
+                            color: '#9BA4B5',
+                            font: { family: 'JetBrains Mono', size: 11 },
+                            padding: { bottom: 12 }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26,30,61,0.96)',
+                            titleColor: '#E8EAF6',
+                            bodyColor: '#E8EAF6',
+                            borderColor: ORANGE,
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: false,
+                            titleFont: { family: 'Manrope', size: 14, weight: 700 },
+                            bodyFont: { family: 'JetBrains Mono', size: 12, weight: 600 },
+                            filter: (item, idx) => idx === 0,
+                            callbacks: {
+                                title: items => {
+                                    const p = nearestMeta(items[0].parsed.x);
+                                    return (Math.abs(p.d) < 1e-6 ? 'Base' : fmtKg(p.d)) + '  ·  massa ' + p.mass.toFixed(1) + ' kg';
+                                },
+                                label: item => {
+                                    const p = nearestMeta(item.parsed.x);
+                                    return [
+                                        'Tempo: ' + fmtClimbTime(p.time),
+                                        'Δ: ' + (Math.abs(p.delta) < 0.5 ? '—' : fmtClimbDelta(p.delta)),
+                                        'Velocità: ' + p.speed.toFixed(2) + ' km/h',
+                                        'W/kg sist.: ' + p.wkg.toFixed(2)
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: minD,
+                            max: maxD,
+                            title: { display: true, text: 'Variazione di peso', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: { family: 'JetBrains Mono', size: 11 },
+                                maxTicksLimit: 11,
+                                callback: v => (v > 0 ? '+' : (v < 0 ? '−' : '')) + Math.abs(Math.round(v * 10) / 10)
+                            },
+                            grid: {
+                                color: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 'rgba(232,234,246,0.45)' : 'rgba(255,255,255,0.05)',
+                                lineWidth: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 2 : 1
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: '← più veloce      Δ tempo      più lento →', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 11, weight: 600 } },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: { family: 'JetBrains Mono', size: 11 },
+                                callback: v => Math.abs(v) < 0.5 ? '0' : fmtClimbDelta(v)
+                            },
+                            grid: {
+                                color: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 'rgba(232,234,246,0.45)' : 'rgba(255,255,255,0.05)',
+                                lineWidth: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 2 : 1
+                            },
+                            grace: '12%'
+                        }
+                    }
+                }
+            });
+
+            function nearestMeta(x) {
+                let best = curveMeta[0], bd = Infinity;
+                for (const p of curveMeta) {
+                    const dd = Math.abs(p.d - x);
+                    if (dd < bd) { bd = dd; best = p; }
+                }
+                return best;
+            }
+        }
+
+        function calculateClimb() {
+            const body = parseFloat(document.getElementById('climb-body').value);
+            const bike = parseFloat(document.getElementById('climb-bike').value);
+            const gradePct = parseFloat(document.getElementById('climb-grade').value);
+            const rho = parseFloat(document.getElementById('climb-rho').value);
+            const cda = parseFloat(document.getElementById('climb-cda').value);
+            const crr = parseFloat(document.getElementById('climb-crr').value);
+            const dtLoss = parseFloat(document.getElementById('climb-dt').value) || 0;
+            const wind = parseFloat(document.getElementById('climb-wind').value) || 0;
+
+            let P;
+            if (climbPowerMode === 'wkg') {
+                P = parseFloat(document.getElementById('climb-wkg').value) * body;
+            } else {
+                P = parseFloat(document.getElementById('climb-watts').value);
+            }
+            if (!(body > 0 && bike > 0 && gradePct > 0 && P > 0 && rho > 0 && cda > 0)) return;
+
+            const mBase = body + bike;
+            const vBase = climbSpeedFromPower(P, mBase, gradePct, rho, cda, crr, dtLoss, wind);
+
+            let distM;
+            if (climbMode === 'dist') {
+                distM = parseFloat(document.getElementById('climb-distance').value) * 1000;
+            } else {
+                let dMin = parseInt(document.getElementById('climb-dur-min').value, 10) || 0;
+                let dSec = parseInt(document.getElementById('climb-dur-sec').value, 10) || 0;
+                if (dSec > 59) dSec = 59;
+                if (dSec < 0) dSec = 0;
+                distM = vBase * (dMin * 60 + dSec);
+            }
+            if (!(distM > 0) || !(vBase > 0)) return;
+
+            const tBase = distM / vBase;
+            const wkgSys = P / mBase;
+            const speedKmh = vBase * 3.6;
+            const theta = Math.atan(gradePct / 100);
+            const height = distM * Math.sin(theta);
+            const vam = (height / tBase) * 3600;
+            const mob = window.innerWidth <= 768;
+            const vPlus = climbSpeedFromPower(P, mBase + 1, gradePct, rho, cda, crr, dtLoss, wind);
+            const perKg = distM / vPlus - tBase;
+
+            document.getElementById('climb-results').innerHTML = buildResultRow([
+                climbPowerMode === 'watt'
+                    ? { label: 'W/kg atleta', value: (P / body).toFixed(2), unit: '' }
+                    : { label: 'Potenza', value: P.toFixed(0), unit: 'W' },
+                { label: 'W/kg sist.', value: wkgSys.toFixed(2), unit: '' },
+                { label: 'Velocità', value: speedKmh.toFixed(1), unit: 'km/h' },
+                { label: 'Tempo base', value: fmtClimbTime(tBase), unit: '' },
+                { label: 'Costo +1 kg', value: (perKg >= 0 ? '+' : '−') + Math.abs(perKg).toFixed(1), unit: 's' },
+                { label: 'Distanza', value: (distM / 1000).toFixed(2), unit: 'km' },
+                { label: 'Dislivello', value: height.toFixed(0), unit: 'm' },
+                { label: 'VAM', value: vam.toFixed(0), unit: 'm/h' }
+            ], mob);
+
+            const baseDeltas = [-10, -5, -2.5, -1, 0, 1, 2.5, 5, 10];
+            const customRaw = parseFloat(document.getElementById('climb-custom').value);
+            const hasCustom = isFinite(customRaw) && Math.abs(customRaw) > 1e-9;
+            const list = baseDeltas.map(d => ({ d, custom: hasCustom && Math.abs(d - customRaw) < 1e-9 }));
+            if (hasCustom && !list.some(x => x.custom)) list.push({ d: customRaw, custom: true });
+            list.sort((a, b) => a.d - b.d);
+
+            let rows = '';
+            const markers = [];
+            list.forEach(item => {
+                const d = item.d;
+                const m = mBase + d;
+                if (m < 30) return;
+                const v = climbSpeedFromPower(P, m, gradePct, rho, cda, crr, dtLoss, wind);
+                const t = distM / v;
+                const dt = t - tBase;
+                const wkg = P / m;
+                const cls = d === 0 ? 'delta-zero' : (dt > 0 ? 'delta-plus' : 'delta-minus');
+                const label = d === 0 ? 'Base' : fmtKg(d);
+                rows += '<tr' + (item.custom ? ' class="climb-custom-row"' : '') + '><td><strong>' + label + '</strong>' +
+                    (item.custom ? '<span class="climb-badge">custom</span>' : '') + '</td><td>' + m.toFixed(1) + ' kg</td><td>' +
+                    wkg.toFixed(2) + '</td><td>' + (v * 3.6).toFixed(1) + ' km/h</td><td>' +
+                    fmtClimbTime(t) + '</td><td class="' + cls + '">' +
+                    (d === 0 ? '—' : fmtClimbDelta(dt)) + '</td></tr>';
+                markers.push({ d, t, dt, custom: item.custom });
+            });
+            document.getElementById('climb-tbody').innerHTML = rows;
+            updateClimbChart({ P, mBase, gradePct, rho, cda, crr, dtLoss, wind, distM, tBase, markers });
+        }
+
+        function updateClimbCustomLabel() {
+            const v = parseFloat(document.getElementById('climb-custom').value) || 0;
+            const el = document.getElementById('climb-custom-val');
+            el.textContent = (Math.abs(v) < 1e-9) ? '0 kg' : fmtKg(v);
+            el.style.color = Math.abs(v) < 1e-9 ? 'var(--text-muted)' : 'var(--primary)';
+        }
+
+        (function setupClimbSlider() {
+            const slider = document.getElementById('climb-custom');
+            const wrap = document.getElementById('climb-slider-wrap');
+            slider.addEventListener('input', updateClimbCustomLabel);
+            wrap.addEventListener('wheel', e => {
+                e.preventDefault();
+                const step = 0.1;
+                const dir = (e.deltaY || e.deltaX) < 0 ? 1 : -1;
+                let v = (parseFloat(slider.value) || 0) + dir * step;
+                v = Math.max(-20, Math.min(20, Math.round(v * 10) / 10));
+                slider.value = v;
+                updateClimbCustomLabel();
+                calculateClimb();
+            }, { passive: false });
+            document.getElementById('climb-custom-reset').addEventListener('click', () => {
+                slider.value = 0;
+                updateClimbCustomLabel();
+                calculateClimb();
+            });
+            slider.addEventListener('dblclick', () => {
+                slider.value = 0;
+                updateClimbCustomLabel();
+                calculateClimb();
+            });
+            updateClimbCustomLabel();
+        })();
+
+        (function setupClimbListeners() {
+            ['climb-body','climb-bike','climb-grade','climb-rho','climb-cda','climb-crr','climb-dt','climb-wind',
+             'climb-distance','climb-dur-min','climb-dur-sec','climb-wkg','climb-watts','climb-custom'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', calculateClimb);
+            });
+        })();
+
         window.addEventListener('load', () => {
             calculatePower();
             calculatePowerFromSpeed();
             calculateAirDensity();
             calculatePressure();
+            calculateClimb();
         });
 
         let resizeTimer;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => { calculatePower(); calculatePowerFromSpeed(); }, 150);
+            resizeTimer = setTimeout(() => {
+                calculatePower();
+                calculatePowerFromSpeed();
+                calculateClimb();
+            }, 150);
         });
     </script>
 </body>
