@@ -68,7 +68,7 @@
         }
 
         h1 {
-            font-size: 3.5rem;
+            font-size: 2.7rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             -webkit-background-clip: text;
@@ -407,7 +407,7 @@
 
         @media (max-width: 768px) {
             .container { padding: 0.75rem; }
-            h1 { font-size: 1.8rem; }
+            h1 { font-size: 1.5rem; }
             header { margin-bottom: 1.1rem; }
             .tab-nav {
                 flex-wrap: nowrap; overflow-x: auto; gap: 0.3rem;
@@ -518,6 +518,33 @@
         .climb-table tr.climb-custom-row td { background: rgba(255,107,53,0.08); }
         .climb-table tr.climb-custom-row td:first-child { box-shadow: inset 3px 0 0 var(--primary); }
         @media (max-width: 768px) { .climb-chart-box { height: 320px; } }
+        .card { position: relative; }
+        .tab-tools { position: absolute; top: 0.35rem; right: 0.6rem; display: flex; gap: 0.15rem; z-index: 2; }
+        .tool-btn {
+            background: none; border: none; cursor: pointer; padding: 0.1rem 0.35rem; border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; color: var(--text-muted); opacity: 0.65;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .tool-btn:hover { opacity: 1; background: rgba(255,255,255,0.08); color: var(--text-light); }
+        .info-btn {
+            background: none; border: none; cursor: pointer; padding: 0 0.15rem; margin-left: 0.1rem;
+            color: var(--primary); font-size: 0.9rem; line-height: 1; vertical-align: middle; text-transform: none;
+        }
+        .info-btn:hover { color: var(--accent); }
+        #info-pop {
+            position: fixed; z-index: 1000; max-width: 270px; display: none;
+            background: rgba(18,24,48,0.98); border: 1px solid var(--primary); border-radius: 10px;
+            padding: 0.6rem 0.75rem; font-size: 0.8rem; line-height: 1.45; color: var(--text-light);
+            font-family: 'Manrope', sans-serif; text-transform: none; letter-spacing: 0; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+        }
+        .air-apply-row { margin-top: 0.9rem; }
+        .mini-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-light);
+            border-radius: 999px; padding: 0.35rem 0.9rem; font-size: 0.78rem; font-weight: 600; cursor: pointer;
+            font-family: 'Manrope', sans-serif; transition: background 0.2s, border-color 0.2s;
+        }
+        .mini-btn:hover { background: rgba(255,107,53,0.15); border-color: var(--primary); }
         .dur-sep { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; }
     </style>
 </head>
@@ -558,25 +585,25 @@
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³)</label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="air-density" value="1.1989" step="0.001"></div>
                     </div>
                     <div class="input-group">
-                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a></label>
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="cda" value="0.4" step="0.01"></div>
                     </div>
                     <div class="input-group">
-                        <label>Velocità Vento (km/h)</label>
+                        <label>Velocità Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="wind-speed" value="0" step="0.1"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a></label>
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="crr" value="0.004" step="0.0001"></div>
                     </div>
                     <div class="input-group">
-                        <label><a href="https://powermetercity.com/2016/11/21/power-meter-drivetrain-power-loss/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a></label>
+                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="drivetrain-loss" value="2" step="0.1"></div>
                     </div>
                 </div>
@@ -618,25 +645,25 @@
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³)</label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="air-density-s" value="1.1989" step="0.001"></div>
                     </div>
                     <div class="input-group">
-                        <label>CdA (m²)</label>
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="cda-s" value="0.4" step="0.01"></div>
                     </div>
                     <div class="input-group">
-                        <label>Velocità Vento (km/h)</label>
+                        <label>Velocità Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="wind-speed-s" value="0" step="0.1"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a></label>
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="crr-s" value="0.004" step="0.0001"></div>
                     </div>
                     <div class="input-group">
-                        <label><a href="https://powermetercity.com/2016/11/21/power-meter-drivetrain-power-loss/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a></label>
+                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="drivetrain-loss-s" value="2" step="0.1"></div>
                     </div>
                 </div>
@@ -672,25 +699,25 @@
                         <div class="input-wrapper"><input type="number" id="climb-grade" value="8" step="0.1" min="1" max="25"></div>
                     </div>
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³)</label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="climb-rho" value="1.1989" step="0.001"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label>CdA (m²)</label>
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="climb-cda" value="0.35" step="0.01"></div>
                     </div>
                     <div class="input-group">
-                        <label>Crr</label>
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr (coeff. rotolamento)</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="climb-crr" value="0.004" step="0.0001"></div>
                     </div>
                     <div class="input-group">
-                        <label>Drivetrain Loss (%)</label>
+                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="climb-dt" value="2" step="0.1"></div>
                     </div>
                     <div class="input-group">
-                        <label>Vento (km/h)</label>
+                        <label>Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="number" id="climb-wind" value="0" step="0.1"></div>
                     </div>
                 </div>
@@ -801,6 +828,9 @@
                     </div>
                 </div>
                 <div id="air-results" class="results"></div>
+                <div class="air-apply-row">
+                    <button type="button" class="mini-btn" id="air-apply">Usa questa densità in Potenza, Velocità e Salita →</button>
+                </div>
                 <div class="chart-container"><canvas id="air-chart"></canvas></div>
             </div>
             <div class="card equations">
@@ -865,6 +895,7 @@
         </footer>
     </div>
 
+    <div id="info-pop" role="tooltip"></div>
     <script>
         // SVG icons for copy button states
         const ICON_COPY = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><rect x="5" y="5" width="8" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v7A1.5 1.5 0 0 0 3.5 12H5"/></svg>`;
@@ -991,6 +1022,7 @@
             }
             const content = document.getElementById(tab + '-tab');
             if (content) content.classList.add('active');
+            saveState();
         }
 
         function buildResultRow(items, isMobile) {
@@ -1149,6 +1181,7 @@
             });
         }
 
+        let lastAirRho = NaN;
         function calculateAirDensity() {
             const temp = parseFloat(document.getElementById('temp').value);
             const pressure_hPa = parseFloat(document.getElementById('pressure').value);
@@ -1160,6 +1193,7 @@
             const Rd = 287.0531, Rv = 461.4964;
             const Pv = Pv_hPa * 100, Pd = Pd_hPa * 100;
             const rho = (Pd / (Rd * Tk)) + (Pv / (Rv * Tk));
+            lastAirRho = rho;
             const dewFromPv = dewpointFromPv(Pv_hPa);
             if (Number.isFinite(dewFromPv)) {
                 const prev = suppressSync; suppressSync = true;
@@ -1317,6 +1351,7 @@
             document.getElementById('climb-wrap-dist').style.display = m === 'dist' ? '' : 'none';
             document.getElementById('climb-wrap-time').style.display = m === 'time' ? '' : 'none';
             calculateClimb();
+            saveState();
         }
 
         function setClimbPowerMode(m) {
@@ -1326,6 +1361,7 @@
             document.getElementById('climb-wrap-wkg').style.display = m === 'wkg' ? '' : 'none';
             document.getElementById('climb-wrap-watt').style.display = m === 'watt' ? '' : 'none';
             calculateClimb();
+            saveState();
         }
 
         function climbSpeedFromPower(P_pedals, m, gradePct, rho, cda, crr, dtLossPct, windKmh) {
@@ -1681,6 +1717,165 @@
             calculatePressure();
             calculateClimb();
         });
+
+
+        // ——— Persistenza, link condivisibili, reset, info, densità aria ———
+        const STORE_KEY = 'bonvi-cycling-tools-v1';
+        const SKIP_IDS = new Set(['dewpoint']); // derivato da temperatura/umidità
+        const TAB_CALC = {
+            power: () => calculatePower(),
+            speed: () => calculatePowerFromSpeed(),
+            climb: () => calculateClimb(),
+            air: () => calculateAirDensity(),
+            pressure: () => calculatePressure()
+        };
+
+        function currentTab() {
+            const b = document.querySelector('.tab-button.active');
+            return b ? b.getAttribute('data-tab') : 'power';
+        }
+
+        function collectState(onlyChanged) {
+            const s = {};
+            document.querySelectorAll('input[id]').forEach(el => {
+                if (SKIP_IDS.has(el.id)) return;
+                if (onlyChanged && el.value === el.defaultValue) return;
+                s[el.id] = el.value;
+            });
+            if (!onlyChanged || climbMode !== 'time') s.cm = climbMode;
+            if (!onlyChanged || climbPowerMode !== 'watt') s.pm = climbPowerMode;
+            s.t = currentTab();
+            return s;
+        }
+
+        let restoring = true;
+        function saveState() {
+            if (restoring) return;
+            try { localStorage.setItem(STORE_KEY, JSON.stringify(collectState(false))); } catch (e) {}
+        }
+
+        function applyState(s) {
+            Object.keys(s).forEach(k => {
+                if (k === 'cm' || k === 'pm' || k === 't') return;
+                const el = document.getElementById(k);
+                if (el && el.tagName === 'INPUT' && !SKIP_IDS.has(k) && s[k] !== '' && isFinite(parseFloat(s[k]))) el.value = s[k];
+            });
+            if (s.cm === 'dist' || s.cm === 'time') setClimbMode(s.cm);
+            if (s.pm === 'wkg' || s.pm === 'watt') setClimbPowerMode(s.pm);
+            updateClimbCustomLabel();
+            if (s.t && TAB_CALC[s.t]) switchTab(s.t);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let state = null;
+            try { state = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) {}
+            const h = location.hash.replace(/^#/, '');
+            if (h) {
+                const fromUrl = {};
+                new URLSearchParams(h).forEach((v, k) => { fromUrl[k] = v; });
+                if (Object.keys(fromUrl).length) state = Object.assign({}, state || {}, fromUrl);
+            }
+            if (state) applyState(state);
+            restoring = false;
+            saveState();
+        });
+
+        ['input', 'change'].forEach(ev => document.addEventListener(ev, e => {
+            if (e.target && e.target.matches && e.target.matches('input[id]')) saveState();
+        }));
+
+        function flashBtn(btn, txt) {
+            const old = btn.textContent;
+            btn.textContent = txt;
+            setTimeout(() => { btn.textContent = old; }, 1400);
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                return navigator.clipboard.writeText(text);
+            }
+            return new Promise((res, rej) => {
+                const ta = document.createElement('textarea');
+                ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy') ? res() : rej(); } catch (e) { rej(e); }
+                document.body.removeChild(ta);
+            });
+        }
+
+        function resetTab(tab) {
+            document.querySelectorAll('#' + tab + '-tab input[id]').forEach(el => { el.value = el.defaultValue; });
+            if (tab === 'climb') {
+                setClimbMode('time');
+                setClimbPowerMode('watt');
+                updateClimbCustomLabel();
+            }
+            if (TAB_CALC[tab]) TAB_CALC[tab]();
+            saveState();
+        }
+
+        // pulsanti minimali per ogni tab: reset + copia link
+        document.querySelectorAll('.tab-content').forEach(tc => {
+            const tab = tc.id.replace('-tab', '');
+            const card = tc.querySelector('.card');
+            if (!card) return;
+            const tools = document.createElement('div');
+            tools.className = 'tab-tools';
+            const reset = document.createElement('button');
+            reset.type = 'button'; reset.className = 'tool-btn'; reset.textContent = '↺ default';
+            reset.title = 'Ripristina i valori di default di questa tab';
+            reset.addEventListener('click', () => resetTab(tab));
+            const link = document.createElement('button');
+            link.type = 'button'; link.className = 'tool-btn'; link.textContent = '🔗';
+            link.title = 'Copia link con i valori attuali';
+            link.addEventListener('click', () => {
+                const s = collectState(true);
+                s.t = tab;
+                const url = location.href.split('#')[0] + '#' + new URLSearchParams(s).toString();
+                copyText(url).then(() => flashBtn(link, '✓'), () => flashBtn(link, '✗'));
+            });
+            tools.appendChild(reset);
+            tools.appendChild(link);
+            card.appendChild(tools);
+        });
+
+        // densità aria → Potenza, Velocità, Salita
+        document.getElementById('air-apply').addEventListener('click', e => {
+            if (!isFinite(lastAirRho)) return;
+            const v = lastAirRho.toFixed(4);
+            ['air-density', 'air-density-s', 'climb-rho'].forEach(id => {
+                const el = document.getElementById(id);
+                el.value = v;
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+            flashBtn(e.currentTarget, '✓ Applicata: ' + v + ' kg/m³');
+        });
+
+        // popover ⓘ
+        (function setupInfo() {
+            const pop = document.getElementById('info-pop');
+            let openBtn = null;
+            function close() { pop.style.display = 'none'; openBtn = null; }
+            document.addEventListener('click', e => {
+                const b = e.target.closest && e.target.closest('.info-btn');
+                if (!b) { if (!e.target.closest || !e.target.closest('#info-pop')) close(); return; }
+                e.preventDefault();
+                if (openBtn === b) { close(); return; }
+                openBtn = b;
+                pop.textContent = b.getAttribute('data-info');
+                pop.style.display = 'block';
+                const r = b.getBoundingClientRect();
+                const w = pop.offsetWidth, h = pop.offsetHeight;
+                let left = Math.max(8, Math.min(r.left - 8, window.innerWidth - w - 8));
+                let top = r.bottom + 6;
+                if (top + h > window.innerHeight - 8) top = Math.max(8, r.top - h - 6);
+                pop.style.left = left + 'px';
+                pop.style.top = top + 'px';
+            });
+            window.addEventListener('scroll', close, { passive: true });
+            window.addEventListener('resize', close);
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+        })();
 
         let resizeTimer;
         window.addEventListener('resize', () => {
