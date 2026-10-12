@@ -216,6 +216,7 @@
         }
 
         input[type="number"],
+        input[data-num],
         select {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border);
@@ -231,6 +232,7 @@
         }
 
         input[type="number"]:focus,
+        input[data-num]:focus,
         select:focus {
             outline: none;
             border-color: var(--primary);
@@ -254,6 +256,22 @@
         }
 
         .input-wrapper input { width: 100%; }
+
+        .tab-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin: 0 0 1.25rem; padding-right: 4.5rem; }
+        .tab-desc strong { color: var(--text-light); font-weight: 700; }
+        .tab-desc em { color: var(--accent); font-style: normal; font-weight: 600; }
+        @media (max-width: 768px) { .tab-desc { padding-right: 0; margin-top: 1.4rem; font-size: 0.84rem; } }
+
+        /* frecce ▲▼ dei campi numerici (il punto resta sempre il separatore decimale) */
+        .input-wrapper > input[data-num] { padding-right: 1.9rem; }
+        .stepper { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+        .input-wrapper:hover .stepper, .input-wrapper:focus-within .stepper { opacity: 1; }
+        .stepper button { width: 18px; height: 12px; padding: 0; border: none; border-radius: 3px; background: rgba(255,255,255,0.1); color: var(--text-muted); font-size: 7px; line-height: 1; cursor: pointer; }
+        .stepper button:hover { background: rgba(255,107,53,0.35); color: #fff; }
+        @media (hover: none) {
+            .stepper { display: none; }
+            .input-wrapper > input[data-num] { padding-right: 0.6rem; }
+        }
 
         .btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
@@ -418,7 +436,7 @@
             .input-grid,
             .input-grid.grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem 0.6rem; margin-bottom: 0.9rem; }
             /* >=16px evita lo zoom automatico di iOS al focus */
-            input[type="number"], select { font-size: 16px; padding: 0.5rem 0.6rem; }
+            input[type="number"], input[data-num], select { font-size: 16px; padding: 0.5rem 0.6rem; }
             #climb-custom, #eq-custom { height: 2.2rem; }
             .card { padding: 1rem; border-radius: 16px; margin-bottom: 1rem; }
             .equations { padding: 1rem; }
@@ -559,6 +577,7 @@
             <button class="tab-button" onclick="switchTab('speed')" data-tab="speed">🚴 Speed → Power</button>
             <button class="tab-button" onclick="switchTab('climb')" data-tab="climb">⏱ Tempo ± kg</button>
             <button class="tab-button" onclick="switchTab('eq')" data-tab="eq">⚖️ Watt ± kg</button>
+            <button class="tab-button" onclick="switchTab('sens')" data-tab="sens">🎯 Sensibilità</button>
             <button class="tab-button" onclick="switchTab('air')" data-tab="air">🌡️ Air Density</button>
             <button class="tab-button" onclick="switchTab('pressure')" data-tab="pressure">⛰️ Pressione in quota</button>
         </div>
@@ -566,46 +585,47 @@
         <!-- Power Calculator Tab -->
         <div id="power-tab" class="tab-content active">
             <div class="card">
+                <p class="tab-desc"><strong>Da potenza a velocità.</strong> Inserisci peso, pendenza, aerodinamica, vento e la potenza che esprimi ai pedali: il tool trova la velocità a cui questa potenza, al netto delle perdite di trasmissione, bilancia le resistenze di aria, rotolamento e gravità. Oltre a velocità, W/kg e VAM, mostra come si ripartiscono i watt tra le resistenze e due grafici che legano velocità, potenza richiesta e perdite. Il calcolo opposto, dalla velocità ai watt, è nella tab Speed → Power.</p>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="rider-weight" value="70" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="rider-weight" value="70" step="0.5" min="30" max="150"></div>
                     </div>
                     <div class="input-group">
                         <label>Peso Attrezzatura (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="bike-weight" value="9" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="bike-weight" value="9" step="0.1" min="3" max="30"></div>
                     </div>
                     <div class="input-group">
                         <label>Pendenza (%)</label>
-                        <div class="input-wrapper"><input type="number" id="slope" value="0" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="slope" value="0" step="0.5" min="-30" max="30"></div>
                     </div>
                     <div class="input-group">
                         <label>Potenza (W)</label>
-                        <div class="input-wrapper"><input type="number" id="power" value="250" step="1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="power" value="250" step="5" min="0" max="2500"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="air-density" value="1.1989" step="0.001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="air-density" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                     <div class="input-group">
                         <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="cda" value="0.4" step="0.01"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="cda" value="0.4" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
                         <label>Velocità Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="wind-speed" value="0" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="wind-speed" value="0" step="1" min="-60" max="60"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="crr" value="0.004" step="0.0001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="crr" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
                         <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="drivetrain-loss" value="2" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="drivetrain-loss" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                 </div>
                 <div id="power-results" class="results"></div>
@@ -626,46 +646,47 @@
         <!-- Speed->Power Calculator Tab -->
         <div id="speed-tab" class="tab-content">
             <div class="card">
+                <p class="tab-desc"><strong>Da velocità a potenza.</strong> Inserisci la velocità che vuoi mantenere, insieme a peso, pendenza, aerodinamica e vento: il tool calcola quanti watt servono ai pedali per sostenerla, sommando la potenza spesa contro aria, rotolamento e gravità e le perdite di trasmissione. Mostra anche W/kg, VAM e la ripartizione dei watt. Utile per stimare lo sforzo di un'andatura obiettivo; il calcolo opposto, dai watt alla velocità, è nella tab Power → Speed.</p>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="rider-weight-s" value="70" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="rider-weight-s" value="70" step="0.5" min="30" max="150"></div>
                     </div>
                     <div class="input-group">
                         <label>Peso Attrezzatura (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="bike-weight-s" value="9" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="bike-weight-s" value="9" step="0.1" min="3" max="30"></div>
                     </div>
                     <div class="input-group">
                         <label>Pendenza (%)</label>
-                        <div class="input-wrapper"><input type="number" id="slope-s" value="0" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="slope-s" value="0" step="0.5" min="-30" max="30"></div>
                     </div>
                     <div class="input-group">
                         <label>Velocità (km/h)</label>
-                        <div class="input-wrapper"><input type="number" id="speed-kmh" value="36" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="speed-kmh" value="36" step="1" min="0" max="120"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="air-density-s" value="1.1989" step="0.001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="air-density-s" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                     <div class="input-group">
                         <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="cda-s" value="0.4" step="0.01"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="cda-s" value="0.4" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
                         <label>Velocità Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="wind-speed-s" value="0" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="wind-speed-s" value="0" step="1" min="-60" max="60"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="crr-s" value="0.004" step="0.0001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="crr-s" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
                         <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="drivetrain-loss-s" value="2" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="drivetrain-loss-s" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                 </div>
                 <div id="speed-results" class="results"></div>
@@ -686,40 +707,41 @@
         <!-- Climb Time ± kg Tab -->
         <div id="climb-tab" class="tab-content">
             <div class="card">
+                <p class="tab-desc"><strong>Quanto pesa il peso in salita.</strong> Imposti la salita (per durata o per distanza) e la potenza con cui la affronti (in watt o W/kg): il tool ricava la velocità e il tempo di salita, poi ricalcola il tempo con più o meno chili a <em>parità di potenza</em>. Tabella e curva mostrano il guadagno o la perdita in secondi; lo slider permette di provare una variazione di peso a piacere. Il caso complementare, a tempo fisso, è nella tab Watt ± kg.</p>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="climb-body" value="70" step="0.1" min="40" max="120"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-body" value="70" step="0.5" min="40" max="120"></div>
                     </div>
                     <div class="input-group">
                         <label>Peso Attrezzatura (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="climb-bike" value="8" step="0.1" min="5" max="20"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-bike" value="8" step="0.1" min="5" max="20"></div>
                     </div>
                     <div class="input-group">
                         <label>Pendenza (%)</label>
-                        <div class="input-wrapper"><input type="number" id="climb-grade" value="8" step="0.1" min="1" max="25"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-grade" value="8" step="0.5" min="1" max="25"></div>
                     </div>
                     <div class="input-group">
                         <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="climb-rho" value="1.1989" step="0.001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-rho" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="climb-cda" value="0.35" step="0.01"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-cda" value="0.35" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
                         <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="climb-crr" value="0.004" step="0.0001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-crr" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
                         <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="climb-dt" value="2" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-dt" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                     <div class="input-group">
                         <label>Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="climb-wind" value="0" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="climb-wind" value="0" step="1" min="-60" max="60"></div>
                     </div>
                 </div>
                 <div style="margin-top:1.25rem;">
@@ -731,7 +753,7 @@
                     <div class="input-grid grid-4">
                         <div class="input-group" id="climb-wrap-dist" style="display:none;">
                             <label>Distanza (km)</label>
-                            <div class="input-wrapper"><input type="number" id="climb-distance" value="5" step="0.1" min="0.5" max="50"></div>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-distance" value="5" step="0.5" min="0.5" max="50"></div>
                         </div>
                         <div class="input-group" id="climb-wrap-time">
                             <label>Durata</label>
@@ -752,11 +774,11 @@
                     <div class="input-grid grid-4">
                         <div class="input-group" id="climb-wrap-wkg" style="display:none;">
                             <label>W/kg (atleta)</label>
-                            <div class="input-wrapper"><input type="number" id="climb-wkg" value="4.5" step="0.1" min="1.5" max="8"></div>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-wkg" value="4.5" step="0.1" min="1.5" max="8"></div>
                         </div>
                         <div class="input-group" id="climb-wrap-watt">
                             <label>Watt assoluti</label>
-                            <div class="input-wrapper"><input type="number" id="climb-watts" value="300" step="1" min="50" max="600"></div>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-watts" value="300" step="5" min="50" max="600"></div>
                         </div>
                     </div>
                 </div>
@@ -799,52 +821,55 @@
             </div>
             <div class="card equations">
                 <h3>📐 Equazioni del Modello</h3>
-                <p>Stesso modello delle altre tab. Si risolve la velocità per potenza e massa, poi il tempo su distanza fissa (o distanza da durata di riferimento).</p>
+                <p>Stesso modello delle altre tab. Dalla potenza si ricava la velocità (per iterazione, con il metodo di Newton–Raphson), poi il tempo su distanza fissa (o la distanza da una durata di riferimento).</p>
                 <div class="equation-block"><strong>Resistenza Aerodinamica:</strong><br>F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²</div>
                 <div class="equation-block"><strong>Resistenza al Rotolamento:</strong><br>F<sub>roll</sub> = Crr × m × g × cos(θ)</div>
                 <div class="equation-block"><strong>Resistenza Gravitazionale:</strong><br>F<sub>grav</sub> = m × g × sin(θ)</div>
                 <div class="equation-block"><strong>Potenza alla ruota:</strong><br>P<sub>wheel</sub> = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v<br>P<sub>pedals</sub> = P<sub>wheel</sub> / (1 − loss%)</div>
-                <p style="margin-top: 1rem;">CdA tipico in salita ≈ 0.32–0.40. Su pendenze elevate (&gt;7%) la gravità domina e ogni kg conta di più.</p>
+                <div class="equation-block"><strong>Tempo ed effetto del peso:</strong><br>t = d / v<br>Δt = d / v(m + Δm) − d / v(m)</div>
+                <p style="margin-top: 1rem;">Dove:<br>• ρ = densità dell'aria (kg/m³)<br>• CdA = coefficiente di drag × area frontale (m²)<br>• v<sub>rel</sub> = v + v<sub>w</sub>, velocità relativa al vento (m/s); v<sub>w</sub> positivo se il vento è contrario<br>• Crr = coefficiente di rotolamento<br>• m = massa totale (ciclista + bici) (kg)<br>• g = accelerazione di gravità (9.80665 m/s²)<br>• θ = angolo di pendenza<br>• loss% = perdita di trasmissione<br>• d = distanza (m)<br>• v = velocità di equilibrio (m/s)<br>• Δm = variazione di peso (kg)</p>
+                <p>CdA tipico in salita ≈ 0.32–0.40. Su pendenze elevate (&gt;7%) la gravità domina e ogni kg conta di più.</p>
             </div>
         </div>
 
         <!-- Watt ± kg (stesso tempo) Tab -->
         <div id="eq-tab" class="tab-content">
             <div class="card">
+                <p class="tab-desc"><strong>Quanti watt valgono i chili.</strong> In salita ogni chilo in più richiede più potenza per andare alla stessa velocità. Inserisci la potenza con cui sali (in watt o W/kg), la pendenza e l'assetto: il tool ricava la velocità e calcola quanti watt in più o in meno servono con più o meno chili <em>tenendo costante quella velocità</em>, cioè lo stesso tempo. È il caso complementare di «Tempo ± kg», dove invece resta fissa la potenza e cambia il tempo.</p>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label>Peso Ciclista (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="eq-body" value="70" step="0.1" min="40" max="120"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-body" value="70" step="0.5" min="40" max="120"></div>
                     </div>
                     <div class="input-group">
                         <label>Peso Attrezzatura (kg)</label>
-                        <div class="input-wrapper"><input type="number" id="eq-bike" value="8" step="0.1" min="5" max="20"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-bike" value="8" step="0.1" min="5" max="20"></div>
                     </div>
                     <div class="input-group">
                         <label>Pendenza (%)</label>
-                        <div class="input-wrapper"><input type="number" id="eq-grade" value="8" step="0.1" min="1" max="25"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-grade" value="8" step="0.5" min="1" max="25"></div>
                     </div>
                     <div class="input-group">
                         <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="eq-rho" value="1.1989" step="0.001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-rho" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
                         <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="eq-cda" value="0.35" step="0.01"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-cda" value="0.35" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
                         <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="eq-crr" value="0.004" step="0.0001"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-crr" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
                         <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="eq-dt" value="2" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-dt" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                     <div class="input-group">
                         <label>Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
-                        <div class="input-wrapper"><input type="number" id="eq-wind" value="0" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="eq-wind" value="0" step="1" min="-60" max="60"></div>
                     </div>
                 </div>
                 <div style="margin-top:1.25rem;">
@@ -856,11 +881,11 @@
                     <div class="input-grid grid-4">
                         <div class="input-group" id="eq-wrap-wkg" style="display:none;">
                             <label>W/kg (atleta)</label>
-                            <div class="input-wrapper"><input type="number" id="eq-wkg" value="4.5" step="0.1" min="1.5" max="8"></div>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-wkg" value="4.5" step="0.1" min="1.5" max="8"></div>
                         </div>
                         <div class="input-group" id="eq-wrap-watt">
                             <label>Watt assoluti</label>
-                            <div class="input-wrapper"><input type="number" id="eq-watts" value="300" step="1" min="50" max="600"></div>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-watts" value="300" step="5" min="50" max="600"></div>
                         </div>
                     </div>
                 </div>
@@ -906,29 +931,149 @@
                 <p>Stesso modello delle altre tab. Dalla potenza di riferimento si ricava la velocità; a parità di tempo la velocità resta uguale, quindi si calcola la potenza necessaria per la nuova massa a quella velocità.</p>
                 <div class="equation-block"><strong>Resistenze:</strong><br>F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²<br>F<sub>roll</sub> = Crr × m × g × cos(θ)<br>F<sub>grav</sub> = m × g × sin(θ)</div>
                 <div class="equation-block"><strong>Potenza necessaria a v costante:</strong><br>P<sub>pedals</sub>(m) = (F<sub>aero</sub> + F<sub>roll</sub>(m) + F<sub>grav</sub>(m)) × v / (1 − loss%)</div>
-                <p style="margin-top: 1rem;">Con v fissata, solo rotolamento e gravità dipendono dalla massa: il costo in watt per kg cresce con la pendenza e con la velocità.</p>
+                <div class="equation-block"><strong>Costo in watt della variazione di peso:</strong><br>ΔP = P<sub>pedals</sub>(m + Δm) − P<sub>pedals</sub>(m)<br>ΔP = Δm × g × (Crr × cos(θ) + sin(θ)) × v / (1 − loss%)</div>
+                <p style="margin-top: 1rem;">Dove:<br>• ρ = densità dell'aria (kg/m³)<br>• CdA = coefficiente di drag × area frontale (m²)<br>• v<sub>rel</sub> = v + v<sub>w</sub>, velocità relativa al vento (m/s); v<sub>w</sub> positivo se il vento è contrario<br>• Crr = coefficiente di rotolamento<br>• m = massa totale (ciclista + bici) (kg)<br>• g = accelerazione di gravità (9.80665 m/s²)<br>• θ = angolo di pendenza<br>• loss% = perdita di trasmissione<br>• v = velocità di riferimento (m/s), ricavata dalla potenza<br>• Δm = variazione di peso (kg)</p>
+                <p>Con v fissata, solo rotolamento e gravità dipendono dalla massa: il costo in watt per kg cresce con la pendenza e con la velocità.</p>
+            </div>
+        </div>
+
+        <!-- Sensitivity Tab -->
+        <div id="sens-tab" class="tab-content">
+            <div class="card">
+                <p class="tab-desc"><strong>Cosa conta di più.</strong> Parti da una salita (peso, pendenza, distanza, potenza, aerodinamica, vento). Il tool varia un parametro alla volta, in più e in meno, di un passo che puoi modificare, e mostra quanto cambia il tempo e quanti watt vale quella variazione. I parametri sono ordinati dal più al meno influente: serve a capire dove conviene intervenire.</p>
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Peso Ciclista (kg)</label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-body" value="70" step="0.5" min="30" max="150"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Peso Attrezzatura (kg)</label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-bike" value="9" step="0.1" min="3" max="30"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Pendenza (%)</label>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="sens-grade" value="8" step="0.5" min="-30" max="30"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Distanza (km)</label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-dist" value="5" step="0.5" min="0.1"></div>
+                    </div>
+                </div>
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Potenza (W)</label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-watts" value="300" step="5" min="50" max="2500"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-rho" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>CdA (m²)</label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-cda" value="0.35" step="0.01" min="0.05" max="1"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Crr</label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-crr" value="0.004" step="0.0005" min="0" max="0.03"></div>
+                    </div>
+                </div>
+                <div class="input-grid grid-4">
+                    <div class="input-group">
+                        <label>Drivetrain Loss (%)</label>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-dt" value="2" step="0.5" min="0" max="20"></div>
+                    </div>
+                    <div class="input-group">
+                        <label>Vento (km/h) <button type="button" class="info-btn" data-info="Componente del vento lungo la direzione di marcia. Positivo = vento contrario, negativo = vento a favore." aria-label="Info">ⓘ</button></label>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="sens-wind" value="0" step="1" min="-60" max="60"></div>
+                    </div>
+                </div>
+                <div style="margin-top:1.25rem;">
+                    <label style="margin-bottom:0.4rem; display:block;">Passi di variazione <button type="button" class="info-btn" data-info="Di quanto viene variato ogni parametro (in più e in meno) per misurarne l'effetto sul tempo. Puoi cambiarli per confrontare variazioni realistiche nel tuo caso (es. un cambio ruote, una posizione diversa)." aria-label="Info">ⓘ</button></label>
+                    <div class="input-grid grid-4">
+                        <div class="input-group">
+                            <label>± Potenza (W)</label>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-st-w" value="5" step="1" min="0.1"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>± Peso (kg)</label>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-st-m" value="1" step="0.5" min="0.1"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>± CdA (m²)</label>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-st-cda" value="0.01" step="0.005" min="0.001"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>± Crr</label>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-st-crr" value="0.001" step="0.0005" min="0.0001"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>± Drivetrain (punti %)</label>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-st-dt" value="1" step="0.5" min="0.1"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>± Vento (km/h)</label>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-st-wind" value="3.6" step="0.5" min="0.1"></div>
+                        </div>
+                        <div class="input-group">
+                            <label>± Densità aria (kg/m³)</label>
+                            <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-st-rho" value="0.02" step="0.01" min="0.001"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="sens-results" class="results" style="margin-top:1.5rem;"></div>
+                <div class="climb-table-wrap">
+                    <table class="climb-table">
+                        <thead>
+                            <tr>
+                                <th>Parametro</th>
+                                <th>Passo</th>
+                                <th>Δ tempo (−)</th>
+                                <th>Δ watt (−)</th>
+                                <th>Δ tempo (+)</th>
+                                <th>Δ watt (+)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sens-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="chart-container climb-chart-box">
+                    <canvas id="sens-chart"></canvas>
+                </div>
+                <p class="climb-note">
+                    Ogni parametro viene variato da solo (in più e in meno) tenendo fermo tutto il resto, a parità di potenza e di distanza. Verde = più veloce, rosso = più lento. «Δ watt» ha lo stesso segno di Δ tempo: sono i watt ai pedali da aggiungere (+) o togliere (−) per tornare al tempo di base dopo la variazione (es. «−1 kg: −11 s, −4.6 W» = senza quel kg a parità di tempo puoi spendere 4.6 W in meno). Nella riga Potenza il valore è la variazione di potenza applicata: In tutta la tabella il colore segue il segno del valore: + rosso, − verde. Per il vento, positivo = contrario. I parametri sono ordinati per effetto massimo.
+                </p>
+            </div>
+            <div class="card equations">
+                <h3>📐 Equazioni del Modello</h3>
+                <p>Stesso modello delle altre tab. Per ogni parametro si risolve la velocità con il valore variato (in più e in meno) e si confronta il tempo sulla distanza fissata.</p>
+                <div class="equation-block"><strong>Resistenze:</strong><br>F<sub>aero</sub> = 0.5 × ρ × CdA × v<sub>rel</sub>²<br>F<sub>roll</sub> = Crr × m × g × cos(θ)<br>F<sub>grav</sub> = m × g × sin(θ)</div>
+                <div class="equation-block"><strong>Variazione di tempo:</strong><br>Δt = d / v(x ± Δx) − d / v(x)</div>
+                <div class="equation-block"><strong>Δ watt:</strong><br>ΔP = P<sub>pedals</sub>(v<sub>base</sub>; x ± Δx) − P<sub>base</sub><br>P<sub>pedals</sub> = (F<sub>aero</sub> + F<sub>roll</sub> + F<sub>grav</sub>) × v / (1 − loss%)</div>
+                <p style="margin-top: 1rem;">Dove:<br>• ρ = densità dell'aria (kg/m³)<br>• CdA = coefficiente di drag × area frontale (m²)<br>• v<sub>rel</sub> = v + v<sub>w</sub>, velocità relativa al vento (m/s); v<sub>w</sub> positivo se il vento è contrario<br>• Crr = coefficiente di rotolamento<br>• m = massa totale (ciclista + bici) (kg)<br>• g = accelerazione di gravità (9.80665 m/s²)<br>• θ = angolo di pendenza<br>• loss% = perdita di trasmissione<br>• d = distanza (m), fissata<br>• x = parametro variato (potenza, peso, CdA, Crr, loss%, vento, ρ), Δx = passo di variazione<br>• v<sub>base</sub>, P<sub>base</sub> = velocità e potenza ai pedali di base</p>
+                <p>Δ watt = potenza da aggiungere (+) o togliere (−) per mantenere la velocità di base con il parametro variato; per la riga Potenza è la variazione applicata. Le asimmetrie tra Δ(−) e Δ(+) (es. il vento) vengono dalla resistenza aerodinamica, che cresce con il quadrato della velocità.</p>
             </div>
         </div>
 
         <!-- Air Density Calculator Tab -->
         <div id="air-tab" class="tab-content">
             <div class="card">
+                <p class="tab-desc"><strong>Densità dell'aria.</strong> Calcola la densità (kg/m³) da temperatura, pressione e umidità relativa; umidità e dew point sono collegati tra loro. È il dato che entra nel calcolo della resistenza aerodinamica e cambia molto tra livello del mare e quota: con il pulsante in fondo il valore viene riportato nelle altre tab di calcolo.</p>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>Temperatura (°C)</label>
-                        <div class="input-wrapper"><input type="number" id="temp" value="20" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="temp" value="20" step="1" min="-60" max="60"></div>
                     </div>
                     <div class="input-group">
                         <label>Pressione (hPa)</label>
-                        <div class="input-wrapper"><input type="number" id="pressure" value="1013.25" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="pressure" value="1013.25" step="1" min="300" max="1100"></div>
                     </div>
                     <div class="input-group">
                         <label>Umidità Relativa (%)</label>
-                        <div class="input-wrapper"><input type="number" id="humidity" value="50" step="1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="humidity" value="50" step="5" min="0" max="100"></div>
                     </div>
                     <div class="input-group">
                         <label>Dew Point (°C)</label>
-                        <div class="input-wrapper"><input type="number" id="dewpoint" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="dewpoint" step="1" min="-60" max="60"></div>
                     </div>
                 </div>
                 <div id="air-results" class="results"></div>
@@ -951,22 +1096,23 @@
         <!-- Pressure Calculator Tab -->
         <div id="pressure-tab" class="tab-content">
             <div class="card">
+                <p class="tab-desc"><strong>Pressione in quota.</strong> Stima la pressione atmosferica a una data altitudine partendo da pressione e temperatura a livello del mare e dalla temperatura in quota (formula barometrica con gradiente termico). Il risultato si può inserire come pressione nella tab Air Density, per ottenere la densità dell'aria in quota; il grafico mostra l'andamento della pressione con l'altitudine.</p>
                 <div class="input-grid">
                     <div class="input-group">
                         <label>P al livello del mare (P₀)</label>
-                        <div class="input-wrapper"><input type="number" id="p-sea-pressure" value="1013.25" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="p-sea-pressure" value="1013.25" step="1" min="300" max="1100"></div>
                     </div>
                     <div class="input-group">
                         <label>T a livello del mare (°C)</label>
-                        <div class="input-wrapper"><input type="number" id="p-temperature-sea" value="25" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="p-temperature-sea" value="25" step="1" min="-60" max="60"></div>
                     </div>
                     <div class="input-group">
                         <label>T in quota (°C)</label>
-                        <div class="input-wrapper"><input type="number" id="p-temperature-alt" value="18" step="0.1"></div>
+                        <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="p-temperature-alt" value="18" step="1" min="-60" max="60"></div>
                     </div>
                     <div class="input-group">
                         <label>Altitudine (m)</label>
-                        <div class="input-wrapper"><input type="number" id="altitude" value="2000" step="1"></div>
+                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="altitude" value="2000" step="50" min="-500" max="9000"></div>
                     </div>
                 </div>
                 <div class="results" style="margin-top:1rem;">
@@ -1077,6 +1223,7 @@
         observeResults('air-results');
         observeResults('climb-results');
         observeResults('eq-results');
+        observeResults('sens-results');
 
         // Also inject into the static pressure card on load
         window.addEventListener('load', () => {
@@ -1824,6 +1971,7 @@
             calculatePressure();
             calculateClimb();
             calculateEq();
+            calculateSens();
         });
 
 
@@ -2125,26 +2273,347 @@
         })();
 
 
-        // ——— Allineamento parametri condivisi tra tab 3 (Tempo ± kg) e tab 4 (Watt ± kg) ———
-        const SHARED = ['body', 'bike', 'grade', 'rho', 'cda', 'crr', 'dt', 'wind', 'wkg', 'watts'];
-        function syncShared(from) {
-            const to = from === 'climb' ? 'eq' : 'climb';
-            SHARED.forEach(k => {
-                const a = document.getElementById(from + '-' + k);
-                const b = document.getElementById(to + '-' + k);
-                if (a && b) b.value = a.value;
+        // ——— Tab Sensibilità: effetto di ogni parametro sul tempo ———
+        let sensChart = null;
+
+        function fmtSensT(dt) {
+            const a = Math.abs(dt);
+            if (a < 0.05) return '0 s';
+            const sign = dt > 0 ? '+' : '−';
+            if (a < 10) return sign + a.toFixed(1) + ' s';
+            return fmtClimbDelta(dt);
+        }
+
+        function fmtSensW(w) {
+            const a = Math.abs(w);
+            if (a < 0.05) return '0 W';
+            return (w > 0 ? '+' : '−') + a.toFixed(a < 10 ? 1 : 0) + ' W';
+        }
+
+        function fmtSensStep(x) {
+            return (Math.round(x * 10000) / 10000).toString();
+        }
+
+        function calculateSens() {
+            const g = id => parseFloat(document.getElementById(id).value);
+            const stepOf = (id, def) => { const x = g(id); return x > 0 ? x : def; };
+
+            const body = g('sens-body');
+            const base = {
+                P: g('sens-watts'),
+                m: body + g('sens-bike'),
+                grade: g('sens-grade'),
+                rho: g('sens-rho'),
+                cda: g('sens-cda'),
+                crr: g('sens-crr'),
+                dt: g('sens-dt') || 0,
+                wind: g('sens-wind') || 0
+            };
+            const distM = g('sens-dist') * 1000;
+            if (!(base.P > 0 && body > 0 && base.m > 0 && base.rho > 0 && base.cda > 0 && base.crr >= 0 && distM > 0 && isFinite(base.grade))) return;
+
+            const speed = p => climbSpeedFromPower(p.P, p.m, p.grade, p.rho, p.cda, p.crr, p.dt, p.wind);
+            const valid = p => p.P > 0 && p.m > 0 && p.cda > 0 && p.crr >= 0 && p.dt >= 0 && p.dt < 50 && p.rho > 0;
+            const vBase = speed(base);
+            const tBase = distM / vBase;
+
+            const defs = [
+                { name: 'Potenza',               unit: 'W',     step: stepOf('sens-st-w', 5),       mod: (p, s) => { p.P += s; }, isPower: true },
+                { name: 'Peso (ciclista + bici)', unit: 'kg',    step: stepOf('sens-st-m', 1),       mod: (p, s) => { p.m += s; } },
+                { name: 'CdA',                   unit: 'm²',    step: stepOf('sens-st-cda', 0.01),  mod: (p, s) => { p.cda += s; } },
+                { name: 'Crr',                   unit: '',      step: stepOf('sens-st-crr', 0.001), mod: (p, s) => { p.crr += s; } },
+                { name: 'Drivetrain loss',       unit: '%',     step: stepOf('sens-st-dt', 1),      mod: (p, s) => { p.dt += s; } },
+                { name: 'Vento contrario',       unit: 'km/h',  step: stepOf('sens-st-wind', 3.6),  mod: (p, s) => { p.wind += s; } },
+                { name: 'Densità aria',          unit: 'kg/m³', step: stepOf('sens-st-rho', 0.02),  mod: (p, s) => { p.rho += s; } }
+            ];
+
+            const evalVar = (def, sign) => {
+                const p = Object.assign({}, base);
+                def.mod(p, sign * def.step);
+                if (!valid(p)) return null;
+                const v = speed(p);
+                if (!(v > 0)) return null;
+                const dt = distM / v - tBase;
+                // Δ watt: per la riga Potenza è la variazione applicata; per gli altri parametri sono i watt da
+                // aggiungere (+) o togliere (−) per tornare alla velocità (e quindi al tempo) di base
+                const w = def.isPower
+                    ? p.P - base.P
+                    : powerForSpeed(vBase, p.m, p.grade, p.rho, p.cda, p.crr, p.dt, p.wind) - p.P;
+                return { dt, w };
+            };
+
+            const entries = defs.map(def => {
+                const lo = evalVar(def, -1), hi = evalVar(def, +1);
+                const mag = Math.max(lo ? Math.abs(lo.dt) : 0, hi ? Math.abs(hi.dt) : 0);
+                return { def, lo, hi, mag };
+            }).sort((a, b) => b.mag - a.mag);
+
+            const mob = window.innerWidth <= 768;
+            document.getElementById('sens-results').innerHTML = buildResultRow([
+                { label: 'W/kg atleta', value: (base.P / body).toFixed(2), unit: '' },
+                { label: 'W/kg sist.', value: (base.P / base.m).toFixed(2), unit: '' },
+                { label: 'Velocità', value: (vBase * 3.6).toFixed(1), unit: 'km/h' },
+                { label: 'Tempo base', value: fmtClimbTime(tBase), unit: '' }
+            ], mob);
+
+            const cls = dt => Math.abs(dt) < 0.05 ? 'delta-zero' : (dt > 0 ? 'delta-plus' : 'delta-minus');
+            // ogni cella è colorata dal proprio segno: + rosso, − verde
+            const cells = r => r
+                ? '<td class="' + cls(r.dt) + '">' + fmtSensT(r.dt) + '</td><td class="' + cls(r.w) + '">' + fmtSensW(r.w) + '</td>'
+                : '<td class="delta-zero">—</td><td class="delta-zero">—</td>';
+            document.getElementById('sens-tbody').innerHTML = entries.map(e =>
+                '<tr><td><strong>' + e.def.name + '</strong></td><td>±' + fmtSensStep(e.def.step) + (e.def.unit ? ' ' + e.def.unit : '') + '</td>' +
+                cells(e.lo) + cells(e.hi) + '</tr>'
+            ).join('');
+
+            updateSensChart({ entries, tBase, base, distM });
+        }
+
+        function updateSensChart(c) {
+            const canvas = document.getElementById('sens-chart');
+            if (!canvas || typeof Chart === 'undefined') return;
+            const GREEN = '#00D9A0', RED = '#ff6b6b', ORANGE = '#FF6B35';
+            const labels = c.entries.map(e => e.def.name + ' ±' + fmtSensStep(e.def.step) + (e.def.unit ? ' ' + e.def.unit : ''));
+            const colorOf = r => (r && r.dt > 0) ? RED : GREEN;
+            const mk = (key, name) => ({
+                label: name,
+                data: c.entries.map(e => e[key] ? e[key].dt : null),
+                backgroundColor: c.entries.map(e => colorOf(e[key])),
+                borderRadius: 4,
+                grouped: false,
+                categoryPercentage: 0.8,
+                barPercentage: 0.85,
+                maxBarThickness: 28
+            });
+
+            const labelPlugin = {
+                id: 'sensBarLabels',
+                afterDatasetsDraw(chart) {
+                    const g = chart.ctx;
+                    const narrow = chart.width < 560;
+                    g.save();
+                    g.font = '600 ' + (narrow ? 10 : 11) + 'px JetBrains Mono, monospace';
+                    g.textBaseline = 'middle';
+                    [0, 1].forEach(di => {
+                        const key = di === 0 ? 'lo' : 'hi';
+                        chart.getDatasetMeta(di).data.forEach((el, i) => {
+                            const r = c.entries[i][key];
+                            if (!r) return;
+                            g.fillStyle = colorOf(r);
+                            const right = r.dt >= 0;
+                            g.textAlign = right ? 'left' : 'right';
+                            g.fillText(fmtSensT(r.dt), el.x + (right ? 6 : -6), el.y);
+                        });
+                    });
+                    g.restore();
+                }
+            };
+
+            if (sensChart) sensChart.destroy();
+            sensChart = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                plugins: [labelPlugin],
+                data: { labels, datasets: [mk('lo', 'Passo −'), mk('hi', 'Passo +')] },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 250 },
+                    layout: { padding: { top: 6, right: 14 } },
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Quanto pesa ogni parametro sul tempo',
+                            color: '#E8EAF6',
+                            font: { family: 'Manrope', size: 15, weight: 700 },
+                            padding: { bottom: 2 }
+                        },
+                        subtitle: {
+                            display: true,
+                            text: 'Base ' + fmtClimbTime(c.tBase) + ' · ' + c.base.P.toFixed(0) + ' W · ' + c.base.grade + '% · ' + (c.distM / 1000).toFixed(1) + ' km',
+                            color: '#9BA4B5',
+                            font: { family: 'JetBrains Mono', size: 11 },
+                            padding: { bottom: 12 }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26,30,61,0.96)',
+                            titleColor: '#E8EAF6',
+                            bodyColor: '#E8EAF6',
+                            borderColor: ORANGE,
+                            borderWidth: 2,
+                            padding: 12,
+                            displayColors: false,
+                            titleFont: { family: 'Manrope', size: 14, weight: 700 },
+                            bodyFont: { family: 'JetBrains Mono', size: 12, weight: 600 },
+                            callbacks: {
+                                title: items => c.entries[items[0].dataIndex].def.name,
+                                label: item => {
+                                    const e = c.entries[item.dataIndex];
+                                    const r = item.datasetIndex === 0 ? e.lo : e.hi;
+                                    if (!r) return '—';
+                                    const sg = item.datasetIndex === 0 ? '−' : '+';
+                                    return [
+                                        sg + fmtSensStep(e.def.step) + (e.def.unit ? ' ' + e.def.unit : '') + ' → ' + fmtSensT(r.dt),
+                                        'Δ watt: ' + fmtSensW(r.w)
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: '← più veloce      Δ tempo      più lento →', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 11, weight: 600 } },
+                            ticks: {
+                                color: '#9BA4B5',
+                                font: { family: 'JetBrains Mono', size: 11 },
+                                maxTicksLimit: 9,
+                                callback: v => Math.abs(v) < 0.5 ? '0' : fmtClimbDelta(v)
+                            },
+                            grid: {
+                                color: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 'rgba(232,234,246,0.45)' : 'rgba(255,255,255,0.05)',
+                                lineWidth: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 2 : 1
+                            },
+                            grace: '22%'
+                        },
+                        y: {
+                            ticks: { color: '#E8EAF6', font: { family: 'Manrope', size: window.innerWidth <= 768 ? 10 : 12, weight: 600 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
             });
         }
-        (function setupSharedSync() {
-            [['climb', 'eq', () => calculateEq()], ['eq', 'climb', () => calculateClimb()]].forEach(([from, to, recalc]) => {
-                SHARED.forEach(k => {
-                    const a = document.getElementById(from + '-' + k);
-                    const b = document.getElementById(to + '-' + k);
-                    if (!a || !b) return;
-                    a.addEventListener('input', () => {
-                        if (b.value !== a.value) { b.value = a.value; recalc(); }
-                    });
+
+        (function setupSens() {
+            document.querySelectorAll('#sens-tab input[id]').forEach(el => el.addEventListener('input', calculateSens));
+        })();
+
+
+        // ——— Parametri condivisi tra tutte le tab: un valore inserito in una tab si propaga alle altre ———
+        const LINK_GROUPS = [
+            ['rider-weight', 'rider-weight-s', 'climb-body', 'eq-body', 'sens-body'],
+            ['bike-weight', 'bike-weight-s', 'climb-bike', 'eq-bike', 'sens-bike'],
+            ['slope', 'slope-s', 'climb-grade', 'eq-grade', 'sens-grade'],
+            ['air-density', 'air-density-s', 'climb-rho', 'eq-rho', 'sens-rho'],
+            ['cda', 'cda-s', 'climb-cda', 'eq-cda', 'sens-cda'],
+            ['crr', 'crr-s', 'climb-crr', 'eq-crr', 'sens-crr'],
+            ['drivetrain-loss', 'drivetrain-loss-s', 'climb-dt', 'eq-dt', 'sens-dt'],
+            ['wind-speed', 'wind-speed-s', 'climb-wind', 'eq-wind', 'sens-wind'],
+            ['power', 'climb-watts', 'eq-watts', 'sens-watts'],
+            ['climb-wkg', 'eq-wkg']
+        ];
+        // Tempo ± kg e Watt ± kg richiedono una pendenza > 0: non accettano 0 o negativa dalle altre tab
+        const POSITIVE_ONLY = new Set(['climb-grade', 'eq-grade']);
+
+        function tabOf(el) {
+            const t = el.closest('.tab-content');
+            return t ? t.id.replace(/-tab$/, '') : null;
+        }
+
+        function linkAccepts(id, v) {
+            if (v === '' || !isFinite(parseFloat(v))) return false;
+            if (POSITIVE_ONLY.has(id) && !(parseFloat(v) > 0)) return false;
+            return true;
+        }
+
+        // copia il valore del campo `id` sui campi collegati delle altre tab; ritorna le tab modificate
+        function propagateField(id) {
+            const touched = new Set();
+            const a = document.getElementById(id);
+            const group = LINK_GROUPS.find(g => g.includes(id));
+            if (!a || !group) return touched;
+            group.forEach(oid => {
+                if (oid === id) return;
+                const b = document.getElementById(oid);
+                if (!b || b.value === a.value || !linkAccepts(oid, a.value)) return;
+                b.value = a.value;
+                const t = tabOf(b);
+                if (t) touched.add(t);
+            });
+            return touched;
+        }
+
+        // allinea tutte le tab ai valori di una tab; ritorna le tab modificate
+        function syncShared(fromTab) {
+            const touched = new Set();
+            LINK_GROUPS.forEach(g => g.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && tabOf(el) === fromTab) propagateField(id).forEach(t => touched.add(t));
+            }));
+            return touched;
+        }
+
+        (function setupLinkedFields() {
+            LINK_GROUPS.forEach(g => g.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('input', () => {
+                    propagateField(id).forEach(t => { if (TAB_CALC[t]) TAB_CALC[t](); });
                 });
+            }));
+        })();
+
+        // ——— Campi numerici: punto sempre come separatore decimale + frecce con passi sensati ———
+        (function setupNumericFields() {
+            const decimalsOf = x => { const t = String(x); const i = t.indexOf('.'); return i < 0 ? 0 : t.length - i - 1; };
+            const attrNum = (el, name, def) => { const v = parseFloat(el.getAttribute(name)); return isFinite(v) ? v : def; };
+
+            function stepField(el, dir, mult) {
+                const stepAttr = attrNum(el, 'step', 1);
+                const step = stepAttr * (mult || 1);
+                const min = attrNum(el, 'min', -Infinity), max = attrNum(el, 'max', Infinity);
+                let v = parseFloat(String(el.value).replace(',', '.'));
+                if (!isFinite(v)) { v = parseFloat(el.defaultValue); if (!isFinite(v)) v = 0; }
+                const q = v / step;
+                let nv = Math.abs(q - Math.round(q)) < 1e-6
+                    ? v + dir * step
+                    : (dir > 0 ? Math.ceil(q) : Math.floor(q)) * step;
+                if (dir > 0 && nv > max) nv = v < max ? max : v;
+                if (dir < 0 && nv < min) nv = v > min ? min : v;
+                nv = Number(nv.toFixed(Math.min(decimalsOf(stepAttr), 8)));
+                if (String(nv) === String(v) && el.value !== '') return;
+                el.value = String(nv);
+                el.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            // se si digita o incolla una virgola la trasformo subito in punto (fase di capture: prima dei calcoli)
+            document.addEventListener('input', e => {
+                const el = e.target;
+                if (!el || !el.hasAttribute || !el.hasAttribute('data-num')) return;
+                if (el.value.indexOf(',') < 0) return;
+                const pos = el.selectionStart;
+                el.value = el.value.replace(/,/g, '.');
+                try { el.setSelectionRange(pos, pos); } catch (_) {}
+            }, true);
+
+            // frecce da tastiera (Shift = passo ×10)
+            document.addEventListener('keydown', e => {
+                const el = e.target;
+                if (!el || !el.hasAttribute || !el.hasAttribute('data-num')) return;
+                if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+                e.preventDefault();
+                stepField(el, e.key === 'ArrowUp' ? 1 : -1, e.shiftKey ? 10 : 1);
+            });
+
+            // frecce ▲▼ col mouse (tenendo premuto si ripete)
+            document.querySelectorAll('.input-wrapper > input[data-num]').forEach(el => {
+                const box = document.createElement('span');
+                box.className = 'stepper';
+                [[1, '▲', 'Aumenta'], [-1, '▼', 'Diminuisci']].forEach(([d, ch, label]) => {
+                    const b = document.createElement('button');
+                    b.type = 'button'; b.tabIndex = -1; b.textContent = ch; b.setAttribute('aria-label', label);
+                    let timer = null, rep = null;
+                    const stop = () => { clearTimeout(timer); clearInterval(rep); timer = rep = null; };
+                    b.addEventListener('pointerdown', ev => {
+                        ev.preventDefault();
+                        stepField(el, d, ev.shiftKey ? 10 : 1);
+                        timer = setTimeout(() => { rep = setInterval(() => stepField(el, d, 1), 80); }, 400);
+                    });
+                    ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => b.addEventListener(t, stop));
+                    box.appendChild(b);
+                });
+                el.parentNode.appendChild(box);
             });
         })();
 
@@ -2156,6 +2625,7 @@
             speed: () => calculatePowerFromSpeed(),
             climb: () => calculateClimb(),
             eq: () => calculateEq(),
+            sens: () => calculateSens(),
             air: () => calculateAirDensity(),
             pressure: () => calculatePressure()
         };
@@ -2193,7 +2663,7 @@
             });
             if (s.cm === 'dist' || s.cm === 'time') setClimbMode(s.cm);
             if (s.pm === 'wkg' || s.pm === 'watt') setClimbPowerMode(s.pm);
-            syncShared('climb');
+            syncShared(s.t && TAB_CALC[s.t] ? s.t : 'climb');
             updateClimbCustomLabel();
             updateEqCustomLabel();
             if (s.t && TAB_CALC[s.t]) switchTab(s.t);
@@ -2247,12 +2717,8 @@
                 setEqPowerMode('watt');
                 updateEqCustomLabel();
             }
-            if (tab === 'climb' || tab === 'eq') {
-                syncShared(tab);
-                calculateClimb();
-                calculateEq();
-            }
-            if (TAB_CALC[tab]) TAB_CALC[tab]();
+            syncShared(tab);
+            Object.keys(TAB_CALC).forEach(k => TAB_CALC[k]());
             saveState();
         }
 
@@ -2327,6 +2793,7 @@
                 calculatePowerFromSpeed();
                 calculateClimb();
                 calculateEq();
+                calculateSens();
             }, 150);
         });
     </script>
