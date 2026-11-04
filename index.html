@@ -1305,18 +1305,18 @@
             const totalMass = riderWeight + bikeWeight;
             const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
-            let speed = 10;
+            let speed = 25; // vedi nota in climbSpeedFromPower
             const windSpeedMS = windSpeed / 3.6;
             for (let i = 0; i < 100; i++) {
                 const relativeSpeed = speed + windSpeedMS;
-                const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
+                const aeroForce = 0.5 * rho * cda * relativeSpeed * Math.abs(relativeSpeed);
                 const rollForce = crr * totalMass * g * Math.cos(slopeRad);
                 const gravForce = totalMass * g * Math.sin(slopeRad);
                 const totalForce = aeroForce + rollForce + gravForce;
                 const calculatedPower = totalForce * speed;
                 const error = calculatedPower - effectivePower;
                 if (Math.abs(error) < 0.1) break;
-                const derivative = totalForce + speed * (rho * cda * relativeSpeed);
+                const derivative = totalForce + speed * (rho * cda * Math.abs(relativeSpeed));
                 if (!Number.isFinite(derivative) || Math.abs(derivative) < 1e-6) break;
                 speed -= error / derivative;
             }
@@ -1324,7 +1324,7 @@
             const verticalSpeed = speed * Math.sin(slopeRad);
             const vam = verticalSpeed * 3600;
             const relativeSpeedNow = speed + windSpeedMS;
-            const aeroForceNow = 0.5 * rho * cda * relativeSpeedNow * relativeSpeedNow;
+            const aeroForceNow = 0.5 * rho * cda * relativeSpeedNow * Math.abs(relativeSpeedNow);
             const rollForceNow = crr * totalMass * g * Math.cos(slopeRad);
             const gravForceNow = totalMass * g * Math.sin(slopeRad);
             const pDragNow = aeroForceNow * speed;
@@ -1364,7 +1364,7 @@
             const speed = (speedKmh || 0) / 3.6;
             const windSpeedMS = windSpeed / 3.6;
             const relativeSpeed = speed + windSpeedMS;
-            const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
+            const aeroForce = 0.5 * rho * cda * relativeSpeed * Math.abs(relativeSpeed);
             const rollForce = crr * totalMass * g * Math.cos(slopeRad);
             const gravForce = totalMass * g * Math.sin(slopeRad);
             const totalForce = aeroForce + rollForce + gravForce;
@@ -1405,7 +1405,7 @@
             for (let speedKmh = 10; speedKmh <= 60; speedKmh += 1) {
                 const speed = speedKmh / 3.6;
                 const relativeSpeed = speed + windSpeedMS;
-                const aeroForce = 0.5 * rho * cda * relativeSpeed * relativeSpeed;
+                const aeroForce = 0.5 * rho * cda * relativeSpeed * Math.abs(relativeSpeed);
                 const rollForce = crr * totalMass * g * Math.cos(slopeRad);
                 const gravForce = totalMass * g * Math.sin(slopeRad);
                 const totalForce = aeroForce + rollForce + gravForce;
@@ -1623,16 +1623,16 @@
             const windMS = windKmh / 3.6;
             const eta = 1 - (dtLossPct / 100);
             const P_wheel = P_pedals * eta;
-            let v = 3.0;
-            for (let i = 0; i < 40; i++) {
+            let v = 25; // si parte da destra della soluzione: con vento a favore forte la funzione ha più rami e da sinistra il solver può finire su quello sbagliato
+            for (let i = 0; i < 80; i++) {
                 const vRel = v + windMS;
-                const Faero = 0.5 * rho * cda * vRel * vRel;
+                const Faero = 0.5 * rho * cda * vRel * Math.abs(vRel);
                 const Froll = crr * m * g * Math.cos(theta);
                 const Fgrav = m * g * Math.sin(theta);
                 const Pcalc = (Faero + Froll + Fgrav) * v;
                 const err = Pcalc - P_wheel;
                 if (Math.abs(err) < 0.05) break;
-                const dPdv = (Faero + Froll + Fgrav) + v * (rho * cda * vRel);
+                const dPdv = (Faero + Froll + Fgrav) + v * (rho * cda * Math.abs(vRel));
                 if (Math.abs(dPdv) < 1e-9) break;
                 v = Math.max(0.1, Math.min(25, v - err / dPdv));
             }
@@ -1996,7 +1996,7 @@
             const g = 9.80665;
             const theta = Math.atan(gradePct / 100);
             const vRel = v + windKmh / 3.6;
-            const F = 0.5 * rho * cda * vRel * vRel + crr * m * g * Math.cos(theta) + m * g * Math.sin(theta);
+            const F = 0.5 * rho * cda * vRel * Math.abs(vRel) + crr * m * g * Math.cos(theta) + m * g * Math.sin(theta);
             return F * v / (1 - dtLossPct / 100);
         }
 
