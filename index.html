@@ -564,12 +564,63 @@
         }
         .mini-btn:hover { background: rgba(255,107,53,0.15); border-color: var(--primary); }
         .dur-sep { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; }
+
+        /* ——— Restyling: layout e dettagli ——— */
+        .container { padding-top: 2.25rem; }
+        header { margin-bottom: 1.5rem; }
+        .subtitle { font-size: 0.95rem; margin-top: 0.15rem; }
+        .tab-nav {
+            position: sticky; top: 0.6rem; z-index: 20;
+            background: rgba(26,30,61,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+        .tab-button { min-width: 0; padding: 0.6rem 0.8rem; font-size: 0.9rem; white-space: nowrap; }
+        .tab-button.active { box-shadow: 0 4px 14px rgba(255,107,53,0.35); }
+        .card { box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 12px 32px rgba(0,0,0,0.18); }
+        .card.equations { background: rgba(26,30,61,0.55); }
+        .result-item { background: linear-gradient(180deg, rgba(0,217,160,0.10), rgba(0,217,160,0.05)); }
+        .result-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.15rem; }
+        .bd-caption { grid-column: 1/-1; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); margin: 1rem 0 0.4rem; }
+        .bd-bar { grid-column: 1/-1; display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,0.06); gap: 2px; }
+        .bd-seg { display: block; height: 100%; min-width: 3px; transition: width 0.3s; }
+        .chart-container { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); }
+        .chart-container:has(#power-chart), .chart-container:has(#power-chart-s) { height: 300px; margin-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
+        .chart-container:has(#power-loss-chart), .chart-container:has(#power-loss-chart-s) { height: 360px; margin-top: 0 !important; border-top-left-radius: 0; border-top-right-radius: 0; }
+        .climb-table tbody tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+        footer.site-footer { margin-top: 2.5rem; border-top: 1px solid var(--border); background: none; }
+        @media (max-width: 768px) {
+            .chart-container:has(#power-chart), .chart-container:has(#power-chart-s) { height: 240px; }
+            .chart-container:has(#power-loss-chart), .chart-container:has(#power-loss-chart-s) { height: 300px; }
+            .tab-nav { top: 0.3rem; }
+        }
+
+        /* ——— Colori delta, equazioni, raggruppamento campi ——— */
+        .result-value.tone-bad { color: #ff6b6b; }
+        .result-value.tone-good { color: var(--success); }
+        .equations h3 { color: #0D5C9E; }
+        .fs { margin: 0 0 1rem; }
+        .fs-title { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
+        .fs-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .fs .input-grid { margin-bottom: 0; }
+
+        /* ——— Margini più compatti ——— */
+        .container { padding-top: 1rem; padding-bottom: 1rem; }
+        header { margin-bottom: 1rem; }
+        .chart-container { padding: 0.35rem 0.75rem 0.45rem; margin-top: 1.1rem; }
+        .card { padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+        footer.site-footer { margin-top: 1.25rem; padding: 0.75rem; }
+        @media (max-width: 768px) {
+            .container { padding: 0.5rem 0.75rem; }
+            .card { padding: 1rem; }
+            .chart-container { padding: 0.3rem 0.4rem 0.4rem; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Bonvi Cycling Tools</h1>
+            <div class="subtitle">Potenza, velocità, peso e aria: il modello fisico della pedalata</div>
         </header>
 
         <div class="tab-nav">
@@ -1039,6 +1090,9 @@
                 <div class="chart-container climb-chart-box">
                     <canvas id="sens-chart"></canvas>
                 </div>
+                <div class="chart-container climb-chart-box" style="margin-top:1rem;">
+                    <canvas id="sens-chart-w"></canvas>
+                </div>
                 <p class="climb-note">
                     Ogni parametro viene variato da solo (in più e in meno) tenendo fermo tutto il resto, a parità di potenza e di distanza. Verde = più veloce, rosso = più lento. «Δ watt» ha lo stesso segno di Δ tempo: sono i watt ai pedali da aggiungere (+) o togliere (−) per tornare al tempo di base dopo la variazione (es. «−1 kg: −11 s, −4.6 W» = senza quel kg a parità di tempo puoi spendere 4.6 W in meno). Nella riga Potenza il valore è la variazione di potenza applicata: In tutta la tabella il colore segue il segno del valore: + rosso, − verde. Per il vento, positivo = contrario. I parametri sono ordinati per effetto massimo.
                 </p>
@@ -1241,6 +1295,23 @@
 
         let powerCharts = {};
         let powerLossCharts = {};
+        const pointerInside = {};
+        function clearLinked(suffix) {
+            [powerCharts[suffix], powerLossCharts[suffix]].forEach(c => {
+                if (!c) return;
+                c.setActiveElements([]);
+                c.tooltip.setActiveElements([], { x: 0, y: 0 });
+                c.update('none');
+            });
+        }
+        function bindLinkedCanvas(id, suffix) {
+            const cv = document.getElementById(id);
+            if (!cv || cv.dataset.linked) return;
+            cv.dataset.linked = '1';
+            cv.addEventListener('pointerenter', () => { pointerInside[suffix] = true; });
+            cv.addEventListener('pointerleave', () => { pointerInside[suffix] = false; clearLinked(suffix); });
+            cv.addEventListener('pointercancel', () => { pointerInside[suffix] = false; clearLinked(suffix); });
+        }
         let airChart = null;
         let pressureChart = null;
 
@@ -1284,7 +1355,7 @@
                 const id = 'ri-dyn-' + Date.now() + '-' + idx;
                 return `<div class="result-item" id="${id}" style="height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
                     <div class="result-label">${it.label}</div>
-                    <div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span>${it.arrow||''}</div>
+                    <div class="result-value${it.tone ? ' tone-' + it.tone : ''}">${it.value}<span class="result-unit"> ${it.unit}</span>${it.arrow||''}</div>
                 </div>`;
             }).join('');
             return `<div style="grid-column:1/-1; display:grid; grid-template-columns:${cols}; gap:${gap}; align-items:stretch;">${html}</div>`;
@@ -1332,20 +1403,13 @@
             const pGravNow = gravForceNow * speed;
             const powerPerKg = power / riderWeight;
             const mob = window.innerWidth <= 768;
-            const resultsDiv = document.getElementById('power-results');
-            resultsDiv.innerHTML =
-                buildResultRow([
-                    {label:'At', value:power.toFixed(0), unit:'W', arrow:'&nbsp;→'},
-                    {label:'Relative', value:powerPerKg.toFixed(2), unit:'W/kg'},
-                    {label:'Velocità', value:speedKmh.toFixed(2), unit:'km/h'},
-                    {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
-                ], mob) +
-                `<div style="grid-column:1/-1; display:grid; grid-template-columns:${mob?'1fr 1fr':'repeat(4,minmax(140px,1fr))'}; gap:${mob?'0.6rem':'1rem'}; margin-top:${mob?'0.6rem':'1rem'}; align-items:stretch;">` +
-                [{label:'Drag',value:pDragNow.toFixed(0),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(0),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(0),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(0),unit:'W'}].map((it,idx)=>{
-                    const id='ri-pl-'+Date.now()+'-'+idx;
-                    return `<div class="result-item" id="${id}" style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;"><div class="result-label">${it.label}</div><div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span></div></div>`;
-                }).join('') + `</div>`;
-            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '');
+            renderPowerResults(document.getElementById('power-results'), [
+                {label:'At', value:power.toFixed(0), unit:'W', arrow:'&nbsp;→'},
+                {label:'Relative', value:powerPerKg.toFixed(2), unit:'W/kg'},
+                {label:'Velocità', value:speedKmh.toFixed(2), unit:'km/h'},
+                {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
+            ], {drag:pDragNow, roll:pRollNow, grav:pGravNow, dt:drivetrainLossWatts}, mob);
+            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '', { speedKmh: speedKmh, power: power });
         }
 
         function calculatePowerFromSpeed() {
@@ -1379,57 +1443,230 @@
             const verticalSpeed = speed * Math.sin(slopeRad);
             const vam = verticalSpeed * 3600;
             const mob = window.innerWidth <= 768;
-            const resultsDiv = document.getElementById('speed-results');
-            resultsDiv.innerHTML =
-                buildResultRow([
-                    {label:'At', value:speedKmh.toFixed(1), unit:'km/h', arrow:'&nbsp;→'},
-                    {label:'Potenza', value:pedalingPower.toFixed(0), unit:'W'},
-                    {label:'Potenza / Peso', value:powerPerKg.toFixed(2), unit:'W/kg'},
-                    {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
-                ], mob) +
-                `<div style="grid-column:1/-1; display:grid; grid-template-columns:${mob?'1fr 1fr':'repeat(4,minmax(140px,1fr))'}; gap:${mob?'0.6rem':'1rem'}; margin-top:${mob?'0.6rem':'1rem'}; align-items:stretch;">` +
-                [{label:'Drag',value:pDragNow.toFixed(0),unit:'W'},{label:'Rolling',value:pRollNow.toFixed(0),unit:'W'},{label:'Gravity',value:pGravNow.toFixed(0),unit:'W'},{label:'Drivetrain',value:drivetrainLossWatts.toFixed(0),unit:'W'}].map((it,idx)=>{
-                    const id='ri-sl-'+Date.now()+'-'+idx;
-                    return `<div class="result-item" id="${id}" style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;"><div class="result-label">${it.label}</div><div class="result-value">${it.value}<span class="result-unit"> ${it.unit}</span></div></div>`;
-                }).join('') + `</div>`;
-            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '-s');
+            renderPowerResults(document.getElementById('speed-results'), [
+                {label:'At', value:speedKmh.toFixed(1), unit:'km/h', arrow:'&nbsp;→'},
+                {label:'Potenza', value:pedalingPower.toFixed(0), unit:'W'},
+                {label:'Potenza / Peso', value:powerPerKg.toFixed(2), unit:'W/kg'},
+                {label:'VAM', value:vam.toFixed(0), unit:'m/h'}
+            ], {drag:pDragNow, roll:pRollNow, grav:pGravNow, dt:drivetrainLossWatts}, mob);
+            updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, '-s', { speedKmh: speedKmh, power: pedalingPower });
         }
 
-        function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, suffix) {
+        // ——— Grafici Power ↔ Speed: due grafici collegati (hover e crosshair sincronizzati) ———
+        const LEGEND = { position: 'top', align: 'end', labels: { color: '#E8EAF6', usePointStyle: true, pointStyle: 'rectRounded', boxWidth: 8, boxHeight: 8, font: { family: 'Manrope', size: 12, weight: 600 } } };
+        const SERIES = { drag: '#8B5CF6', roll: '#22D3EE', grav: '#FBBF24', dt: '#F472B6' }; // viola, ciano, ambra, rosa: distinguibili anche tra loro
+
+        function renderPowerResults(el, primary, parts, mob) {
+            const cols = mob ? '1fr 1fr' : 'repeat(4,minmax(120px,1fr))';
+            const gap = mob ? '0.6rem' : '1rem';
+            const defs = [['Drag', parts.drag, SERIES.drag], ['Rolling', parts.roll, SERIES.roll], ['Gravity', parts.grav, SERIES.grav], ['Drivetrain', parts.dt, SERIES.dt]];
+            const tot = defs.reduce((s, d) => s + Math.max(0, d[1]), 0) || 1;
+            const bar = '<div class="bd-caption">Ripartizione dei watt ai pedali</div><div class="bd-bar">' +
+                defs.filter(d => d[1] > 0.5).map(d =>
+                    '<span class="bd-seg" style="width:' + (d[1] / tot * 100).toFixed(2) + '%;background:' + d[2] + '" title="' + d[0] + ': ' + d[1].toFixed(0) + ' W"></span>'
+                ).join('') + '</div>';
+            const cards = defs.map(d =>
+                '<div class="result-item" style="border-top:3px solid ' + d[2] + ';height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;">' +
+                '<div class="result-label">' + d[0] + '</div>' +
+                '<div class="result-value">' + d[1].toFixed(0) + '<span class="result-unit"> W</span></div>' +
+                '<div class="result-sub">' + (d[1] > 0.5 ? (d[1] / tot * 100).toFixed(0) + '%' : '—') + '</div></div>'
+            ).join('');
+            el.innerHTML = buildResultRow(primary, mob) + bar +
+                '<div style="grid-column:1/-1;display:grid;grid-template-columns:' + cols + ';gap:' + gap + ';margin-top:0.6rem;align-items:stretch;">' + cards + '</div>';
+        }
+
+        // linea verticale che segue il cursore (su entrambi i grafici, grazie al tooltip sincronizzato)
+        const chartCrosshair = {
+            id: 'crosshair',
+            afterDatasetsDraw(chart) {
+                const act = chart.tooltip && chart.tooltip.getActiveElements ? chart.tooltip.getActiveElements() : [];
+                if (!act.length) return;
+                const el = chart.getDatasetMeta(act[0].datasetIndex).data[act[0].index];
+                if (!el) return;
+                const { top, bottom } = chart.chartArea;
+                const g = chart.ctx;
+                g.save();
+                g.beginPath();
+                g.moveTo(el.x, top);
+                g.lineTo(el.x, bottom);
+                g.lineWidth = 1;
+                g.strokeStyle = 'rgba(232,234,246,0.5)';
+                g.setLineDash([4, 4]);
+                g.stroke();
+                g.restore();
+            }
+        };
+
+        // punto di lavoro corrente (velocità/potenza calcolate) evidenziato sul grafico
+        const opPointPlugin = {
+            id: 'opPoint',
+            afterDatasetsDraw(chart, args, opts) {
+                if (!opts || !isFinite(opts.x)) return;
+                const { top, bottom, left, right } = chart.chartArea;
+                const x = chart.scales.x.getPixelForValue(opts.x);
+                if (x < left || x > right) return;
+                const g = chart.ctx;
+                g.save();
+                g.beginPath();
+                g.moveTo(x, top);
+                g.lineTo(x, bottom);
+                g.lineWidth = 1.5;
+                g.strokeStyle = 'rgba(255,107,53,0.85)';
+                g.setLineDash([2, 4]);
+                g.stroke();
+                g.setLineDash([]);
+                if (isFinite(opts.y)) {
+                    const y = chart.scales.y.getPixelForValue(opts.y);
+                    g.beginPath();
+                    g.arc(x, y, 5.5, 0, Math.PI * 2);
+                    g.fillStyle = '#FF6B35';
+                    g.fill();
+                    g.lineWidth = 2;
+                    g.strokeStyle = '#0A0E27';
+                    g.stroke();
+                }
+                if (opts.label) {
+                    g.font = '700 11px JetBrains Mono, monospace';
+                    g.fillStyle = '#FF9A6F';
+                    g.textBaseline = 'top';
+                    const flip = x > right - 150;
+                    g.textAlign = flip ? 'right' : 'left';
+                    g.fillText(opts.label, x + (flip ? -8 : 8), top + 6);
+                }
+                g.restore();
+            }
+        };
+
+        function updatePowerChart(riderWeight, bikeWeight, cda, crr, slope, rho, windSpeed, suffix, op) {
             const totalMass = riderWeight + bikeWeight;
             const g = 9.80665;
             const slopeRad = Math.atan(slope / 100);
-            const windSpeedMS = windSpeed / 3.6;
-            const speeds = [], powers = [], dragPowers = [], rollPowers = [], gravPowers = [], drivetrainPowers = [];
-            const dtPct = parseFloat(document.getElementById('drivetrain-loss').value) || 0;
-            for (let speedKmh = 10; speedKmh <= 60; speedKmh += 1) {
-                const speed = speedKmh / 3.6;
-                const relativeSpeed = speed + windSpeedMS;
-                const aeroForce = 0.5 * rho * cda * relativeSpeed * Math.abs(relativeSpeed);
-                const rollForce = crr * totalMass * g * Math.cos(slopeRad);
-                const gravForce = totalMass * g * Math.sin(slopeRad);
-                const totalForce = aeroForce + rollForce + gravForce;
-                const power = totalForce * speed;
-                speeds.push(speedKmh);
-                powers.push(power);
-                dragPowers.push(aeroForce * speed);
-                rollPowers.push(rollForce * speed);
-                gravPowers.push(gravForce * speed);
-                drivetrainPowers.push(power * (dtPct / 100));
+            const windMS = windSpeed / 3.6;
+            const dtPct = parseFloat(document.getElementById('drivetrain-loss' + suffix).value) || 0;
+            const eff = Math.max(0.01, 1 - dtPct / 100);
+            const cur = (op && isFinite(op.speedKmh)) ? op.speedKmh : 25;
+            const curP = (op && isFinite(op.power)) ? op.power : NaN;
+            const xMin = cur < 12 ? 0 : 10;
+            const xMax = Math.max(60, Math.ceil(cur * 1.15 / 5) * 5);
+
+            const tot = [], drag = [], roll = [], grav = [], dtl = [];
+            for (let k = xMin; k <= xMax; k += 1) {
+                const v = k / 3.6;
+                const vr = v + windMS;
+                const pAero = 0.5 * rho * cda * vr * Math.abs(vr) * v;
+                const pRoll = crr * totalMass * g * Math.cos(slopeRad) * v;
+                const pGrav = totalMass * g * Math.sin(slopeRad) * v;
+                const wheel = pAero + pRoll + pGrav;
+                const pedal = wheel > 0 ? wheel / eff : 0;
+                tot.push({ x: k, y: pedal });
+                drag.push({ x: k, y: -pAero });
+                roll.push({ x: k, y: -pRoll });
+                grav.push({ x: k, y: -pGrav });
+                dtl.push({ x: k, y: -(wheel * dtPct / 100) });
             }
+
+            const MONO = 'JetBrains Mono';
+            const tick = { color: '#9BA4B5', font: { family: MONO, size: 11 } };
+            const grid = { color: 'rgba(255,255,255,0.05)' };
+            const axisTitle = text => ({ display: true, text, color: '#9BA4B5', font: { family: MONO, size: 11, weight: 600 } });
+            const tt = {
+                enabled: true, mode: 'index', intersect: false,
+                backgroundColor: 'rgba(18,22,48,0.96)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', footerColor: '#FF9A6F',
+                borderColor: 'rgba(255,107,53,0.7)', borderWidth: 1.5, padding: 10, caretPadding: 10,
+                titleFont: { family: 'Manrope', size: 13, weight: 700 },
+                bodyFont: { family: MONO, size: 12, weight: 600 },
+                footerFont: { family: MONO, size: 12, weight: 700 }
+            };
+            const xScale = () => ({
+                type: 'linear', min: xMin, max: xMax,
+                title: axisTitle('Velocità (km/h)'),
+                ticks: Object.assign({ stepSize: 5 }, tick), grid
+            });
+            const yScale = title => ({
+                beginAtZero: true,
+                title: axisTitle(title), ticks: tick, grid,
+                afterFit: s => { s.width = 66; } // stessa larghezza su entrambi i grafici: gli assi x restano allineati
+            });
+            const legend = LEGEND;
+
+            // hover sincronizzato: muovendo il mouse su un grafico, l'altro mostra lo stesso punto
+            const hoverSync = (evt, active, chart) => {
+                if (!pointerInside[suffix]) return; // evento tardivo dopo l'uscita del mouse: ignora
+                const other = chart === powerCharts[suffix] ? powerLossCharts[suffix] : powerCharts[suffix];
+                if (!other) return;
+                if (!active.length) { clearLinked(suffix); return; }
+                const idx = active[0].index;
+                const shown = other.getActiveElements();
+                if (shown.length && shown[0].index === idx) return;
+                const els = other.data.datasets.map((_, di) => ({ datasetIndex: di, index: idx }));
+                const pt = other.getDatasetMeta(0).data[idx];
+                if (!pt) return;
+                other.setActiveElements(els);
+                other.tooltip.setActiveElements(els, { x: pt.x, y: pt.y });
+                other.update('none');
+            };
+            const common = {
+                responsive: true, maintainAspectRatio: false, animation: false,
+                layout: { padding: { right: 8 } },
+                interaction: { mode: 'index', axis: 'x', intersect: false },
+                onHover: hoverSync
+            };
+
+            // ——— grafico 1: potenza richiesta ai pedali ———
+            bindLinkedCanvas('power-chart' + suffix, suffix);
+            bindLinkedCanvas('power-loss-chart' + suffix, suffix);
             const ctx = document.getElementById('power-chart' + suffix).getContext('2d');
             if (powerCharts[suffix]) powerCharts[suffix].destroy();
             powerCharts[suffix] = new Chart(ctx, {
                 type: 'line',
-                data: { labels: speeds, datasets: [{ label: 'Potenza Richiesta (W)', data: powers, borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 8, pointHoverBackgroundColor: '#FF6B35', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 }] },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => 'Potenza: ' + c.parsed.y.toFixed(0) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Potenza (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+                plugins: [chartCrosshair, opPointPlugin],
+                data: { datasets: [{
+                    label: 'Potenza Richiesta (W)', data: tot, borderColor: '#FF6B35', backgroundColor: 'rgba(255,107,53,0.12)',
+                    borderWidth: 2.5, tension: 0.25, fill: true, pointRadius: 0, pointHoverRadius: 5,
+                    pointHoverBackgroundColor: '#FF6B35', pointHoverBorderColor: '#0A0E27', pointHoverBorderWidth: 2
+                }] },
+                options: Object.assign({}, common, {
+                    plugins: {
+                        legend,
+                        opPoint: { x: cur, y: curP, label: cur.toFixed(1) + ' km/h' + (isFinite(curP) ? ' · ' + curP.toFixed(0) + ' W' : '') },
+                        tooltip: Object.assign({}, tt, { callbacks: {
+                            title: c => 'Velocità: ' + c[0].parsed.x + ' km/h',
+                            label: c => 'Potenza: ' + c.parsed.y.toFixed(0) + ' W'
+                        } })
+                    },
+                    scales: { x: xScale(), y: yScale('Potenza (W)') }
+                })
+            });
+
+            // ——— grafico 2: perdite per componente (curve indipendenti, valori negativi) ———
+            const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; };
+            const mk = (label, data, color) => ({
+                label, data, borderColor: color, backgroundColor: hexA(color, 0.08), borderWidth: 2, tension: 0.3,
+                fill: true, pointRadius: 0, pointHoverRadius: 4,
+                pointHoverBackgroundColor: color, pointHoverBorderColor: '#0A0E27', pointHoverBorderWidth: 2
             });
             const ctxLoss = document.getElementById('power-loss-chart' + suffix).getContext('2d');
             if (powerLossCharts[suffix]) powerLossCharts[suffix].destroy();
             powerLossCharts[suffix] = new Chart(ctxLoss, {
                 type: 'line',
-                data: { labels: speeds, datasets: [ { label: 'Drag', data: dragPowers.map(v => -v), borderColor: '#8040FF', backgroundColor: 'rgba(128,64,255,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Rolling', data: rollPowers.map(v => -v), borderColor: '#AD619A', backgroundColor: 'rgba(173,97,154,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Gravity', data: gravPowers.map(v => -v), borderColor: '#FFB347', backgroundColor: 'rgba(255,179,71,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 }, { label: 'Drivetrain', data: drivetrainPowers.map(v => -v), borderColor: '#FFD700', backgroundColor: 'rgba(255,215,0,0.08)', borderWidth: 2, tension: 0.3, fill: true, pointRadius: 0 } ] },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#FF6B35', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Velocità: ' + c[0].label + ' km/h', label: c => c.dataset.label + ': ' + Math.abs(c.parsed.y).toFixed(0) + ' W' } } }, scales: { x: { title: { display: true, text: 'Velocità (km/h)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } }, y: { title: { display: true, text: 'Perdita (W)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } } } } }
+                plugins: [chartCrosshair, opPointPlugin],
+                data: { datasets: [
+                    mk('Drag', drag, SERIES.drag),
+                    mk('Rolling', roll, SERIES.roll),
+                    mk('Gravity', grav, SERIES.grav),
+                    mk('Drivetrain', dtl, SERIES.dt)
+                ] },
+                options: Object.assign({}, common, {
+                    plugins: {
+                        legend,
+                        opPoint: { x: cur, label: '' },
+                        tooltip: Object.assign({}, tt, { callbacks: {
+                            title: c => 'Velocità: ' + c[0].parsed.x + ' km/h',
+                            label: c => c.dataset.label + ': ' + Math.abs(c.parsed.y).toFixed(0) + ' W'
+                        } })
+                    },
+                    scales: { x: xScale(), y: yScale('Perdita (W)') }
+                })
             });
         }
 
@@ -1469,25 +1706,53 @@
             updateAirChart(pressure_hPa, humidity);
         }
 
+        // grafico a linea singolo, nello stesso stile dei grafici Power/Speed (crosshair + marker del valore corrente)
+        function buildSimpleLine(prev, canvasId, cfg) {
+            if (prev) prev.destroy();
+            const MONO = 'JetBrains Mono';
+            const tick = { color: '#9BA4B5', font: { family: MONO, size: 11 } };
+            const grid = { color: 'rgba(255,255,255,0.05)' };
+            const axisTitle = text => ({ display: true, text, color: '#9BA4B5', font: { family: MONO, size: 11, weight: 600 } });
+            return new Chart(document.getElementById(canvasId).getContext('2d'), {
+                type: 'line',
+                plugins: [chartCrosshair, opPointPlugin],
+                data: { datasets: [{ label: cfg.label, data: cfg.data, borderColor: cfg.color, backgroundColor: cfg.fill, borderWidth: 2.5, tension: 0.3, fill: true, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: cfg.color, pointHoverBorderColor: '#0A0E27', pointHoverBorderWidth: 2 }] },
+                options: {
+                    responsive: true, maintainAspectRatio: false, animation: false,
+                    layout: { padding: { right: 8 } },
+                    interaction: { mode: 'index', axis: 'x', intersect: false },
+                    plugins: {
+                        legend: LEGEND,
+                        opPoint: cfg.op,
+                        tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(18,22,48,0.96)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: cfg.color, borderWidth: 1.5, padding: 10, caretPadding: 10, displayColors: false,
+                            titleFont: { family: 'Manrope', size: 13, weight: 700 }, bodyFont: { family: MONO, size: 12, weight: 600 },
+                            callbacks: { title: c => cfg.tipTitle(c[0].parsed.x), label: c => cfg.tipLabel(c.parsed.y) } }
+                    },
+                    scales: {
+                        x: { type: 'linear', min: cfg.xMin, max: cfg.xMax, title: axisTitle(cfg.xTitle), ticks: Object.assign({ stepSize: cfg.step }, tick), grid },
+                        y: { title: axisTitle(cfg.yTitle), ticks: Object.assign({ callback: v => (+v).toFixed(cfg.yDec) }, tick), grid, grace: '4%' }
+                    }
+                }
+            });
+        }
+
         function updateAirChart(pressure, humidity) {
-            const temps = [], densities = [];
             const tempCurrent = parseFloat(document.getElementById('temp').value);
             const PvConstant_hPa = (humidity / 100) * calcEs(tempCurrent);
-            for (let temp = -10; temp <= 40; temp += 1) {
-                const EsTemp = calcEs(temp);
-                const Pv_hPa = Math.min(PvConstant_hPa, EsTemp);
-                const Pd_hPa = pressure - Pv_hPa;
+            const rhoAt = temp => {
+                const Pv_hPa = Math.min(PvConstant_hPa, calcEs(temp));
                 const Tk = temp + 273.15;
-                const Rd = 287.0531, Rv = 461.4964;
-                const rho = (Pd_hPa * 100 / (Rd * Tk)) + (Pv_hPa * 100 / (Rv * Tk));
-                temps.push(temp); densities.push(rho);
-            }
-            const ctx = document.getElementById('air-chart').getContext('2d');
-            if (airChart) airChart.destroy();
-            airChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: temps, datasets: [{ label: 'Densità Aria (kg/m³)', data: densities, borderColor: '#00D9A0', backgroundColor: 'rgba(0,217,160,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 8, pointHoverBackgroundColor: '#00D9A0', pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 }] },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6', font: { family: 'Manrope', size: 14, weight: 600 } } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#00D9A0', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Temperatura: ' + c[0].label + ' °C', label: c => 'Densità: ' + c.parsed.y.toFixed(4) + ' kg/m³' } } }, scales: { x: { title: { display: true, text: 'Temperatura (°C)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Densità (kg/m³)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+                return ((pressure - Pv_hPa) * 100 / (287.0531 * Tk)) + (Pv_hPa * 100 / (461.4964 * Tk));
+            };
+            const data = [];
+            for (let temp = -10; temp <= 40; temp += 1) data.push({ x: temp, y: rhoAt(temp) });
+            const cur = rhoAt(tempCurrent);
+            airChart = buildSimpleLine(airChart, 'air-chart', {
+                label: 'Densità aria (kg/m³)', data, color: '#00D9A0', fill: 'rgba(0,217,160,0.10)',
+                xMin: -10, xMax: 40, step: 5, xTitle: 'Temperatura (°C)', yTitle: 'Densità (kg/m³)', yDec: 3,
+                op: { x: tempCurrent, y: cur, label: tempCurrent.toFixed(1) + ' °C · ' + cur.toFixed(4) },
+                tipTitle: x => 'Temperatura: ' + x + ' °C',
+                tipLabel: y => 'Densità: ' + y.toFixed(4) + ' kg/m³'
             });
         }
 
@@ -1521,23 +1786,19 @@
             const Th_sel = (isNaN(t_h_c) ? 15 : t_h_c) + 273.15;
             const selAlt = parseFloat(document.getElementById('altitude').value) || 0;
             const L = (selAlt === 0) ? 0 : (Th_sel - T0) / selAlt;
-            const alts = [], pressures = [];
-            for (let h = 0; h <= 9000; h += 100) {
-                let pPa;
-                if (Math.abs(L) < 1e-12) {
-                    pPa = p0 * Math.exp(-(g * M * h) / (R * Th_sel));
-                } else {
-                    const Th_local = T0 + L * h;
-                    pPa = p0 * Math.pow(Th_local / T0, -(g * M) / (R * L));
-                }
-                alts.push(h); pressures.push(pPa / 100);
-            }
-            const ctx = document.getElementById('pressure-chart').getContext('2d');
-            if (pressureChart) pressureChart.destroy();
-            pressureChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: alts, datasets: [{ label: 'Pressione (hPa)', data: pressures, borderColor: '#00A3FF', backgroundColor: 'rgba(0,163,255,0.08)', borderWidth: 2, tension: 0.3, pointRadius: 0, fill: true }] },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { labels: { color: '#E8EAF6' } }, tooltip: { enabled: true, mode: 'index', intersect: false, backgroundColor: 'rgba(26,30,61,0.95)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: '#00A3FF', borderWidth: 2, padding: 12, displayColors: true, titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 13, weight: 600 }, callbacks: { title: c => 'Altitudine: ' + c[0].label + ' m', label: c => 'Pressione: ' + c.parsed.y.toFixed(1) + ' hPa' } } }, scales: { x: { title: { display: true, text: 'Altitudine (m)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { title: { display: true, text: 'Pressione (hPa)', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 12, weight: 600 } }, ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono' } }, grid: { color: 'rgba(255,255,255,0.05)' } } } }
+            const pAt = h => {
+                if (Math.abs(L) < 1e-12) return p0 * Math.exp(-(g * M * h) / (R * Th_sel)) / 100;
+                return p0 * Math.pow((T0 + L * h) / T0, -(g * M) / (R * L)) / 100;
+            };
+            const data = [];
+            for (let h = 0; h <= 9000; h += 100) data.push({ x: h, y: pAt(h) });
+            const curP = pAt(selAlt);
+            pressureChart = buildSimpleLine(pressureChart, 'pressure-chart', {
+                label: 'Pressione (hPa)', data, color: '#00A3FF', fill: 'rgba(0,163,255,0.10)',
+                xMin: 0, xMax: 9000, step: 1000, xTitle: 'Altitudine (m)', yTitle: 'Pressione (hPa)', yDec: 0,
+                op: { x: selAlt, y: curP, label: selAlt.toFixed(0) + ' m · ' + curP.toFixed(0) + ' hPa' },
+                tipTitle: x => 'Altitudine: ' + x + ' m',
+                tipLabel: y => 'Pressione: ' + y.toFixed(1) + ' hPa'
             });
         }
 
@@ -1714,7 +1975,7 @@
             if (climbChart) climbChart.destroy();
             climbChart = new Chart(canvas.getContext('2d'), {
                 type: 'line',
-                plugins: [labelPlugin],
+                plugins: [labelPlugin, chartCrosshair],
                 data: {
                     datasets: [
                         {
@@ -1723,7 +1984,10 @@
                             borderColor: ORANGE,
                             borderWidth: 3,
                             pointRadius: 0,
-                            pointHoverRadius: 0,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: ORANGE,
+                            pointHoverBorderColor: '#0A0E27',
+                            pointHoverBorderWidth: 2,
                             tension: 0.2,
                             fill: { target: 'origin', above: 'rgba(255,107,107,0.14)', below: 'rgba(0,217,160,0.14)' },
                             order: 2
@@ -1886,7 +2150,7 @@
                 { label: 'W/kg sist.', value: wkgSys.toFixed(2), unit: '' },
                 { label: 'Velocità', value: speedKmh.toFixed(1), unit: 'km/h' },
                 { label: 'Tempo base', value: fmtClimbTime(tBase), unit: '' },
-                { label: 'Costo +1 kg', value: (perKg >= 0 ? '+' : '−') + Math.abs(perKg).toFixed(1), unit: 's' },
+                { label: 'Costo +1 kg', value: (perKg >= 0 ? '+' : '−') + Math.abs(perKg).toFixed(1), unit: 's', tone: perKg > 0 ? 'bad' : 'good' },
                 { label: 'Distanza', value: (distM / 1000).toFixed(2), unit: 'km' },
                 { label: 'Dislivello', value: height.toFixed(0), unit: 'm' },
                 { label: 'VAM', value: vam.toFixed(0), unit: 'm/h' }
@@ -2057,7 +2321,7 @@
             if (eqChart) eqChart.destroy();
             eqChart = new Chart(canvas.getContext('2d'), {
                 type: 'line',
-                plugins: [labelPlugin],
+                plugins: [labelPlugin, chartCrosshair],
                 data: {
                     datasets: [
                         {
@@ -2066,7 +2330,10 @@
                             borderColor: ORANGE,
                             borderWidth: 3,
                             pointRadius: 0,
-                            pointHoverRadius: 0,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: ORANGE,
+                            pointHoverBorderColor: '#0A0E27',
+                            pointHoverBorderWidth: 2,
                             tension: 0.2,
                             fill: { target: 'origin', above: 'rgba(255,107,107,0.14)', below: 'rgba(0,217,160,0.14)' },
                             order: 2
@@ -2213,8 +2480,8 @@
                 { label: 'W/kg sist.', value: (P / mBase).toFixed(2), unit: '' },
                 { label: 'Velocità', value: (v * 3.6).toFixed(1), unit: 'km/h' },
                 { label: 'VAM', value: vam.toFixed(0), unit: 'm/h' },
-                { label: 'Costo +1 kg', value: fmtW(pPlus, false), unit: 'W' },
-                { label: 'Guadagno −1 kg', value: fmtW(pMinus, false), unit: 'W' }
+                { label: 'Costo +1 kg', value: fmtW(pPlus, false), unit: 'W', tone: pPlus > 0 ? 'bad' : 'good' },
+                { label: 'Guadagno −1 kg', value: fmtW(pMinus, false), unit: 'W', tone: pMinus < 0 ? 'good' : 'bad' }
             ], mob);
 
             const baseDeltas = [-10, -5, -2.5, -1, 0, 1, 2.5, 5, 10];
@@ -2367,6 +2634,7 @@
             ).join('');
 
             updateSensChart({ entries, tBase, base, distM });
+            updateSensWattChart({ entries });
         }
 
         function updateSensChart(c) {
@@ -2409,6 +2677,7 @@
                 }
             };
 
+            bindSensLink();
             if (sensChart) sensChart.destroy();
             sensChart = new Chart(canvas.getContext('2d'), {
                 type: 'bar',
@@ -2420,6 +2689,11 @@
                     maintainAspectRatio: false,
                     animation: { duration: 250 },
                     layout: { padding: { top: 6, right: 14 } },
+                    onHover: (evt, active) => {
+                        if (!sensPointer.v) return;
+                        if (!active.length) { sensLinkClear(); return; }
+                        sensLinkTo(sensChartW, sensWMap.indexOf(active[0].index));
+                    },
                     plugins: {
                         legend: { display: false },
                         title: {
@@ -2485,10 +2759,160 @@
             });
         }
 
+        // secondo grafico: gli stessi parametri, espressi in watt equivalenti; hover collegato al grafico dei tempi
+        let sensChartW = null;
+        let sensWMap = []; // indice nel grafico dei watt -> indice del parametro nel grafico dei tempi
+        const sensPointer = { v: false };
+        function sensLinkClear() {
+            [sensChart, sensChartW].forEach(ch => { if (!ch) return; ch.setActiveElements([]); ch.tooltip.setActiveElements([], { x: 0, y: 0 }); ch.update('none'); });
+        }
+        function sensLinkTo(other, idx) {
+            if (!other) return;
+            if (idx < 0) { other.setActiveElements([]); other.tooltip.setActiveElements([], { x: 0, y: 0 }); other.update('none'); return; }
+            const els = [0, 1].filter(di => { const v = other.data.datasets[di].data[idx]; return v !== null && v !== undefined; }).map(di => ({ datasetIndex: di, index: idx }));
+            const cur = other.getActiveElements();
+            if (!els.length) return;
+            if (cur.length && cur[0].index === idx && cur.length === els.length) return;
+            const pt = other.getDatasetMeta(els[0].datasetIndex).data[idx];
+            if (!pt) return;
+            other.setActiveElements(els);
+            other.tooltip.setActiveElements(els, { x: pt.x, y: pt.y });
+            other.update('none');
+        }
+        function bindSensLink() {
+            ['sens-chart', 'sens-chart-w'].forEach(id => {
+                const cv = document.getElementById(id);
+                if (!cv || cv.dataset.linked) return;
+                cv.dataset.linked = '1';
+                cv.addEventListener('pointerenter', () => { sensPointer.v = true; });
+                const off = () => { sensPointer.v = false; sensLinkClear(); };
+                cv.addEventListener('pointerleave', off);
+                cv.addEventListener('pointercancel', off);
+            });
+        }
+        function updateSensWattChart(c) {
+            const canvas = document.getElementById('sens-chart-w');
+            if (!canvas || typeof Chart === 'undefined') return;
+            bindSensLink();
+            // la riga Potenza è il valore immesso: non ha senso nel grafico dei watt
+            sensWMap = c.entries.map((e, i) => e.def.isPower ? -1 : i).filter(i => i >= 0);
+            c = { entries: sensWMap.map(i => c.entries[i]) };
+            const GREEN = '#00D9A0', RED = '#ff6b6b', ORANGE = '#FF6B35';
+            const labels = c.entries.map(e => e.def.name + ' ±' + fmtSensStep(e.def.step) + (e.def.unit ? ' ' + e.def.unit : ''));
+            const colorOf = r => (r && r.dt > 0) ? RED : GREEN;
+            const mk = (key, name) => ({
+                label: name,
+                data: c.entries.map(e => e[key] ? e[key].w : null),
+                backgroundColor: c.entries.map(e => colorOf(e[key])),
+                borderRadius: 4, grouped: false, categoryPercentage: 0.8, barPercentage: 0.85, maxBarThickness: 28
+            });
+            const labelPlugin = {
+                id: 'sensWBarLabels',
+                afterDatasetsDraw(chart) {
+                    const g = chart.ctx; const narrow = chart.width < 560;
+                    g.save(); g.font = '600 ' + (narrow ? 10 : 11) + 'px JetBrains Mono, monospace'; g.textBaseline = 'middle';
+                    [0, 1].forEach(di => {
+                        const key = di === 0 ? 'lo' : 'hi';
+                        chart.getDatasetMeta(di).data.forEach((el, i) => {
+                            const r = c.entries[i][key]; if (!r) return;
+                            g.fillStyle = colorOf(r);
+                            const right = r.w >= 0;
+                            g.textAlign = right ? 'left' : 'right';
+                            g.fillText(fmtSensW(r.w), el.x + (right ? 6 : -6), el.y);
+                        });
+                    });
+                    g.restore();
+                }
+            };
+            if (sensChartW) sensChartW.destroy();
+            sensChartW = new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                plugins: [labelPlugin],
+                data: { labels, datasets: [mk('lo', 'Passo −'), mk('hi', 'Passo +')] },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
+                    layout: { padding: { top: 6, right: 14 } },
+                    onHover: (evt, active) => {
+                        if (!sensPointer.v) return;
+                        if (!active.length) { sensLinkClear(); return; }
+                        sensLinkTo(sensChart, sensWMap[active[0].index]);
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Quanti watt valgono', color: '#E8EAF6', font: { family: 'Manrope', size: 15, weight: 700 }, padding: { bottom: 2 } },
+                        subtitle: { display: true, text: 'Watt da aggiungere (+) o togliere (−) per tornare al tempo base', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 11 }, padding: { bottom: 12 } },
+                        tooltip: {
+                            backgroundColor: 'rgba(26,30,61,0.96)', titleColor: '#E8EAF6', bodyColor: '#E8EAF6', borderColor: ORANGE, borderWidth: 2, padding: 12, displayColors: false,
+                            titleFont: { family: 'Manrope', size: 14, weight: 700 }, bodyFont: { family: 'JetBrains Mono', size: 12, weight: 600 },
+                            callbacks: {
+                                title: items => c.entries[items[0].dataIndex].def.name,
+                                label: item => {
+                                    const e = c.entries[item.dataIndex];
+                                    const r = item.datasetIndex === 0 ? e.lo : e.hi;
+                                    if (!r) return '—';
+                                    const sg = item.datasetIndex === 0 ? '−' : '+';
+                                    return [sg + fmtSensStep(e.def.step) + (e.def.unit ? ' ' + e.def.unit : '') + ' → ' + fmtSensW(r.w), 'Δ tempo: ' + fmtSensT(r.dt)];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: '← meno watt      Δ watt      più watt →', color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 11, weight: 600 } },
+                            ticks: { color: '#9BA4B5', font: { family: 'JetBrains Mono', size: 11 }, maxTicksLimit: 9 },
+                            grid: { color: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 'rgba(232,234,246,0.45)' : 'rgba(255,255,255,0.05)', lineWidth: ctx => (ctx.tick && Math.abs(ctx.tick.value) < 1e-9) ? 2 : 1 },
+                            grace: '22%'
+                        },
+                        y: { ticks: { color: '#E8EAF6', font: { family: 'Manrope', size: window.innerWidth <= 768 ? 10 : 12, weight: 600 } }, grid: { display: false } }
+                    }
+                }
+            });
+        }
+
         (function setupSens() {
             document.querySelectorAll('#sens-tab input[id]').forEach(el => el.addEventListener('input', calculateSens));
         })();
 
+
+        // ——— Campi raggruppati per tema (sezioni sempre visibili) ———
+        (function groupFields() {
+            const T = {
+                power: [['rider-weight', 'bike-weight', 'power'], ['slope', 'air-density', 'wind-speed'], ['cda', 'crr', 'drivetrain-loss']],
+                speed: [['rider-weight-s', 'bike-weight-s', 'speed-kmh'], ['slope-s', 'air-density-s', 'wind-speed-s'], ['cda-s', 'crr-s', 'drivetrain-loss-s']],
+                climb: [['climb-body', 'climb-bike'], ['climb-grade', 'climb-rho', 'climb-wind'], ['climb-cda', 'climb-crr', 'climb-dt']],
+                eq:    [['eq-body', 'eq-bike'], ['eq-grade', 'eq-rho', 'eq-wind'], ['eq-cda', 'eq-crr', 'eq-dt']],
+                sens:  [['sens-body', 'sens-bike', 'sens-watts'], ['sens-grade', 'sens-dist', 'sens-rho', 'sens-wind'], ['sens-cda', 'sens-crr', 'sens-dt']]
+            };
+            const groupOf = id => { const el = document.getElementById(id); return el ? el.closest('.input-group') : null; };
+            const mkGrid = ids => {
+                const g = document.createElement('div');
+                g.className = 'input-grid grid-4';
+                ids.forEach(id => { const n = groupOf(id); if (n) g.appendChild(n); });
+                return g;
+            };
+            Object.keys(T).forEach(tab => {
+                const [who, env, adv] = T[tab];
+                const first = groupOf(who[0]);
+                if (!first) return;
+                const anchorGrid = first.closest('.input-grid');
+                const wrap = document.createElement('div');
+                wrap.className = 'field-sections';
+                const sec1 = document.createElement('div'); sec1.className = 'fs';
+                sec1.innerHTML = '<div class="fs-title">' + (tab === 'sens' ? 'Ciclista e potenza' : (tab === 'power' ? 'Ciclista e potenza' : (tab === 'speed' ? 'Ciclista e velocità' : 'Ciclista e mezzo'))) + '</div>';
+                sec1.appendChild(mkGrid(who));
+                const sec2 = document.createElement('div'); sec2.className = 'fs';
+                sec2.innerHTML = '<div class="fs-title">Percorso e ambiente</div>';
+                sec2.appendChild(mkGrid(env));
+                const sec3 = document.createElement('div'); sec3.className = 'fs';
+                sec3.innerHTML = '<div class="fs-title">Aerodinamica e trasmissione</div>';
+                sec3.appendChild(mkGrid(adv));
+                wrap.append(sec1, sec2, sec3);
+                anchorGrid.parentNode.insertBefore(wrap, anchorGrid);
+                // rimuove le griglie originali rimaste vuote
+                const card = wrap.parentNode;
+                card.querySelectorAll(':scope > .input-grid').forEach(g => { if (!g.querySelector('.input-group')) g.remove(); });
+            });
+        })();
 
         // ——— Parametri condivisi tra tutte le tab: un valore inserito in una tab si propaga alle altre ———
         const LINK_GROUPS = [
