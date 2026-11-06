@@ -550,12 +550,15 @@
         }
         .info-btn:hover { color: var(--accent); }
         #info-pop {
-            position: fixed; z-index: 1000; max-width: 270px; display: none;
+            position: fixed; z-index: 1000; max-width: 300px; display: none;
             background: rgba(18,24,48,0.98); border: 1px solid var(--primary); border-radius: 10px;
             padding: 0.6rem 0.75rem; font-size: 0.8rem; line-height: 1.45; color: var(--text-light);
-            font-family: 'Manrope', sans-serif; text-transform: none; letter-spacing: 0; font-weight: 500;
+            font-family: 'Manrope', sans-serif; text-transform: none; letter-spacing: 0; font-weight: 500; white-space: pre-line;
             box-shadow: 0 10px 30px rgba(0,0,0,0.45);
         }
+        #info-pop .pop-src { margin-top: 0.5rem; padding-top: 0.45rem; border-top: 1px solid var(--border); white-space: normal; }
+        #info-pop .pop-src b { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        #info-pop .pop-src a { display: block; margin-top: 0.2rem; color: var(--primary); text-decoration: underline; }
         .air-apply-row { margin-top: 0.9rem; }
         .mini-btn {
             background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-light);
@@ -614,6 +617,8 @@
             .card { padding: 1rem; }
             .chart-container { padding: 0.3rem 0.4rem 0.4rem; }
         }
+        .vmax-row { margin-top: 0.9rem; }
+        .vmax-slider { width: 100%; accent-color: var(--primary); cursor: pointer; height: 1.4rem; }
     </style>
 </head>
 <body>
@@ -657,11 +662,11 @@
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità. Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m.&#10;Puoi calcolarla o stimarla nella tab Air Density (da temperatura, pressione e umidità; la pressione in quota si ricava nella tab Pressione in quota) e riportarla qui con il pulsante «Usa questa densità…»." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="air-density" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                     <div class="input-group">
-                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-links="Garimella et al. 2020, Applied Sciences|https://www.mdpi.com/2076-3417/10/23/8635;;BestBikeSplit: CdA per posizione|https://www.bestbikesplit.com/cda-aerodynamic-drag-coefficient-cycling" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="cda" value="0.4" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
@@ -671,17 +676,27 @@
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-links="bicyclerollingresistance.com: metodo di test|https://www.bicyclerollingresistance.com/the-test;;BestBikeSplit: Crr dei copertoni|https://www.bestbikesplit.com/case-study-crr" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.002–0.003 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010. Test su tamburo a 29 km/h: copertoni road ≈0.002–0.007.&#10;" aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="crr" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
-                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a> <button type="button" class="info-btn" data-links="Friction Facts (via CyclingAbout)|https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/;;Friction Facts (via BikeRadar)|https://www.bikeradar.com/news/friction-facts-measuring-drivetrain-efficiency;;Spicer et al. 1999 (Johns Hopkins)|https://www.sciencedaily.com/releases/1999/08/990819180058.htm" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti). Misure di laboratorio a 250 W (Friction Facts):&#10;• Catena pulita e lubrificata: 2–3&#160;%&#10;• Catena bagnata: ≈5&#160;%&#10;• Fangosa e asciutta: ≈7&#160;%&#10;• Senza lubrificante: 8–10&#160;%&#10;A potenze più basse o con pignoni piccoli la perdita sale." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="drivetrain-loss" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                 </div>
                 <div id="power-results" class="results"></div>
                 <div class="chart-container"><canvas id="power-chart"></canvas></div>
                 <div class="chart-container" style="margin-top:1rem;"><canvas id="power-loss-chart"></canvas></div>
+                <div class="vmax-row" data-vmax-row="p">
+                    <div class="climb-slider-head">
+                        <label style="margin:0;">Velocità massima asse x</label>
+                        <div class="climb-slider-right">
+                            <span class="climb-slider-val" data-vmax-val="p">—</span>
+                            <button type="button" class="climb-reset" data-vmax-auto="p" title="Torna al valore automatico" style="visibility:hidden;">auto</button>
+                        </div>
+                    </div>
+                    <div class="climb-slider-wrap"><input type="range" class="vmax-slider" data-vmax="p" min="20" max="200" step="1" value="60"></div>
+                </div>
             </div>
             <div class="card equations">
                 <h3>📐 Equazioni del Modello</h3>
@@ -718,11 +733,11 @@
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità. Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m.&#10;Puoi calcolarla o stimarla nella tab Air Density (da temperatura, pressione e umidità; la pressione in quota si ricava nella tab Pressione in quota) e riportarla qui con il pulsante «Usa questa densità…»." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="air-density-s" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                     <div class="input-group">
-                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-links="Garimella et al. 2020, Applied Sciences|https://www.mdpi.com/2076-3417/10/23/8635;;BestBikeSplit: CdA per posizione|https://www.bestbikesplit.com/cda-aerodynamic-drag-coefficient-cycling" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="cda-s" value="0.4" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
@@ -732,17 +747,27 @@
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-links="bicyclerollingresistance.com: metodo di test|https://www.bicyclerollingresistance.com/the-test;;BestBikeSplit: Crr dei copertoni|https://www.bestbikesplit.com/case-study-crr" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010. Test su tamburo a 29 km/h: copertoni road ≈0.002–0.007.&#10;" aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="crr-s" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
-                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a> <button type="button" class="info-btn" data-links="Friction Facts (via CyclingAbout)|https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/;;Friction Facts (via BikeRadar)|https://www.bikeradar.com/news/friction-facts-measuring-drivetrain-efficiency;;Spicer et al. 1999 (Johns Hopkins)|https://www.sciencedaily.com/releases/1999/08/990819180058.htm" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti). Misure di laboratorio a 250 W (Friction Facts):&#10;• Catena pulita e lubrificata: 2–3&#160;%&#10;• Catena bagnata: ≈5&#160;%&#10;• Fangosa e asciutta: ≈7&#160;%&#10;• Senza lubrificante: 8–10&#160;%&#10;A potenze più basse o con pignoni piccoli la perdita sale." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="drivetrain-loss-s" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                 </div>
                 <div id="speed-results" class="results"></div>
                 <div class="chart-container"><canvas id="power-chart-s"></canvas></div>
                 <div class="chart-container" style="margin-top:1rem;"><canvas id="power-loss-chart-s"></canvas></div>
+                <div class="vmax-row" data-vmax-row="s">
+                    <div class="climb-slider-head">
+                        <label style="margin:0;">Velocità massima asse x</label>
+                        <div class="climb-slider-right">
+                            <span class="climb-slider-val" data-vmax-val="s">—</span>
+                            <button type="button" class="climb-reset" data-vmax-auto="s" title="Torna al valore automatico" style="visibility:hidden;">auto</button>
+                        </div>
+                    </div>
+                    <div class="climb-slider-wrap"><input type="range" class="vmax-slider" data-vmax="s" min="20" max="200" step="1" value="60"></div>
+                </div>
             </div>
             <div class="card equations">
                 <h3>📐 Equazioni del Modello</h3>
@@ -773,21 +798,21 @@
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-grade" value="8" step="0.5" min="1" max="25"></div>
                     </div>
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità. Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m.&#10;Puoi calcolarla o stimarla nella tab Air Density (da temperatura, pressione e umidità; la pressione in quota si ricava nella tab Pressione in quota) e riportarla qui con il pulsante «Usa questa densità…»." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-rho" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-links="Garimella et al. 2020, Applied Sciences|https://www.mdpi.com/2076-3417/10/23/8635;;BestBikeSplit: CdA per posizione|https://www.bestbikesplit.com/cda-aerodynamic-drag-coefficient-cycling" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-cda" value="0.35" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
-                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-links="bicyclerollingresistance.com: metodo di test|https://www.bicyclerollingresistance.com/the-test;;BestBikeSplit: Crr dei copertoni|https://www.bestbikesplit.com/case-study-crr" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010. Test su tamburo a 29 km/h: copertoni road ≈0.002–0.007.&#10;" aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-crr" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
-                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a> <button type="button" class="info-btn" data-links="Friction Facts (via CyclingAbout)|https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/;;Friction Facts (via BikeRadar)|https://www.bikeradar.com/news/friction-facts-measuring-drivetrain-efficiency;;Spicer et al. 1999 (Johns Hopkins)|https://www.sciencedaily.com/releases/1999/08/990819180058.htm" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti). Misure di laboratorio a 250 W (Friction Facts):&#10;• Catena pulita e lubrificata: 2–3&#160;%&#10;• Catena bagnata: ≈5&#160;%&#10;• Fangosa e asciutta: ≈7&#160;%&#10;• Senza lubrificante: 8–10&#160;%&#10;A potenze più basse o con pignoni piccoli la perdita sale." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="climb-dt" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                     <div class="input-group">
@@ -901,21 +926,21 @@
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-grade" value="8" step="0.5" min="1" max="25"></div>
                     </div>
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità. Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m.&#10;Puoi calcolarla o stimarla nella tab Air Density (da temperatura, pressione e umidità; la pressione in quota si ricava nella tab Pressione in quota) e riportarla qui con il pulsante «Usa questa densità…»." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-rho" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.mdpi.com/2076-3417/10/23/8635" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">CdA (m²)</a> <button type="button" class="info-btn" data-links="Garimella et al. 2020, Applied Sciences|https://www.mdpi.com/2076-3417/10/23/8635;;BestBikeSplit: CdA per posizione|https://www.bestbikesplit.com/cda-aerodynamic-drag-coefficient-cycling" data-info="Area frontale × coefficiente aerodinamico. Valori tipici: crono 0.20–0.25 · strada in presa bassa 0.30–0.35 · sulle leve 0.35–0.40 · posizione eretta 0.45+ m²." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-cda" value="0.35" step="0.01" min="0.05" max="1"></div>
                     </div>
                     <div class="input-group">
-                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.bicyclerollingresistance.com/road-bike-reviews/compare" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Crr</a> <button type="button" class="info-btn" data-links="bicyclerollingresistance.com: metodo di test|https://www.bicyclerollingresistance.com/the-test;;BestBikeSplit: Crr dei copertoni|https://www.bestbikesplit.com/case-study-crr" data-info="Coefficiente di resistenza al rotolamento. Su asfalto liscio: copertoni veloci 0.003–0.004 · standard 0.004–0.005 · asfalto rovinato o gravel 0.006–0.010. Test su tamburo a 29 km/h: copertoni road ≈0.002–0.007.&#10;" aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-crr" value="0.004" step="0.0005" min="0" max="0.03"></div>
                     </div>
                     <div class="input-group">
-                        <label>Drivetrain Loss (%) <button type="button" class="info-btn" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti)." aria-label="Info">ⓘ</button></label>
+                        <label><a href="https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a> <button type="button" class="info-btn" data-links="Friction Facts (via CyclingAbout)|https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/;;Friction Facts (via BikeRadar)|https://www.bikeradar.com/news/friction-facts-measuring-drivetrain-efficiency;;Spicer et al. 1999 (Johns Hopkins)|https://www.sciencedaily.com/releases/1999/08/990819180058.htm" data-info="Quota di potenza persa tra pedali e ruota posteriore (catena, corone, pignoni, cuscinetti). Misure di laboratorio a 250 W (Friction Facts):&#10;• Catena pulita e lubrificata: 2–3&#160;%&#10;• Catena bagnata: ≈5&#160;%&#10;• Fangosa e asciutta: ≈7&#160;%&#10;• Senza lubrificante: 8–10&#160;%&#10;A potenze più basse o con pignoni piccoli la perdita sale." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="eq-dt" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                     <div class="input-group">
@@ -1016,7 +1041,7 @@
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-watts" value="300" step="5" min="50" max="2500"></div>
                     </div>
                     <div class="input-group">
-                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità (calcolala nella tab Air Density). Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m." aria-label="Info">ⓘ</button></label>
+                        <label>Densità Aria (kg/m³) <button type="button" class="info-btn" data-info="Densità dell'aria: dipende da temperatura, pressione e umidità. Tipica: 1.225 a 15 °C a livello del mare, ≈1.20 a 20 °C, ≈1.0 kg/m³ intorno ai 2000 m.&#10;Puoi calcolarla o stimarla nella tab Air Density (da temperatura, pressione e umidità; la pressione in quota si ricava nella tab Pressione in quota) e riportarla qui con il pulsante «Usa questa densità…»." aria-label="Info">ⓘ</button></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-rho" value="1.1989" step="0.01" min="0.3" max="1.5"></div>
                     </div>
                     <div class="input-group">
@@ -1030,7 +1055,7 @@
                 </div>
                 <div class="input-grid grid-4">
                     <div class="input-group">
-                        <label>Drivetrain Loss (%)</label>
+                        <label><a href="https://www.cyclingabout.com/how-much-does-a-dirty-bicycle-chain-slow-you-down/" target="_blank" rel="noopener" style="color:inherit; text-decoration:underline;">Drivetrain Loss (%)</a></label>
                         <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-dt" value="2" step="0.5" min="0" max="20"></div>
                     </div>
                     <div class="input-group">
@@ -1296,6 +1321,49 @@
         let powerCharts = {};
         let powerLossCharts = {};
         const pointerInside = {};
+        const vmaxManual = {};   // '' (Power→Speed) e '-s' (Speed→Power): null = valore automatico
+        const vmaxAuto = {};
+        const vmaxKey = sfx => (sfx === 'p' ? '' : '-s');
+        const vmaxStep = (lo, hi) => (hi - lo) <= 60 ? 5 : ((hi - lo) <= 130 ? 10 : 20);
+        function setVmaxUI(suffix, xMax, autoMax, sliderMax) {
+            const sfx = suffix === '' ? 'p' : 's';
+            const sl = document.querySelector('[data-vmax="' + sfx + '"]');
+            if (!sl) return;
+            sl.max = sliderMax; sl.value = xMax;
+            document.querySelector('[data-vmax-val="' + sfx + '"]').textContent = xMax + ' km/h';
+            document.querySelector('[data-vmax-auto="' + sfx + '"]').style.visibility = (vmaxManual[suffix] == null) ? 'hidden' : 'visible';
+        }
+        function applyVmax(suffix, v) {
+            [powerCharts[suffix], powerLossCharts[suffix]].forEach(c => {
+                if (!c) return;
+                c.options.scales.x.max = v;
+                c.options.scales.x.ticks.stepSize = vmaxStep(c.options.scales.x.min, v);
+                c.update('none');
+            });
+        }
+        (function bindVmax() {
+            ['p', 's'].forEach(sfx => {
+                const suffix = vmaxKey(sfx);
+                const sl = document.querySelector('[data-vmax="' + sfx + '"]');
+                const val = document.querySelector('[data-vmax-val="' + sfx + '"]');
+                const au = document.querySelector('[data-vmax-auto="' + sfx + '"]');
+                if (!sl) return;
+                sl.addEventListener('input', () => {
+                    const v = parseInt(sl.value, 10);
+                    vmaxManual[suffix] = v;
+                    val.textContent = v + ' km/h';
+                    au.style.visibility = 'visible';
+                    applyVmax(suffix, v);
+                });
+                au.addEventListener('click', () => {
+                    vmaxManual[suffix] = null;
+                    sl.value = vmaxAuto[suffix];
+                    val.textContent = vmaxAuto[suffix] + ' km/h';
+                    au.style.visibility = 'hidden';
+                    applyVmax(suffix, vmaxAuto[suffix]);
+                });
+            });
+        })();
         function clearLinked(suffix) {
             [powerCharts[suffix], powerLossCharts[suffix]].forEach(c => {
                 if (!c) return;
@@ -1547,10 +1615,14 @@
             const cur = (op && isFinite(op.speedKmh)) ? op.speedKmh : 25;
             const curP = (op && isFinite(op.power)) ? op.power : NaN;
             const xMin = cur < 12 ? 0 : 10;
-            const xMax = Math.max(60, Math.ceil(cur * 1.15 / 5) * 5);
+            const autoMax = Math.round(Math.max(cur * 1.25, cur + 15));
+            const sliderMax = Math.max(80, autoMax);
+            vmaxAuto[suffix] = autoMax;
+            const xMax = (vmaxManual[suffix] != null) ? vmaxManual[suffix] : autoMax;
+            setVmaxUI(suffix, xMax, autoMax, sliderMax);
 
             const tot = [], drag = [], roll = [], grav = [], dtl = [];
-            for (let k = xMin; k <= xMax; k += 1) {
+            for (let k = xMin; k <= sliderMax; k += 1) {
                 const v = k / 3.6;
                 const vr = v + windMS;
                 const pAero = 0.5 * rho * cda * vr * Math.abs(vr) * v;
@@ -1580,7 +1652,7 @@
             const xScale = () => ({
                 type: 'linear', min: xMin, max: xMax,
                 title: axisTitle('Velocità (km/h)'),
-                ticks: Object.assign({ stepSize: 5 }, tick), grid
+                ticks: Object.assign({ stepSize: vmaxStep(xMin, xMax) }, tick), grid
             });
             const yScale = title => ({
                 beginAtZero: true,
@@ -3141,6 +3213,8 @@
                 setEqPowerMode('watt');
                 updateEqCustomLabel();
             }
+            if (tab === 'power') vmaxManual[''] = null;
+            if (tab === 'speed') vmaxManual['-s'] = null;
             syncShared(tab);
             Object.keys(TAB_CALC).forEach(k => TAB_CALC[k]());
             saveState();
@@ -3194,7 +3268,22 @@
                 e.preventDefault();
                 if (openBtn === b) { close(); return; }
                 openBtn = b;
-                pop.textContent = b.getAttribute('data-info');
+                pop.textContent = (b.getAttribute('data-info') || '').trim();
+                const lk = b.getAttribute('data-links');
+                if (lk) {
+                    const box = document.createElement('div');
+                    box.className = 'pop-src';
+                    lk.split(';;').forEach(item => {
+                        const i = item.lastIndexOf('|');
+                        const a = document.createElement('a');
+                        a.textContent = item.slice(0, i);
+                        a.href = item.slice(i + 1);
+                        a.target = '_blank';
+                        a.rel = 'noopener';
+                        box.appendChild(a);
+                    });
+                    pop.appendChild(box);
+                }
                 pop.style.display = 'block';
                 const r = b.getBoundingClientRect();
                 const w = pop.offsetWidth, h = pop.offsetHeight;
