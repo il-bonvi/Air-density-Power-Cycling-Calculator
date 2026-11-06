@@ -566,6 +566,12 @@
             font-family: 'Manrope', sans-serif; transition: background 0.2s, border-color 0.2s;
         }
         .mini-btn:hover { background: rgba(255,107,53,0.15); border-color: var(--primary); }
+        .mode-cycle {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: inherit;
+            border-radius: 999px; padding: 0.1rem 0.55rem; font: inherit; font-size: 0.7rem; line-height: 1.3;
+            cursor: pointer; text-transform: inherit; letter-spacing: inherit; transition: background 0.2s, border-color 0.2s;
+        }
+        .mode-cycle:hover { background: rgba(255,107,53,0.15); border-color: var(--primary); }
         .dur-sep { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 1.1rem; }
 
         /* ——— Restyling: layout e dettagli ——— */
@@ -1030,9 +1036,14 @@
                         <label>Pendenza (%)</label>
                         <div class="input-wrapper"><input type="text" data-num autocomplete="off" spellcheck="false" id="sens-grade" value="8" step="0.5" min="-30" max="30"></div>
                     </div>
-                    <div class="input-group">
-                        <label>Distanza (km)</label>
-                        <div class="input-wrapper"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-dist" value="5" step="0.5" min="0.1"></div>
+                    <div class="input-group" id="sens-ref-group">
+                        <label><button type="button" class="mode-cycle" id="sens-mode-btn" onclick="cycleSensMode()" title="Cambia riferimento: distanza o durata">⇄ <span id="sens-mode-label">Distanza (km)</span></button></label>
+                        <div class="input-wrapper" id="sens-wrap-dist"><input type="text" inputmode="decimal" data-num autocomplete="off" spellcheck="false" id="sens-dist" value="5" step="0.5" min="0.1"></div>
+                        <div class="dur-row" id="sens-wrap-time" style="display:none;">
+                            <input type="number" id="sens-dur-min" value="10" step="1" min="0" max="180" title="Minuti">
+                            <span class="dur-sep">:</span>
+                            <input type="number" id="sens-dur-sec" value="0" step="1" min="0" max="59" title="Secondi">
+                        </div>
                     </div>
                 </div>
                 <div class="input-grid grid-4">
@@ -2614,6 +2625,20 @@
 
         // ——— Tab Sensibilità: effetto di ogni parametro sul tempo ———
         let sensChart = null;
+        let sensMode = 'dist'; // 'dist' | 'time'
+
+        function setSensMode(m) {
+            sensMode = (m === 'time') ? 'time' : 'dist';
+            document.getElementById('sens-mode-label').textContent = sensMode === 'time' ? 'Durata (mm:ss)' : 'Distanza (km)';
+            document.getElementById('sens-wrap-dist').style.display = sensMode === 'dist' ? '' : 'none';
+            document.getElementById('sens-wrap-time').style.display = sensMode === 'time' ? '' : 'none';
+        }
+
+        function cycleSensMode() {
+            setSensMode(sensMode === 'dist' ? 'time' : 'dist');
+            calculateSens();
+            saveState();
+        }
 
         function fmtSensT(dt) {
             const a = Math.abs(dt);
@@ -2648,12 +2673,21 @@
                 dt: g('sens-dt') || 0,
                 wind: g('sens-wind') || 0
             };
-            const distM = g('sens-dist') * 1000;
-            if (!(base.P > 0 && body > 0 && base.m > 0 && base.rho > 0 && base.cda > 0 && base.crr >= 0 && distM > 0 && isFinite(base.grade))) return;
-
             const speed = p => climbSpeedFromPower(p.P, p.m, p.grade, p.rho, p.cda, p.crr, p.dt, p.wind);
             const valid = p => p.P > 0 && p.m > 0 && p.cda > 0 && p.crr >= 0 && p.dt >= 0 && p.dt < 50 && p.rho > 0;
+            if (!(base.P > 0 && body > 0 && base.m > 0 && base.rho > 0 && base.cda > 0 && base.crr >= 0 && isFinite(base.grade))) return;
             const vBase = speed(base);
+            let distM;
+            if (sensMode === 'time') {
+                // durata di riferimento → distanza percorsa alla velocità base; poi la distanza resta fissa per tutte le varianti
+                const dMin = parseInt(document.getElementById('sens-dur-min').value, 10) || 0;
+                let dSec = parseInt(document.getElementById('sens-dur-sec').value, 10) || 0;
+                dSec = Math.max(0, Math.min(59, dSec));
+                distM = vBase * (dMin * 60 + dSec);
+            } else {
+                distM = g('sens-dist') * 1000;
+            }
+            if (!(distM > 0) || !(vBase > 0)) return;
             const tBase = distM / vBase;
 
             const defs = [
@@ -3141,6 +3175,7 @@
             if (!onlyChanged || climbMode !== 'time') s.cm = climbMode;
             if (!onlyChanged || climbPowerMode !== 'watt') s.pm = climbPowerMode;
             if (!onlyChanged || eqPowerMode !== 'watt') s.pw2 = eqPowerMode;
+            if (!onlyChanged || sensMode !== 'dist') s.sm = sensMode;
             s.t = currentTab();
             return s;
         }
@@ -3153,12 +3188,13 @@
 
         function applyState(s) {
             Object.keys(s).forEach(k => {
-                if (k === 'cm' || k === 'pm' || k === 'pw2' || k === 't') return;
+                if (k === 'cm' || k === 'pm' || k === 'pw2' || k === 'sm' || k === 't') return;
                 const el = document.getElementById(k);
                 if (el && el.tagName === 'INPUT' && !SKIP_IDS.has(k) && s[k] !== '' && isFinite(parseFloat(s[k]))) el.value = s[k];
             });
             if (s.cm === 'dist' || s.cm === 'time') setClimbMode(s.cm);
             if (s.pm === 'wkg' || s.pm === 'watt') setClimbPowerMode(s.pm);
+            if (s.sm === 'dist' || s.sm === 'time') setSensMode(s.sm);
             syncShared(s.t && TAB_CALC[s.t] ? s.t : 'climb');
             updateClimbCustomLabel();
             updateEqCustomLabel();
@@ -3209,6 +3245,7 @@
                 setClimbPowerMode('watt');
                 updateClimbCustomLabel();
             }
+            if (tab === 'sens') setSensMode('dist');
             if (tab === 'eq') {
                 setEqPowerMode('watt');
                 updateEqCustomLabel();
